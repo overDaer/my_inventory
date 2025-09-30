@@ -1,0 +1,236 @@
+html, body {
+    height:100%;
+    width: 100%;
+    margin:0;
+    font-family: Futura, "Trebuchet MS", Arial, sans-serif;
+}
+
+button {
+  margin: 10px 5px;
+  width: 70px;
+  height: 30px;
+  border: 0;
+  background-color: #8e973a;
+  box-shadow: 0 2px 4px rgba(0,0,0,2.5);
+  color: #fff;
+  border-radius: 7px;
+}
+
+/*copied from https://www.cssfontstack.com*/
+h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 17.5px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 25px; } pre { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
+
+/*---------class----------*/
+.container {
+
+}
+
+.interactive-bar {
+
+}
+
+.content-header {
+    
+}
+
+.content-body {
+
+}
+
+.item-display{
+    display: flex;
+    flex-direction: column;
+    border: 2px solid rgb(111, 112, 112);
+    border-radius: 6%;
+    height: 400px;
+    width: 250px;
+    margin: 10px;
+}
+
+.item-name{
+    margin: 5px;
+    text-align: center;
+    height: 20px;
+}
+
+.item-img{
+    height: 250px;
+    width: 250px;
+}
+
+.item-top-table{
+    height: 85px;
+}
+
+.key-value-table{
+    font-size: 13px;
+    text-align: left;
+}
+
+.item-description{
+    text-align:justify;
+    vertical-align: text-top;
+    text-overflow: clip;
+}
+
+.group-action{
+    margin: 5px 5px;
+}
+
+/*----------id----------*/
+#base-container{
+    display: flex;
+    flex-flow:column;
+    height: 100%;
+}
+
+#nav-bar{
+    display: flex;
+    flex:0 1 auto;
+    background-color: dodgerblue;
+    position: relative;
+    margin: 3px;
+    height: 50px;
+}
+
+#nav-bar > button{
+    margin: 5px;
+    height: 20px;
+}
+
+#content-container{
+    display: flex;
+    flex: 1 1 auto;
+    flex-flow: row;
+    position: relative;
+    margin: 3px;
+
+}
+
+#groups-container{
+    display: flex;
+    flex: 1 1 85%;
+    flex-flow: column;
+    position: relative;
+    height: 100%;
+
+}
+
+#avatar-container{
+    display: flex;
+    flex-flow: column;
+    flex: 0 1 350px;
+    position: relative;
+    height: 100%;
+}
+
+#groups-header{
+    display: flex;
+    justify-content: left;
+}
+
+#items-header{
+
+}
+
+#items-body{
+
+}
+
+#items-grid{
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    position: relative;
+    overflow-y:auto;
+}
+
+#avatar-animation{
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+}
+
+#stats-header{
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+}
+
+#stats-body{
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+}
+
+/* modal css */
+
+.modal-container {
+  display: "none";
+  background-color: rgba(0,0,0,0.3);
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.modal-container.show {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 40px 50px;
+  width: 600px;
+  border-radius: 25px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  text-align: center;
+}
+
+#group-input-description {
+  height: 100px;
+  width: 100%;
+}
+
+.modal-button-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items:right;
+}
+
+/* .modal-action {
+  margin: 10px 5px;
+  width: 70px;
+  height: 30px;
+  border: 0;
+  background-color: #47b186;
+  box-shadow: 0 2px 4px rgba(0,0,0,2.5);
+  color: #fff;
+  border-radius: 7px;
+} */
+
+.modal-input {
+    border: 1px solid #4d4d4d;
+    border-radius: 3px;
+    padding: 5px;
+    width: 100%;
+}
+
+.modal-input-header {
+  padding: 0px;
+  margin: 15px 5px;
+}

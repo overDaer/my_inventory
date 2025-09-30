@@ -1,7 +1,14 @@
 from django import forms
 from .models import *
 
-class CategoryForm(forms.ModelForm):
+
+class GroupForm(forms.ModelForm):
     class Meta:
-        model = Category
+        model = Group
         fields = '__all__'
+
+class ItemForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = '__all__'
+

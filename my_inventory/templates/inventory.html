@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Inventory</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'my_inventory/styles.css' %}">
+</head>
+<body>
+    <!-- main page content -->
+    <div class="container" id="base-container">
+        <div class="interactive-bar" id="nav-bar">
+            <button class="nav-bar-button" id="nav-bar-button-about">about</button>
+            <button class="nav-bar-button" id="nav-bar-button-help">help</button>
+            <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
+        </div>
+        <div class="container" id="content-container">
+            <div class="container" id="groups-container">
+                <div class="button-header" id="groups-header">
+                    <button class="group-action" id="group-add">add</button>
+                    <button class="group-action" id="group-remove">remove</button>
+                    <button class="group-action" id="group-edit">edit</button>
+                </div>
+            </div>
+            <div class= "container" id="avatar-container">
+                avatar-container
+                <div class="animation" id="avatar-animation" >avatar-animation</div>
+                <div class="content-header" id="stats-header">stats-header</div>
+                <div class="content-body" id="stats-body">stats-body</div>
+            </div>
+        </div>  
+    </div>
+
+    <!-- modals -->
+    <div class='modal-container' id='group-modal-container'>
+        <div class='modal-content' id='group-modal-content'>
+            <h1 class='modal-header' id='group-modal-header'>Group</h1>
+            <h4 class="modal-input-header">Name</h4>
+            <input class="modal-input"
+                type="text"
+                id="group-input-name"
+                name="name"
+                required
+                minlength="0"
+                maxlength="200"
+                size="50"/>
+            <h4 class="modal-input-header">Category</h4>
+            <input class="modal-input"
+            type="text"
+            id="group-input-category"
+            name="category"
+            size="50"/>
+            <h4 class="modal-input-header">Description</h4>
+            <input class="modal-input"
+                type="text"
+                id="group-input-description"
+                name="description"
+                />
+            <div class="modal-button-container" id="group-button-container">
+                <button class="modal-action" id="group-modal-cancel">Cancel</button>
+                <button class="modal-action" id="group-modal-save">Save</button>
+            </div>
+        </div>
+    </div>
+<script>
+    var defaultImage = "{% static 'my_inventory/default-image.webp' %}";
+    var csrftoken = "{{ csrf_token }}";
+</script>
+<script type="module" src="{% static 'my_inventory/script.js' %}"></script>
+</body>
+
+
+</html>
