@@ -10,7 +10,7 @@ button {
   width: 70px;
   height: 30px;
   border: 0;
-  background-color: #8e973a;
+  background-color: #d9dbc9;
   box-shadow: 0 2px 4px rgba(0,0,0,2.5);
   color: #fff;
   border-radius: 7px;
@@ -100,19 +100,21 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 .group-action{
     margin: 5px 5px;
     margin: 5px 5px;
-    background-color: rgb(116, 152, 163);
+    background-color: rgb(204, 204, 204);
 }
 
 .item-action{
     margin: 5px 5px;
-    margin: 5px 5px;
     width: 25px;
-    background-color: rgb(116, 152, 163);
+    background-color: rgb(94, 173, 204);
 }
 
 .group-display-header{
     margin: 5px 5px;
+    height: 60px;
     display: flex;
+    flex-direction: row;
+    text-align: center;
     background-color: rgb(189, 189, 189);
     border-radius: 6px;
 }
@@ -125,6 +127,10 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     flex-wrap: wrap;
     position: relative;
     overflow-y:auto;
+}
+
+.button-icon {
+    
 }
 
 /*----------id----------*/

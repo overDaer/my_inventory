@@ -127,6 +127,11 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     overflow-y:auto;
 }
 
+.button-icon {
+    fill: white;
+    stroke: white;
+}
+
 /*----------id----------*/
 #base-container{
     display: flex;

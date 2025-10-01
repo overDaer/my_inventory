@@ -18,9 +18,15 @@
         <div class="container" id="content-container">
             <div class="container" id="groups-container">
                 <div class="button-header" id="groups-header">
-                    <button class="group-action" id="group-add">add</button>
-                    <button class="group-action" id="group-remove">remove</button>
-                    <button class="group-action" id="group-edit">edit</button>
+                    <button class="group-action" id="group-add">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/folder-plus.svg' %}">
+                    </button>
+                    <button class="group-action" id="group-remove">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/folder-minus.svg' %}">
+                    </button>
+                    <button class="group-action" id="group-edit">
+                        <img class="button-icon" src="">
+                    </button>
                 </div>
             </div>
             <div class= "container" id="avatar-container">
@@ -67,9 +73,9 @@
     var csrftoken = "{{ csrf_token }}";
     var defaultImage = "{% static 'my_inventory/assets/default-image.webp' %}";
     var addGroup = "{% static 'my_inventory/assets/folder-plus.svg' %}";
-    var deleteGroup = "{% static 'my_inventory/assets/folder-minus.svg' %}";
+    var removeGroup = "{% static 'my_inventory/assets/folder-minus.svg' %}";
     var addItem = "{% static 'my_inventory/assets/file-earmark-plus.svg' %}";
-    var deleteItem = "{% static 'my_inventory/assets/file-earmark-minus.svg' %}";
+    var removeItem = "{% static 'my_inventory/assets/file-minus.svg' %}";
     var expandGroup = "{% static 'my_inventory/assets/chevron-double-down.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>

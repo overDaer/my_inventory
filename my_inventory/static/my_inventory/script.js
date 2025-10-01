@@ -7,7 +7,17 @@ const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
 document.addEventListener('DOMContentLoaded', async function () {
     await loadGroups();
     addButtonEvents();
+    loadStaticIcons();
 });
+
+function loadStaticIcons() {
+    let addGroupButton = document.getElementById('group-add');
+    addGroupImg = document.createElement('img');
+    addGroupImg.setAttribute('src', addGroup);
+    addGroupImg.setAttribute('class','button-icon');
+    addGroupButton.prepend(addGroupImg);
+
+}
 
 async function loadGroups(group_id = null) {
     let response = null;
@@ -47,7 +57,9 @@ function buildGroupDisplay(group){
     let groupDescription = document.createElement('h4');groupDescription.innerHTML = group.fields.description;groupName.setAttribute('class', 'group-data-field');
     let groupExpandContainer = document.createElement('div'); groupExpandContainer.setAttribute('class','group-expand-container'); 
     let groupExpandButton = document.createElement('button'); groupExpandButton.setAttribute('class','group-expand-button'); 
-    
+    let expandImg = document.createElement('img');
+    expandImg.setAttribute('src', expandGroup);
+    groupExpandButton.prepend(expandImg);
     groupContainer.appendChild(groupData);
 
     groupData.appendChild(groupName);
@@ -62,7 +74,17 @@ function buildGroupDisplay(group){
     groupHeader.appendChild(itemActionContainer);
     
     let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action');addItemButton.setAttribute('data-id',group.pk);
+    let addItemImg = document.createElement('img');
+    addItemImg.setAttribute('src', addItem);
+    addItemImg.setAttribute('class','button-icon');
+    addItemButton.prepend(addItemImg);
+    
     let removeItemButton = document.createElement('button'); removeItemButton.setAttribute('class','item-action');removeItemButton.setAttribute('data-id',group.pk);
+    let removeItemImg = document.createElement('img');
+    removeItemImg.setAttribute('src', removeItem);
+    removeItemImg.setAttribute('class','button-icon');
+    removeItemButton.prepend(removeItemImg);
+
     let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action');editItemButton.setAttribute('data-id',group.pk);
     itemActionContainer.appendChild(addItemButton);itemActionContainer.appendChild(removeItemButton);itemActionContainer.appendChild(editItemButton);
     return groupContainer;

@@ -5,21 +5,18 @@ const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
     timeStyle: 'short'
 });
 document.addEventListener('DOMContentLoaded', async function () {
-    loadStaticIcons();
     await loadGroups();
     addButtonEvents();
+    loadStaticIcons();
 });
 
-loadStaticIcons() {
-    const addGroupButton = document.getElementById("group-add");
-    let groupAddImg = document.createElement('img');
-    groupAddImg.setAttribute('src',addGroup);
-    addGroupButton.appendChild(groupAddImg);
+function loadStaticIcons() {
+    let addGroupButton = document.getElementById('group-add');
+    addGroupImg = document.createElement('img');
+    addGroupImg.setAttribute('src', addGroup);
+    addGroupImg.setAttribute('class','button-icon');
+    addGroupButton.prepend(addGroupImg);
 
-    const removeGroupButton = document.getElementById("group-remove");
-    let groupRemoveImg = document.createElement('img');
-    groupRemoveImg.setAttribute('src',removeGroup);
-    removeGroupButton.appendChild(groupRemoveImg);
 }
 
 async function loadGroups(group_id = null) {
@@ -60,7 +57,9 @@ function buildGroupDisplay(group){
     let groupDescription = document.createElement('h4');groupDescription.innerHTML = group.fields.description;groupName.setAttribute('class', 'group-data-field');
     let groupExpandContainer = document.createElement('div'); groupExpandContainer.setAttribute('class','group-expand-container'); 
     let groupExpandButton = document.createElement('button'); groupExpandButton.setAttribute('class','group-expand-button'); 
-    // let expandImg = document.createElement('img'); expandImg.setAttribute('src', expandGroup);groupExpandButton.appendChild(expandImg);
+    let expandImg = document.createElement('img');
+    expandImg.setAttribute('src', expandGroup);
+    groupExpandButton.prepend(expandImg);
     groupContainer.appendChild(groupData);
 
     groupData.appendChild(groupName);
@@ -73,15 +72,19 @@ function buildGroupDisplay(group){
 
     let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container');
     groupHeader.appendChild(itemActionContainer);
-
+    
     let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action');addItemButton.setAttribute('data-id',group.pk);
-    let addItemImg = document.createElement('img'); 
-    expandImg.setAttribute('src', addItem);
-    addItemButton.appendChild(addItemImg);
+    let addItemImg = document.createElement('img');
+    addItemImg.setAttribute('src', addItem);
+    addItemImg.setAttribute('class','button-icon');
+    addItemButton.prepend(addItemImg);
     
     let removeItemButton = document.createElement('button'); removeItemButton.setAttribute('class','item-action');removeItemButton.setAttribute('data-id',group.pk);
-    let removeItemImg = document.createElement('img'); expandImg.setAttribute('src', removeItem);removeItemButton.appendChild(removeItemImg);
-    
+    let removeItemImg = document.createElement('img');
+    removeItemImg.setAttribute('src', removeItem);
+    removeItemImg.setAttribute('class','button-icon');
+    removeItemButton.prepend(removeItemImg);
+
     let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action');editItemButton.setAttribute('data-id',group.pk);
     itemActionContainer.appendChild(addItemButton);itemActionContainer.appendChild(removeItemButton);itemActionContainer.appendChild(editItemButton);
     return groupContainer;
