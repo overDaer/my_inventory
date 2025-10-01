@@ -64,8 +64,13 @@
         </div>
     </div>
 <script>
-    var defaultImage = "{% static 'my_inventory/default-image.webp' %}";
     var csrftoken = "{{ csrf_token }}";
+    var defaultImage = "{% static 'my_inventory/assets/default-image.webp' %}";
+    var addGroup = "{% static 'my_inventory/assets/folder-plus.svg' %}";
+    var deleteGroup = "{% static 'my_inventory/assets/folder-minus.svg' %}";
+    var addItem = "{% static 'my_inventory/assets/file-earmark-plus.svg' %}";
+    var deleteItem = "{% static 'my_inventory/assets/file-earmark-minus.svg' %}";
+    var expandGroup = "{% static 'my_inventory/assets/chevron-double-down.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>
 </body>

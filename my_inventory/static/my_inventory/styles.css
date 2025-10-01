@@ -72,8 +72,59 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     text-overflow: clip;
 }
 
+.group-data-content{
+    display: flex;
+}
+
+.group-data-field{
+    margin: 20px 5px;
+}
+
+.group-container{
+    max-height: 50%;
+}
+
+.group-expand-container {
+    align-items: right;
+    margin-right: 0;
+    background-color: #fff;
+
+}
+.group-expand-button {
+    width: 35px;
+    height: 30px;
+    align-self: center;
+    margin-right: 0;
+}
+
 .group-action{
     margin: 5px 5px;
+    margin: 5px 5px;
+    background-color: rgb(116, 152, 163);
+}
+
+.item-action{
+    margin: 5px 5px;
+    margin: 5px 5px;
+    width: 25px;
+    background-color: rgb(116, 152, 163);
+}
+
+.group-display-header{
+    margin: 5px 5px;
+    display: flex;
+    background-color: rgb(189, 189, 189);
+    border-radius: 6px;
+}
+
+.items-grid{
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    position: relative;
+    overflow-y:auto;
 }
 
 /*----------id----------*/
@@ -119,7 +170,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     display: flex;
     flex-flow: column;
     flex: 0 1 350px;
-    position: relative;
+    position: static;
     height: 100%;
 }
 
@@ -127,6 +178,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     display: flex;
     justify-content: left;
 }
+
 
 #items-header{
 
@@ -136,15 +188,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 }
 
-#items-grid{
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    position: relative;
-    overflow-y:auto;
-}
+
 
 #avatar-animation{
     display: flex;

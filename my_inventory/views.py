@@ -47,8 +47,8 @@ def group(request: HttpRequest):
                 return JsonResponse({'error':'JSON failed to decode'}, status=400)
     elif request.method == "GET":
         groups = [];
-        if 'id' in request.headers:
-            group_id = request.headers['id']
+        if 'id' in request.GET:
+            group_id = request.GET.get('id')
             try:
                 groups = [Group.objects.get(pk=group_id)]
             except Group.DoesNotExist:
@@ -76,16 +76,16 @@ def item(request: HttpRequest):
                 return JsonResponse({'error':'JSON failed to decode'}, status=400)
     elif request.method == "GET":
         items = [];
-        if 'id' in request.headers:
-            item_id = request.headers['id']
+        if 'id' in request.GET:
+            item_id = request.GET.get('id')
             try:
                 items = [Item.objects.get(pk=item_id)]
             except Item.DoesNotExist:
                 return JsonResponse({'error':f'failed to find item with id {item_id}'}, status=400)
-        elif 'group_id' in request.headers:
-            group_id = request.headers['group_id']
+        elif 'group_id' in request.GET:
+            group_id = request.GET.get('group_id')
             items = Item.objects.filter(group__id=group_id)
         else:
-            items = Group.objects.all()
+            items = Item.objects.all()
         serializedjson = serializers.serialize("json", items)
         return JsonResponse(serializedjson,safe=False)
