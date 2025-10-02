@@ -1,3 +1,21 @@
+:root {
+    --selection-item-border-color: rgb(129, 193, 236);
+    --selection-item-background-color:rgb(129, 193, 236);
+    --selection-group-border-color: rgb(46, 171, 255);
+    --selection-group-background-color:rgb(98, 238, 248);
+    --group-button-color: #fcb07d;
+    --item-button-color: rgb(94, 173, 204);
+    --item-border-color: rgb(0, 88, 88);
+    --box-shadow-one: rgb(85, 85, 85);
+    --box-shadow-two: rgb(44, 44, 44);
+    --group-header-background-color: rgb(189, 189, 189);
+    --group-data-background-color: rgb(96, 248, 228);
+    --nav-bar-color: rgb(127, 98, 255);
+    --nav-bar-button-color:rgb(144, 180, 178);
+    --modal-border-color: #4d4d4d;
+    --group-description-background-color: rgb(233, 199, 105);
+}
+
 html, body {
     height:100%;
     width: 100%;
@@ -10,7 +28,7 @@ button {
   width: 70px;
   height: 30px;
   border: 0;
-  background-color: #8e973a;
+  background-color: var(--group-button-color);
   box-shadow: 0 2px 4px rgba(0,0,0,2.5);
   color: #fff;
   border-radius: 7px;
@@ -20,30 +38,28 @@ button {
 h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 17.5px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 25px; } pre { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
 
 /*---------class----------*/
-.container {
-
-}
-
-.interactive-bar {
-
-}
-
-.content-header {
-    
-}
-
-.content-body {
-
-}
 
 .item-display{
     display: flex;
     flex-direction: column;
-    border: 2px solid rgb(111, 112, 112);
+    /* border: 2px solid rgb(111, 112, 112); */
+    border: 4px solid var(--item-border-color);
     border-radius: 6%;
     height: 400px;
     width: 250px;
     margin: 10px;
+}
+
+.item-display:hover{
+    border: 4px solid var(--selection-item-border-color);
+    margin: 10px;
+}
+
+
+.item-display:focus-within{
+    background-color:var(--selection-item-background-color);
+    border: 4px solid var(--selection-item-border-color);
+    box-shadow:3px 3px 5px var(--box-shadow-one), 10px 10px 7px var(--box-shadow-two);
 }
 
 .item-name{
@@ -72,48 +88,70 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     text-overflow: clip;
 }
 
+.group-container{
+    transition: tansform 0.3s ease-in-out;
+}
+
 .group-data-content{
     display: flex;
+    margin: 5px 5px;
+    height: 30px;
+    flex-direction: row;
+    align-content:space-around;
+    background-color: var(--group-data-background-color);
+    border-radius: 6px;
 }
 
-.group-data-field{
-    margin: 20px 5px;
-}
-
-.group-container{
+.group-content{
     max-height: 50%;
 }
 
-.group-expand-container {
-    align-items: right;
-    margin-right: 0;
-    background-color: #fff;
-
+.group-content.minimized{
+    max-height: 0;
+    overflow: hidden;
 }
+
+.group-data-description{
+    margin: 5px 5px;
+    height: auto;
+    border-radius: 6px;
+    background-color: var(--group-description-background-color);
+}
+.group-data-content:focus-within{
+    background-color: var(--selection-group-background-color);
+    border: 4px solid var(--selection-group-border-color);
+}
+
+.group-data-field{
+    margin: 5px 5px;
+    text-align: center;
+}
+
 .group-expand-button {
-    width: 35px;
-    height: 30px;
-    align-self: center;
-    margin-right: 0;
+    width: 28px;
+    height: 25px;
+    margin: 2px 2px;
 }
 
 .group-action{
     margin: 5px 5px;
     margin: 5px 5px;
-    background-color: rgb(116, 152, 163);
+    background-color: var(--group-button-color);
 }
 
 .item-action{
     margin: 5px 5px;
-    margin: 5px 5px;
     width: 25px;
-    background-color: rgb(116, 152, 163);
+    background-color: var(--item-button-color);
 }
 
 .group-display-header{
     margin: 5px 5px;
+    height: 42px;
     display: flex;
-    background-color: rgb(189, 189, 189);
+    flex-direction: row;
+    text-align: center;
+    background-color: var(--group-header-background-color);
     border-radius: 6px;
 }
 
@@ -127,9 +165,14 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     overflow-y:auto;
 }
 
+.nav-bar-button{
+    margin: 5px;
+    height: 20px;
+    background-color: var(--nav-bar-button-color);
+}
+
 .button-icon {
-    fill: white;
-    stroke: white;
+    
 }
 
 /*----------id----------*/
@@ -142,16 +185,13 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 #nav-bar{
     display: flex;
     flex:0 1 auto;
-    background-color: dodgerblue;
+    background-color: var(--nav-bar-color);
     position: relative;
     margin: 3px;
     height: 50px;
 }
 
-#nav-bar > button{
-    margin: 5px;
-    height: 20px;
-}
+
 
 #content-container{
     display: flex;
@@ -273,7 +313,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 } */
 
 .modal-input {
-    border: 1px solid #4d4d4d;
+    border: 1px solid var(--modal-border-color);
     border-radius: 3px;
     padding: 5px;
     width: 100%;

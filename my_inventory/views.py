@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.http import HttpResponse, HttpRequest, JsonResponse, Http404
 from django.views import View
 from django.core import serializers
+from django.shortcuts import get_object_or_404, redirect
 
 from .models import *
 from .forms import *
@@ -57,6 +58,38 @@ def group(request: HttpRequest):
             groups = Group.objects.all()
         serializedjson = serializers.serialize("json", groups)
         return JsonResponse(serializedjson,safe=False)
+    elif request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            pk = data['id']
+            name = data['name']
+            category = data['category']
+            description = data['description']
+            group = Group.objects.get(pk=pk)
+            group.name = name
+            group.category = category
+            group.description = description
+            try:
+                group.full_clean()
+                group.save()
+                return JsonResponse({'message':'successfully created Group object'}, status=201)
+            except ValidationError:
+                return JsonResponse({'error':'Group failed to validate'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error':'JSON failed to decode'}, status=400)
+        
+    
+def group_delete(request:HttpRequest,pk: int):
+    if request.method == "POST":
+        try:
+            group = get_object_or_404(Group, pk=pk)
+            group.delete()
+            return JsonResponse({'message':'successfully delete Group'}, status=204)
+        except Http404:
+            return JsonResponse({'error':'Group could not be found with that pk'}, status=404)
+    else:
+            return JsonResponse({'error':'Expected a POST request'}, status=400)
+    
 
 def item(request: HttpRequest):
     if request.method == "POST":

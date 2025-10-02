@@ -25,7 +25,7 @@
                         <img class="button-icon" src="{% static 'my_inventory/assets/folder-minus.svg' %}">
                     </button>
                     <button class="group-action" id="group-edit">
-                        <img class="button-icon" src="">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/pencil.svg' %}">
                     </button>
                 </div>
             </div>
@@ -77,6 +77,8 @@
     var addItem = "{% static 'my_inventory/assets/file-earmark-plus.svg' %}";
     var removeItem = "{% static 'my_inventory/assets/file-minus.svg' %}";
     var expandGroup = "{% static 'my_inventory/assets/chevron-double-down.svg' %}";
+    var collapseGroup = "{% static 'my_inventory/assets/chevron-double-up.svg' %}";
+    var pencil = "{% static 'my_inventory/assets/pencil.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>
 </body>

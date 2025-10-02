@@ -1,29 +1,24 @@
 console.log("external javascript loaded.");
-//document loading
+
 const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
     dateStyle: 'short',
     timeStyle: 'short'
 });
 document.addEventListener('DOMContentLoaded', async function () {
-    await loadGroups();
+    await buildGroupContainers();
     addButtonEvents();
-    loadStaticIcons();
 });
 
-function loadStaticIcons() {
-    let addGroupButton = document.getElementById('group-add');
-    addGroupImg = document.createElement('img');
-    addGroupImg.setAttribute('src', addGroup);
-    addGroupImg.setAttribute('class','button-icon');
-    addGroupButton.prepend(addGroupImg);
+//global variables
+let itemSelection = null;
+let groupSelection = null;
 
-}
 
 async function loadGroups(group_id = null) {
     let response = null;
     if (group_id) {
         let groupIdParams = new URLSearchParams();
-        groupIdParams.append('group_id', group_id);
+        groupIdParams.append('id', group_id);
         response = await fetch(`/inventory/group/?${groupIdParams}`);
     }
     else {
@@ -35,14 +30,18 @@ async function loadGroups(group_id = null) {
     }
     let groups = await response.json();
     groups = JSON.parse(groups);
+    return groups;
+}
 
+async function buildGroupContainers() {
+    let groups = await loadGroups();
     let groupsContainer = document.getElementById('groups-container')
     groups.forEach(async (group) => {
         let groupDisplay = buildGroupDisplay(group);
         let groupItems = await loadItems(group.pk);
         if (groupItems) {
             let itemsGrid = buildItemsGrid(groupItems);
-            groupDisplay.appendChild(itemsGrid);
+            groupDisplay.querySelector('.group-content').appendChild(itemsGrid);
         }
         groupsContainer.appendChild(groupDisplay);
     });
@@ -51,42 +50,68 @@ async function loadGroups(group_id = null) {
 function buildGroupDisplay(group){
     
     let groupContainer = document.createElement('div');groupContainer.setAttribute('class','group-container');
-    let groupData = document.createElement('div');groupData.setAttribute('data-id',group.pk);groupData.setAttribute('class','group-data-content');
-    let groupName = document.createElement('h4');groupName.innerHTML = group.fields.name;groupName.setAttribute('class', 'group-data-field');
-    let groupCategory = document.createElement('h4');groupCategory.innerHTML = group.fields.category;groupName.setAttribute('class', 'group-data-field');
-    let groupDescription = document.createElement('h4');groupDescription.innerHTML = group.fields.description;groupName.setAttribute('class', 'group-data-field');
+    let groupData = document.createElement('div');groupData.setAttribute('data-id',group.pk); groupData.setAttribute('class','group-data-content');
+    let groupName = document.createElement('h4'); groupName.setAttribute('class', 'group-data-field');
+    groupName.innerHTML = group.fields.name;
+    let groupCategory = document.createElement('h4'); groupCategory.setAttribute('class', 'group-data-field');
+    if (group.fields.category) groupCategory.innerHTML = `[${group.fields.category}]`;
+    let groupDescription = document.createElement('p'); groupDescription.setAttribute('class', 'group-data-description');
+    groupDescription.innerHTML = group.fields.description;
     let groupExpandContainer = document.createElement('div'); groupExpandContainer.setAttribute('class','group-expand-container'); 
     let groupExpandButton = document.createElement('button'); groupExpandButton.setAttribute('class','group-expand-button'); 
+    
+    
     let expandImg = document.createElement('img');
-    expandImg.setAttribute('src', expandGroup);
+    expandImg.setAttribute('src', collapseGroup);
     groupExpandButton.prepend(expandImg);
     groupContainer.appendChild(groupData);
 
     groupData.appendChild(groupName);
     groupData.appendChild(groupCategory);
-    groupData.appendChild(groupDescription);
     groupData.appendChild(groupExpandContainer);
+    groupData.setAttribute('tabIndex',0);
+    groupData.addEventListener('focus',()=>{
+        groupSelection = groupData;
+    })
     groupExpandContainer.appendChild(groupExpandButton);
+    
+    let groupContent = document.createElement('div'); groupContent.setAttribute('class','group-content');
+    groupContent.appendChild(groupDescription);
+    groupExpandButton.addEventListener('click', ()=> {
+        groupContent.classList.toggle('minimized');
+        if (groupContent.classList.contains('minimized')) {
+            expandImg.setAttribute('src', expandGroup);
+        }   
+        else{
+            expandImg.setAttribute('src', collapseGroup);
+        }
+    });
+    groupContainer.appendChild(groupContent);
 
-    let groupHeader = document.createElement('div'); groupHeader.setAttribute('class','group-display-header');groupContainer.appendChild(groupHeader); 
+
+    let groupHeader = document.createElement('div'); groupHeader.setAttribute('class','group-display-header');
+    groupContent.appendChild(groupHeader); 
 
     let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container');
     groupHeader.appendChild(itemActionContainer);
     
     let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action');addItemButton.setAttribute('data-id',group.pk);
-    let addItemImg = document.createElement('img');
-    addItemImg.setAttribute('src', addItem);
-    addItemImg.setAttribute('class','button-icon');
+
+    let addItemImg = document.createElement('img');addItemImg.setAttribute('src', addItem);addItemImg.setAttribute('class','button-icon');
     addItemButton.prepend(addItemImg);
     
     let removeItemButton = document.createElement('button'); removeItemButton.setAttribute('class','item-action');removeItemButton.setAttribute('data-id',group.pk);
-    let removeItemImg = document.createElement('img');
-    removeItemImg.setAttribute('src', removeItem);
-    removeItemImg.setAttribute('class','button-icon');
+    let removeItemImg = document.createElement('img');removeItemImg.setAttribute('src', removeItem);removeItemImg.setAttribute('class','button-icon');
     removeItemButton.prepend(removeItemImg);
 
     let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action');editItemButton.setAttribute('data-id',group.pk);
-    itemActionContainer.appendChild(addItemButton);itemActionContainer.appendChild(removeItemButton);itemActionContainer.appendChild(editItemButton);
+    let editItemImg = document.createElement('img');editItemImg.setAttribute('src', pencil);editItemImg.setAttribute('class','button-icon');
+    editItemButton.prepend(editItemImg);
+    
+    itemActionContainer.appendChild(addItemButton);
+    itemActionContainer.appendChild(removeItemButton);
+    itemActionContainer.appendChild(editItemButton);
+    
     return groupContainer;
 }
 
@@ -121,52 +146,120 @@ function buildItemsGrid(items, groupContainer) {
 
 function addButtonEvents() {
     const groupAddBtn = document.getElementById('group-add');
+    const groupRemoveBtn = document.getElementById('group-remove');
+    const groupEditBtn = document.getElementById('group-edit');
     const groupModalContainer = document.getElementById('group-modal-container');
-    const groupSaveBtn = document.getElementById('group-modal-save');
-    const groupCancelBtn = document.getElementById('group-modal-cancel');
+    const groupModalSaveBtn = document.getElementById('group-modal-save');
+    const groupModalCancelBtn = document.getElementById('group-modal-cancel');
     groupAddBtn?.addEventListener('click', () => {
+        clearModal();
         groupModalContainer?.classList.add('show');
     });
-    groupCancelBtn?.addEventListener('click', () => {
-        // clear modal here
+    groupRemoveBtn?.addEventListener('click', () => {
+        if(!groupSelection) {
+            alert("Select a group to remove");
+            return;
+        }
+        let deleteMessage = `Are you sure you want to delete the selected group and all contained items?`
+        if (confirm(deleteMessage)) {
+            deleteGroup(groupSelection.getAttribute('data-id'));
+        }
+    });
+    groupEditBtn?.addEventListener('click',async () => {
+        clearModal();
+        if(!groupSelection) {
+            alert("Select a group to edit");
+            return;
+        }
+        let groups = await loadGroups(`${groupSelection.getAttribute('data-id')}`);
+        populateModal(groups[0]);
+        groupModalContainer?.classList.add('show');
+    });
+
+    groupModalCancelBtn?.addEventListener('click', () => {
         groupModalContainer?.classList.remove('show');
     });
-    groupSaveBtn?.addEventListener('click', () => {
-        // save data here
+    groupModalSaveBtn?.addEventListener('click', () => {
         saveGroupModal();
         groupModalContainer?.classList.remove('show');
     });
+    
+    
+}
+
+function clearModal(){
+    document.getElementById('group-modal-container').removeAttribute('data-id');
+    document.getElementById('group-input-name').value = "";
+    document.getElementById('group-input-category').value = "";
+    document.getElementById('group-input-description').value = "";
+}
+
+function populateModal(group){
+    console.log(group);
+    document.getElementById('group-modal-container').setAttribute('data-id', group.pk);
+    document.getElementById('group-input-name').value = group.fields.name;
+    document.getElementById('group-input-category').value = group.fields.category;
+    document.getElementById('group-input-description').value = group.fields.description;
 }
 
 async function saveGroupModal() {
     // gather data
+    const groupModal = document.getElementById('group-modal-container');
     let groupName = document.getElementById('group-input-name').value;
     let groupCategory = document.getElementById('group-input-category').value;
     let groupDescription = document.getElementById('group-input-description').value;
-    let group = {
-        name: groupName,
-        description: groupDescription,
-        category:  groupCategory
+    if (groupModal.hasAttribute('data-id')){
+        let group = {
+            id: groupModal.getAttribute('data-id'),
+            name: groupName,
+            description: groupDescription,
+            category:  groupCategory
+        }
+        let response = await fetch('/inventory/group/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(group)
+        });
     }
-    // POST
-    let response = await fetch('/inventory/group/', {
+    else {
+        // POST
+        let group = {
+            name: groupName,
+            description: groupDescription,
+            category:  groupCategory
+        }
+        let response = await fetch('/inventory/group/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(group)
+        });
+    }
+    
+}
+
+async function deleteGroup(id) {
+    let response = await fetch(`/inventory/group/delete/${id}/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify(group)
-    });
-
-    
-    
-
+        }
+    }
+    );
+    console.log(response);
 }
 
 function buildItemDisplay(item) {
     //top level box container
     let display = document.createElement("div");
     display.setAttribute("class", "item-display");
+    display.setAttribute("data-id", item.pk);
+    display.setAttribute('tabindex', 0);
     //html elements containing data
     //add name as separate div
     let name = document.createElement("h3");name.setAttribute("class", "item-name");name.innerHTML = item.fields.name;
@@ -184,6 +277,10 @@ function buildItemDisplay(item) {
     row.insertCell().appendChild(numberTable);
     row.insertCell().appendChild(description);
     display.appendChild(topTable);
+    display.addEventListener('focus',()=>{
+        itemSelection = display;
+    });
+
     return display;
 }
 ;
