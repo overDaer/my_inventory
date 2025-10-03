@@ -67,8 +67,8 @@ def group(request: HttpRequest):
             description = data['description']
             group = Group.objects.get(pk=pk)
             group.name = name
-            group.category = category
-            group.description = description
+            if(category): group.category = category
+            if(description): group.description = description
             try:
                 group.full_clean()
                 group.save()
@@ -90,15 +90,42 @@ def group_delete(request:HttpRequest,pk: int):
     else:
             return JsonResponse({'error':'Expected a POST request'}, status=400)
     
-
+def item_delete(request:HttpRequest,pk: int):
+    if request.method == "POST":
+        try:
+            item = get_object_or_404(Item, pk=pk)
+            item.delete()
+            return JsonResponse({'message':'successfully delete item'}, status=204)
+        except Http404:
+            return JsonResponse({'error':'Item could not be found with that pk'}, status=404)
+    else:
+            return JsonResponse({'error':'Expected a POST request'}, status=400)
+    
 def item(request: HttpRequest):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            # name = data['name']
-            # category = data['category']
-            # description = data['description']
+            group_id = data['group_id']
+            name= data['name']
+            price= data['price']
+            total= data['total']
+            available= data['available']
+            used= data['used']
+            acquired= data['acquired']
+            expire=  data['expire']
+            lifespan=  data['lifespan']
+            description=  data['description']
             item = Item()
+            item.group = Group.objects.get(pk=group_id)
+            item.name = name
+            if (price): item.price = price
+            if (total): item.total_quantity = total
+            if (available): item.available_quantity = available
+            if (used): item.used_quantity = used
+            if (acquired): item.acquired_dt = acquired
+            if (expire): item.expire_dt = expire
+            if (lifespan): item.lifespan = lifespan
+            if (description): item.description = description
             try:
                 item.full_clean()
                 item.save()
@@ -122,3 +149,45 @@ def item(request: HttpRequest):
             items = Item.objects.all()
         serializedjson = serializers.serialize("json", items)
         return JsonResponse(serializedjson,safe=False)
+    elif request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            id = data['id']
+            name= data['name']
+            price= data['price']
+            total= data['total']
+            available= data['available']
+            used= data['used']
+            acquired= data['acquired']
+            expire=  data['expire']
+            lifespan=  data['lifespan']
+            description=  data['description']
+            item = Item.objects.get(pk=id)
+            item.name = name
+            if (price): item.price = price
+            if (total): item.total_quantity = total
+            if (available): item.available_quantity = available
+            if (used): item.used_quantity = used
+            if (acquired): item.acquired_dt = acquired
+            if (expire): item.expire_dt = expire
+            if (lifespan): item.lifespan = lifespan
+            if (description): item.description = description
+            try:
+                item.full_clean()
+                item.save()
+                return JsonResponse({'message':'successfully created item object'}, status=201)
+            except ValidationError:
+                return JsonResponse({'error':'Item failed to validate'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error':'JSON failed to decode'}, status=400)
+        
+def item_delete(request:HttpRequest,pk: int):
+    if request.method == "POST":
+        try:
+            item = get_object_or_404(Item, pk=pk)
+            item.delete()
+            return JsonResponse({'message':'successfully delete item'}, status=204)
+        except Http404:
+            return JsonResponse({'error':'Item could not be found with that pk'}, status=404)
+    else:
+            return JsonResponse({'error':'Expected a POST request'}, status=400)

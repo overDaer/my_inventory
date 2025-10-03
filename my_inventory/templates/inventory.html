@@ -69,6 +69,72 @@
             </div>
         </div>
     </div>
+    <div class='modal-container' id='item-modal-container'>
+        <div class='modal-content' id='item-modal-content'>
+            <h1 class='modal-header' id='item-modal-header'>Item</h1>
+            <h4 class="modal-input-header">Name</h4>
+            <input class="modal-input" 
+                id="item-input-name"
+                type="text"
+                name="name"
+                required
+                minlength="0"
+                maxlength="200"
+                size="50"/>
+            <h4 class="modal-input-header">Price</h4>
+            <input class="modal-input"
+            id="item-input-price"
+            type="number"
+            name="price"
+            size="50"/>
+          <h4 class="modal-input-header">Total Quantity</h4>
+            <input class="modal-input"
+            id="item-input-total-quantity"
+            type="number"
+            step="0.01"
+            name="total-quantity"
+            size="50"/>
+          <h4 class="modal-input-header">Available Quantity</h4>
+            <input class="modal-input"
+            id="item-input-available-quantity"
+            type="number"
+            name="available-quantity"
+            size="50"/>
+          <h4 class="modal-input-header">Used Quantity</h4>
+            <input class="modal-input"
+            id="item-input-used-quantity"
+            type="number"
+            name="used-quantity"
+            size="50"/>
+          <h4 class="modal-input-header">Acquired Date</h4>
+            <input class="modal-input"
+            id="item-input-acquired-date"
+            type="datetime-local"
+            name="acquired-datetime"
+            size="50"/>
+          <h4 class="modal-input-header">Expire Date</h4>
+            <input class="modal-input"
+            id="item-input-expire-date"
+            type="datetime-local"
+            name="expire-datetime"
+            size="50"/>
+          <h4 class="modal-input-header">Lifespan (days)</h4>
+            <input class="modal-input"
+            id="item-input-lifespan"
+            type="number"
+            name="lifespan"
+            size="50"/>
+            <h4 class="modal-input-header">Description</h4>
+            <input class="modal-input"
+                id="item-input-description"
+                type="text"
+                name="description"/>
+            <div class="modal-button-container" id="item-button-container">
+                <button class="modal-action" id="item-modal-cancel">Cancel</button>
+                <button class="modal-action" id="item-modal-save">Save</button>
+            </div>
+        </div>
+    </div>
 <script>
     var csrftoken = "{{ csrf_token }}";
     var defaultImage = "{% static 'my_inventory/assets/default-image.webp' %}";

@@ -38,19 +38,27 @@ async function buildGroupContainers() {
     let groupsContainer = document.getElementById('groups-container')
     groups.forEach(async (group) => {
         let groupDisplay = buildGroupDisplay(group);
-        let groupItems = await loadItems(group.pk);
+        let groupItems = await loadItems({group_id: group.pk});
         if (groupItems) {
-            let itemsGrid = buildItemsGrid(groupItems);
+            let itemsGrid = buildItemsGrid(groupItems, group.pk);
             groupDisplay.querySelector('.group-content').appendChild(itemsGrid);
         }
         groupsContainer.appendChild(groupDisplay);
     });
 }
 
+function clearGroupSelect(){
+    let groupDataArray = document.getElementsByClassName('group-data-content');
+    for (let i=0;i < groupDataArray.length; i++){
+        groupDataArray[i].classList.remove('selected');
+    };
+    groupSelection = null;
+};
+
 function buildGroupDisplay(group){
     
     let groupContainer = document.createElement('div');groupContainer.setAttribute('class','group-container');
-    let groupData = document.createElement('div');groupData.setAttribute('data-id',group.pk); groupData.setAttribute('class','group-data-content');
+    let groupData = document.createElement('div');groupData.setAttribute('data-id',group.pk);groupData.setAttribute('data-name',group.fields.name); groupData.setAttribute('class','group-data-content');
     let groupName = document.createElement('h4'); groupName.setAttribute('class', 'group-data-field');
     groupName.innerHTML = group.fields.name;
     let groupCategory = document.createElement('h4'); groupCategory.setAttribute('class', 'group-data-field');
@@ -70,9 +78,13 @@ function buildGroupDisplay(group){
     groupData.appendChild(groupCategory);
     groupData.appendChild(groupExpandContainer);
     groupData.setAttribute('tabIndex',0);
-    groupData.addEventListener('focus',()=>{
+    groupData.addEventListener('click',()=>{
+        //unselect previously selected groups
+        clearGroupSelect();
+        //select this group
         groupSelection = groupData;
-    })
+        groupData.classList.add('selected');
+    });
     groupExpandContainer.appendChild(groupExpandButton);
     
     let groupContent = document.createElement('div'); groupContent.setAttribute('class','group-content');
@@ -108,6 +120,38 @@ function buildGroupDisplay(group){
     let editItemImg = document.createElement('img');editItemImg.setAttribute('src', pencil);editItemImg.setAttribute('class','button-icon');
     editItemButton.prepend(editItemImg);
     
+    addItemButton?.addEventListener('click', () => {
+        let itemModalContainer = document.getElementById('item-modal-container');
+        clearItemModal();
+        itemModalContainer?.setAttribute('data-group-id', group.pk)
+        itemModalContainer?.classList.add('show');
+    });
+    removeItemButton?.addEventListener('click', () => {
+        if(!itemSelection) {
+            alert("Select an item to remove");
+            return;
+        }
+        let itemName = itemSelection.getAttribute('data-name')
+        let deleteMessage = `Are you sure you want to delete the selected item ${itemName}?`
+        if (confirm(deleteMessage)) {
+            deleteItem(itemSelection.getAttribute('data-id'));
+        }
+    });
+    editItemButton?.addEventListener('click',async () => {
+        clearItemModal();
+        if(!itemSelection) {
+            alert("Select an item to edit");
+            return;
+        }
+        let itemModalContainer = document.getElementById('item-modal-container');
+        let items = await loadItems({id:`${itemSelection.getAttribute('data-id')}`});
+        console.log(items);
+        console.log(itemSelection);
+        populateItemModal(items[0]);
+        itemModalContainer?.setAttribute('data-group-id', group.pk)
+        itemModalContainer?.classList.add('show');
+    });
+
     itemActionContainer.appendChild(addItemButton);
     itemActionContainer.appendChild(removeItemButton);
     itemActionContainer.appendChild(editItemButton);
@@ -115,9 +159,14 @@ function buildGroupDisplay(group){
     return groupContainer;
 }
 
-async function loadItems(group_id = null) {
+async function loadItems({id = null, group_id = null}) {
     let response = null;
-    if (group_id) {
+    if (id) {
+        let idParams = new URLSearchParams();
+        idParams.append('id', id);
+        response = await fetch(`/inventory/item/?${idParams}`);
+    }
+    else if (group_id) {
         let groupIdParams = new URLSearchParams();
         groupIdParams.append('group_id', group_id);
         response = await fetch(`/inventory/item/?${groupIdParams}`);
@@ -135,79 +184,116 @@ async function loadItems(group_id = null) {
     }
 }
 
-function buildItemsGrid(items, groupContainer) {
+function buildItemsGrid(items, group_id) {
     let itemsGrid = document.createElement("div");
     itemsGrid.setAttribute("class", "items-grid");
     items.forEach((element) => {
-        itemsGrid.appendChild(buildItemDisplay(element));
+        itemsGrid.appendChild(buildItemDisplay(element, group_id));
     });
     return itemsGrid;
 }
 
 function addButtonEvents() {
-    const groupAddBtn = document.getElementById('group-add');
-    const groupRemoveBtn = document.getElementById('group-remove');
-    const groupEditBtn = document.getElementById('group-edit');
+    const groupAddButton = document.getElementById('group-add');
+    const groupRemoveButton = document.getElementById('group-remove');
+    const groupEditButton = document.getElementById('group-edit');
     const groupModalContainer = document.getElementById('group-modal-container');
-    const groupModalSaveBtn = document.getElementById('group-modal-save');
-    const groupModalCancelBtn = document.getElementById('group-modal-cancel');
-    groupAddBtn?.addEventListener('click', () => {
-        clearModal();
+    const groupModalSaveButton = document.getElementById('group-modal-save');
+    const groupModalCancelButton = document.getElementById('group-modal-cancel');
+    groupAddButton?.addEventListener('click', () => {
         groupModalContainer?.classList.add('show');
     });
-    groupRemoveBtn?.addEventListener('click', () => {
+    groupRemoveButton?.addEventListener('click', () => {
         if(!groupSelection) {
             alert("Select a group to remove");
             return;
         }
-        let deleteMessage = `Are you sure you want to delete the selected group and all contained items?`
+        let groupName = groupSelection.getAttribute('data-name')
+        let deleteMessage = `Are you sure you want to delete the selected group ${groupName} and all contained items?`
         if (confirm(deleteMessage)) {
             deleteGroup(groupSelection.getAttribute('data-id'));
         }
     });
-    groupEditBtn?.addEventListener('click',async () => {
-        clearModal();
+    groupEditButton?.addEventListener('click',async () => {
         if(!groupSelection) {
             alert("Select a group to edit");
             return;
         }
         let groups = await loadGroups(`${groupSelection.getAttribute('data-id')}`);
-        populateModal(groups[0]);
+        populateGroupModal(groups[0]);
         groupModalContainer?.classList.add('show');
     });
 
-    groupModalCancelBtn?.addEventListener('click', () => {
+    groupModalCancelButton?.addEventListener('click', () => {
+        clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
-    groupModalSaveBtn?.addEventListener('click', () => {
+    groupModalSaveButton?.addEventListener('click', () => {
         saveGroupModal();
+        clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
-    
+    const itemModalContainer = document.getElementById('item-modal-container');
+    const itemModalSaveButton = document.getElementById('item-modal-save');
+    const itemModalCancelButton = document.getElementById('item-modal-cancel');
+     itemModalCancelButton?.addEventListener('click', () => {
+        clearItemModal();
+        itemModalContainer?.classList.remove('show');
+    });
+    itemModalSaveButton?.addEventListener('click', () => {
+        saveItemModal();
+        clearItemModal();
+        itemModalContainer?.classList.remove('show');
+    });
     
 }
 
-function clearModal(){
+function clearGroupModal(){
     document.getElementById('group-modal-container').removeAttribute('data-id');
     document.getElementById('group-input-name').value = "";
     document.getElementById('group-input-category').value = "";
     document.getElementById('group-input-description').value = "";
 }
 
-function populateModal(group){
-    console.log(group);
+function clearItemModal(){
+    document.getElementById('item-modal-container').removeAttribute('data-id');
+    document.getElementById('item-modal-container').removeAttribute('data-group-id');
+    document.getElementById('item-input-name').value = "";
+    document.getElementById('item-input-price').value = null;
+    document.getElementById('item-input-total-quantity').value = null;
+    document.getElementById('item-input-available-quantity').value = null;
+    document.getElementById('item-input-acquired-date').value = null;
+    document.getElementById('item-input-expire-date').value = null;
+    document.getElementById('item-input-lifespan').value = null;
+    document.getElementById('item-input-description').value = "";
+}
+
+function populateGroupModal(group){
     document.getElementById('group-modal-container').setAttribute('data-id', group.pk);
     document.getElementById('group-input-name').value = group.fields.name;
     document.getElementById('group-input-category').value = group.fields.category;
     document.getElementById('group-input-description').value = group.fields.description;
 }
 
+function populateItemModal(item){
+    console.log(item);
+    document.getElementById('item-modal-container').setAttribute('data-id', item.pk);
+    document.getElementById('item-input-name').value = item.fields.name;
+    document.getElementById('item-input-price').value = item.fields.price;
+    document.getElementById('item-input-total-quantity').value = item.fields.total_quantity;
+    document.getElementById('item-input-available-quantity').value = item.fields.available_quantity;
+    document.getElementById('item-input-acquired-date').value = item.fields.acquired_dt;
+    document.getElementById('item-input-expire-date').value = item.fields.expire_dt;
+    document.getElementById('item-input-lifespan').value = item.fields.lifespan;
+    document.getElementById('item-input-description').value = item.fields.description;
+}
+
 async function saveGroupModal() {
     // gather data
     const groupModal = document.getElementById('group-modal-container');
     let groupName = document.getElementById('group-input-name').value;
-    let groupCategory = document.getElementById('group-input-category').value;
-    let groupDescription = document.getElementById('group-input-description').value;
+    let groupCategory = document.getElementById('group-input-category')?.value;
+    let groupDescription = document.getElementById('group-input-description')?.value;
     if (groupModal.hasAttribute('data-id')){
         let group = {
             id: groupModal.getAttribute('data-id'),
@@ -243,6 +329,69 @@ async function saveGroupModal() {
     
 }
 
+async function saveItemModal() {
+    // gather data
+    let itemModal = document.getElementById('item-modal-container');
+    let id = itemModal.getAttribute('data-id')
+    let group_id = itemModal.getAttribute('data-group-id');
+    let name = document.getElementById('item-input-name').value;
+    let price = document.getElementById('item-input-price')?.value;
+    let total = document.getElementById('item-input-total-quantity')?.value;
+    let available = document.getElementById('item-input-available-quantity')?.value;
+    let used = document.getElementById('item-input-used-quantity')?.value;
+    let acquired = document.getElementById('item-input-acquired-date')?.value;
+    let expire = document.getElementById('item-input-expire-date')?.value;
+    let lifespan = document.getElementById('item-input-lifespan')?.value;
+    let description = document.getElementById('item-input-description')?.value;
+
+    if (itemModal.hasAttribute('data-id')){
+        let item = {
+            id: id,
+            group_id: group_id,
+            name: name,
+            price: price,
+            total: total,
+            available: available,
+            used: used,
+            acquired: acquired,
+            expire:  expire,
+            lifespan:  lifespan,
+            description:  description
+        }
+        let response = await fetch('/inventory/item/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(item)
+        });
+    }
+    else {
+        // POST
+        let item = {
+            group_id: group_id,
+            name: name,
+            price: price,
+            total: total,
+            available: available,
+            used: used,
+            acquired: acquired,
+            expire:  expire,
+            lifespan:  lifespan,
+            description:  description
+        }
+        let response = await fetch('/inventory/item/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(item)
+        });
+    }
+}
+
 async function deleteGroup(id) {
     let response = await fetch(`/inventory/group/delete/${id}/`, {
         method: 'POST',
@@ -254,11 +403,23 @@ async function deleteGroup(id) {
     console.log(response);
 }
 
-function buildItemDisplay(item) {
+async function deleteItem(id) {
+    let response = await fetch(`/inventory/item/delete/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    }
+    );
+    console.log(response);
+}
+function buildItemDisplay(item, group_id) {
     //top level box container
     let display = document.createElement("div");
     display.setAttribute("class", "item-display");
     display.setAttribute("data-id", item.pk);
+    display.setAttribute("data-group-id", group_id);
+    display.setAttribute("data-name", item.fields.name);
     display.setAttribute('tabindex', 0);
     //html elements containing data
     //add name as separate div
