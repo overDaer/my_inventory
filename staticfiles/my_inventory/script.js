@@ -247,7 +247,7 @@ function addButtonEvents() {
         itemModalContainer?.classList.remove('show');
     });
 
-    const imageUploadContainer = document.getElementById('image-modal-upload-container');
+    const imageUploadContainer = document.getElementById('image-upload-container');
     const imageUploadButton = document.getElementById('image-upload-submit');
     const imageCancelButton = document.getElementById('image-upload-cancel');
      imageCancelButton?.addEventListener('click', () => {
@@ -425,11 +425,13 @@ async function saveItemModal() {
 }
 
 async function uploadImage(){
+    let item_id = document.getElementById('image-upload-container').getAttribute('data-item-id');
     let name = document.getElementById('image-name-input').value;
     let file = document.getElementById('image-file-input').files[0];
     let formData = new FormData();
     formData.append('name', name);
     formData.append('file', file);
+    formData.append('item_id',item_id);
     let response = await fetch(`/inventory/upload-image/`,{
         method: 'POST',
         headers: {
@@ -470,18 +472,20 @@ async function buildItemDisplay(item, group_id) {
     //add name as separate div
     let name = document.createElement("h3");name.setAttribute("class", "item-name");name.innerHTML = item.fields.name;
     display.appendChild(name);
+    let itemButtonContainer = document.createElement("div"); itemButtonContainer.setAttribute("class", "item-button-container");
+    display.appendChild(itemButtonContainer);
     let uploadImageButton = document.createElement("button"); 
-    uploadImageButton.setAttribute("class", ".item-display-action"); 
+    uploadImageButton.setAttribute("class", "item-display-action"); 
     uploadImageButton.setAttribute("id", "item-image-upload");
     uploadImageButton.setAttribute("data-item-id", item.pk);
-    uploadImageButton.setAttribute("src",upload);
-    display.appendChild(uploadImageButton);
+    uploadImageButton.setAttribute("src",uploadIcon);
+    itemButtonContainer.appendChild(uploadImageButton);
     uploadImageButton.addEventListener('click',()=>{
         // let iframe = document.getElementById('iframe-forms');
         // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
         // let iframeContainer = document.getElementById('iframe-container');
         // iframeContainer.classList.toggle('show');
-        let uploadModal = document.getElementById('image-modal-upload-container');
+        let uploadModal = document.getElementById('image-upload-container');
         uploadModal.setAttribute('data-item-id', item.pk);
         uploadModal.classList.toggle('show');
     });

@@ -36,7 +36,7 @@ class Item(models.Model):
     #add validator to check available quantity and used quantity does not exceed total quantity
 
 class Image(models.Model):
-    Item = models.ForeignKey(Item, on_delete=models.CASCADE,related_name='image')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE,related_name='image')
     name = models.CharField(max_length=200)
     image = models.ImageField(upload_to=IMAGE_FILE_PATH)
     def __str__(self):

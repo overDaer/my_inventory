@@ -213,11 +213,13 @@ def upload_image(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         file = request.FILES.get('file')
-        if file:
-            Image.objects.create(name=name, image=file)
-            return JsonResponse({'message': 'Image uploaded successfully'})
-        return JsonResponse({'error': 'No image provided'}, status=400)
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+        if not file: return JsonResponse({'error': 'No image provided'}, status=400)
+        item_id = request.POST.get('item_id')
+        item = get_object_or_404(Item,pk=item_id)
+        Image.objects.create(name=name, image=file, item=item)
+        return JsonResponse({'message': 'Image uploaded successfully'})
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 def item_image(request):
     images = []

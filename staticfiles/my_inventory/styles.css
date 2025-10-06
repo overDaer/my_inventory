@@ -116,9 +116,9 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     border-radius: 6px;
 }
 
-.group-content{
+/* .group-content{
     max-height: 50%;
-}
+} */
 
 .group-content.minimized{
     max-height: 0;
@@ -192,8 +192,8 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 .item-display-action {
     position: relative;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
 }
 
 .iframe-action{
@@ -202,6 +202,11 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     height: 20px;
 }
 
+.item-button-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items:right;
+}
 /*----------id----------*/
 #base-container{
     display: flex;
@@ -383,6 +388,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
   flex-direction: row-reverse;
   align-items:right;
 }
+
 
 /* .modal-action {
   margin: 10px 5px;
