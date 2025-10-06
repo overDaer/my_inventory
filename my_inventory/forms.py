@@ -12,3 +12,7 @@ class ItemForm(forms.ModelForm):
         model = Item
         fields = '__all__'
 
+class ItemImageForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = ['name', 'image']

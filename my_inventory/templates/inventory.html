@@ -37,7 +37,14 @@
             </div>
         </div>  
     </div>
-
+    <!-- <div class="container" id="iframe-container">
+        <div class="button-header" id="iframe-button-header">
+            <button class="iframe-action" id="iframe-button-close">X</button>
+        </div>
+        <iframe id="iframe-forms">
+        </iframe>
+    </div> -->
+    
     <!-- modals -->
     <div class='modal-container' id='group-modal-container'>
         <div class='modal-content' id='group-modal-content'>
@@ -135,6 +142,18 @@
             </div>
         </div>
     </div>
+    <div class='modal-container' id='image-modal-upload-container'>
+        <div class='modal-content' id='image-modal-upload'>
+            <h4 class="modal-input-header">Name</h4>
+            <input type="name" class="modal-input" id="image-name-input" placeholder="Image Name">
+            <h4 class="modal-input-header">File</h4>
+            <input type="file" class="modal-input" id="image-file-input" accept="image/*">
+            <div class="modal-button-container" id="image-upload-button-container">
+                <button id="image-upload-cancel">Cancel</button>
+                <button id="image-upload-submit">Upload</button>
+            </div>
+        </div>
+    </div>
 <script>
     var csrftoken = "{{ csrf_token }}";
     var defaultImage = "{% static 'my_inventory/assets/default-image.webp' %}";
@@ -145,6 +164,7 @@
     var expandGroup = "{% static 'my_inventory/assets/chevron-double-down.svg' %}";
     var collapseGroup = "{% static 'my_inventory/assets/chevron-double-up.svg' %}";
     var pencil = "{% static 'my_inventory/assets/pencil.svg' %}";
+    var upload = "{% static 'my_inventory/assets/upload.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>
 </body>

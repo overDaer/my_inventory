@@ -40,7 +40,7 @@ async function buildGroupContainers() {
         let groupDisplay = buildGroupDisplay(group);
         let groupItems = await loadItems({group_id: group.pk});
         if (groupItems) {
-            let itemsGrid = buildItemsGrid(groupItems, group.pk);
+            let itemsGrid = await buildItemsGrid(groupItems, group.pk);
             groupDisplay.querySelector('.group-content').appendChild(itemsGrid);
         }
         groupsContainer.appendChild(groupDisplay);
@@ -184,11 +184,12 @@ async function loadItems({id = null, group_id = null}) {
     }
 }
 
-function buildItemsGrid(items, group_id) {
+async function buildItemsGrid(items, group_id) {
     let itemsGrid = document.createElement("div");
     itemsGrid.setAttribute("class", "items-grid");
-    items.forEach((element) => {
-        itemsGrid.appendChild(buildItemDisplay(element, group_id));
+    items.forEach(async (element) => {
+        let itemDisplay = await buildItemDisplay(element, group_id);
+        itemsGrid.appendChild(itemDisplay);
     });
     return itemsGrid;
 }
@@ -245,19 +246,43 @@ function addButtonEvents() {
         clearItemModal();
         itemModalContainer?.classList.remove('show');
     });
+
+    const imageUploadContainer = document.getElementById('image-modal-upload-container');
+    const imageUploadButton = document.getElementById('image-upload-submit');
+    const imageCancelButton = document.getElementById('image-upload-cancel');
+     imageCancelButton?.addEventListener('click', () => {
+        clearImageUpload();
+        imageUploadContainer?.classList.remove('show');
+    });
+    imageUploadButton?.addEventListener('click', () => {
+        uploadImage();
+        clearImageUpload();
+        imageUploadContainer?.classList.remove('show');
+    });
+
+
+    let iframeButtonClose = document.getElementById('iframe-button-close');
+    iframeButtonClose?.addEventListener('click', ()=>{
+        let iframeContainer = document.getElementById('iframe-container');
+        iframeContainer.classList.remove('show');
+    });
     
 }
 
 function clearGroupModal(){
-    document.getElementById('group-modal-container').removeAttribute('data-id');
+    let modalContainer = document.getElementById('group-modal-container');
+    modalContainer.removeAttribute('data-id');
+    // modalContainer.reset();
     document.getElementById('group-input-name').value = "";
     document.getElementById('group-input-category').value = "";
     document.getElementById('group-input-description').value = "";
 }
 
 function clearItemModal(){
-    document.getElementById('item-modal-container').removeAttribute('data-id');
-    document.getElementById('item-modal-container').removeAttribute('data-group-id');
+    let modalContainer = document.getElementById('item-modal-container');
+    modalContainer.removeAttribute('data-id');
+    modalContainer.removeAttribute('data-group-id');
+    // modalContainer.reset();
     document.getElementById('item-input-name').value = "";
     document.getElementById('item-input-price').value = null;
     document.getElementById('item-input-total-quantity').value = null;
@@ -266,6 +291,13 @@ function clearItemModal(){
     document.getElementById('item-input-expire-date').value = null;
     document.getElementById('item-input-lifespan').value = null;
     document.getElementById('item-input-description').value = "";
+}
+
+function clearImageUpload(){
+    let modalContainer = document.getElementById('item-modal-container');
+    modalContainer.removeAttribute('data-item-id');
+    document.getElementById('image-name-input').value = "";
+    document.getElementById('image-file-input').value = null;
 }
 
 function populateGroupModal(group){
@@ -392,6 +424,21 @@ async function saveItemModal() {
     }
 }
 
+async function uploadImage(){
+    let name = document.getElementById('image-name-input').value;
+    let file = document.getElementById('image-file-input').files[0];
+    let formData = new FormData();
+    formData.append('name', name);
+    formData.append('file', file);
+    let response = await fetch(`/inventory/upload-image/`,{
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        body: formData,
+    });
+}
+
 async function deleteGroup(id) {
     let response = await fetch(`/inventory/group/delete/${id}/`, {
         method: 'POST',
@@ -400,7 +447,6 @@ async function deleteGroup(id) {
         }
     }
     );
-    console.log(response);
 }
 
 async function deleteItem(id) {
@@ -411,9 +457,8 @@ async function deleteItem(id) {
         }
     }
     );
-    console.log(response);
 }
-function buildItemDisplay(item, group_id) {
+async function buildItemDisplay(item, group_id) {
     //top level box container
     let display = document.createElement("div");
     display.setAttribute("class", "item-display");
@@ -425,7 +470,35 @@ function buildItemDisplay(item, group_id) {
     //add name as separate div
     let name = document.createElement("h3");name.setAttribute("class", "item-name");name.innerHTML = item.fields.name;
     display.appendChild(name);
-    let image = document.createElement("img");image.setAttribute("class", "item-img");image.setAttribute("src", defaultImage);
+    let uploadImageButton = document.createElement("button"); 
+    uploadImageButton.setAttribute("class", ".item-display-action"); 
+    uploadImageButton.setAttribute("id", "item-image-upload");
+    uploadImageButton.setAttribute("data-item-id", item.pk);
+    uploadImageButton.setAttribute("src",upload);
+    display.appendChild(uploadImageButton);
+    uploadImageButton.addEventListener('click',()=>{
+        // let iframe = document.getElementById('iframe-forms');
+        // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
+        // let iframeContainer = document.getElementById('iframe-container');
+        // iframeContainer.classList.toggle('show');
+        let uploadModal = document.getElementById('image-modal-upload-container');
+        uploadModal.setAttribute('data-item-id', item.pk);
+        uploadModal.classList.toggle('show');
+    });
+    let image = document.createElement("img");image.setAttribute("class", "item-img");
+    //load images, if no image, show defaultImage
+    let imageParams = new URLSearchParams();
+    imageParams.append('item_id', item.pk);
+    let response = await fetch(`/inventory/image/?${imageParams}`);
+
+    let images = await response.json();
+    if(images.length > 0) {
+        image.setAttribute("src", images[0].uri);
+        image.setAttribute('data-name', images[0].name);
+    } else {
+        image.setAttribute("src", defaultImage);
+    }
+
     display.appendChild(image);
     let description = document.createElement("p");description.setAttribute("class", "item-description");description.innerHTML = item.fields.description;
     let topTable = document.createElement("table");topTable.setAttribute("class", "item-top-table");

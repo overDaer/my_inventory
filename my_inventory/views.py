@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpRequest, JsonResponse, Http404
 from django.views import View
 from django.core import serializers
 from django.shortcuts import get_object_or_404, redirect
-
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from .models import *
 from .forms import *
 from typing import Sequence, TypeVar
@@ -191,3 +191,61 @@ def item_delete(request:HttpRequest,pk: int):
             return JsonResponse({'error':'Item could not be found with that pk'}, status=404)
     else:
             return JsonResponse({'error':'Expected a POST request'}, status=400)
+
+# @xframe_options_sameorigin
+# def item_image_upload(request, item_id):
+#     item = get_object_or_404(Item, pk=item_id)
+    
+#     if request.method == 'POST':
+#         form = ItemImageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             image_instance = form.save(commit=False)
+#             image_instance.Item = item
+#             image_instance.save()
+#             return redirect('/inventory/success/')
+
+#     else:
+#         form = ItemImageForm()
+#         return render(request, 'item_image_upload.html', {'form': form, 'item_id': item_id})
+    
+def upload_image(request):
+    # breakpoint()
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        file = request.FILES.get('file')
+        if file:
+            Image.objects.create(name=name, image=file)
+            return JsonResponse({'message': 'Image uploaded successfully'})
+        return JsonResponse({'error': 'No image provided'}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def item_image(request):
+    images = []
+    data = []
+    if 'id' in request.GET:
+        image_id = request.GET.get('id')
+        try:
+            images = [Image.objects.get(pk=image_id)]
+        except Image.DoesNotExist:
+            return JsonResponse({'error':f'failed to find item with id {image_id}'}, status=400)
+    elif 'item_id' in request.GET:
+        item_id = request.GET.get('item_id')
+        item = get_object_or_404(Item,pk=item_id)
+        images = item.image.all()
+    else:
+        images = Image.objects.all()
+    for image in images:
+        data.append({
+            'pk':image.pk,
+            'name':image.name,
+            'uri':request.build_absolute_uri(image.image.url)
+        })
+        
+    return JsonResponse(data, safe=False)
+    # serializedjson = serializers.serialize("json", items)
+        
+    # return JsonResponse(serializedjson,safe=False)
+
+
+def success(request):
+    return render(request, 'success.html')

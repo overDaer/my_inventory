@@ -3,8 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-RESOURCE_FILE_PATH = Path(__file__).parent.parent / 'resource'
-IMAGE_FILE_PATH = RESOURCE_FILE_PATH / 'image'
+IMAGE_FILE_PATH = 'pictures/'
 STAT_MIN = 0
 STAT_MAX = 10
 QTY_MIN = 0
@@ -37,7 +36,7 @@ class Item(models.Model):
     #add validator to check available quantity and used quantity does not exceed total quantity
 
 class Image(models.Model):
-    Item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    Item = models.ForeignKey(Item, on_delete=models.CASCADE,related_name='image')
     name = models.CharField(max_length=200)
     image = models.ImageField(upload_to=IMAGE_FILE_PATH)
     def __str__(self):

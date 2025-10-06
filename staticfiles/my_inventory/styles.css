@@ -1,20 +1,26 @@
 :root {
-    --selection-item-border-color: rgb(129, 193, 236);
-    --selection-item-background-color:rgb(129, 193, 236);
-    --selection-group-border-color: rgb(46, 171, 255);
+    --selection-item-border-color: rgb(199, 199, 199);
+    --selection-group-border-color: rgb(248, 248, 248);
     --selection-group-background-color:rgb(98, 238, 248);
-    --group-button-color: #fcb07d;
-    --item-button-color: rgb(94, 173, 204);
+    --group-button-color: #444857;
+    --item-button-color: #848b9e;
     --item-border-color: rgb(0, 88, 88);
+    --item-image-background-color: rgb(66, 66, 66);
     --box-shadow-one: rgb(85, 85, 85);
     --box-shadow-two: rgb(44, 44, 44);
-    --group-header-background-color: rgb(189, 189, 189);
-    --group-data-background-color: rgb(96, 248, 228);
-    --nav-bar-color: rgb(127, 98, 255);
-    --nav-bar-button-color:rgb(144, 180, 178);
+    --group-header-background-color: rgb(122, 122, 122);
+    --group-header-font-color: #ececec;
+    --group-data-background-color: rgb(109, 109, 109);
+    --group-data-font-color: #f1f1f1;
+    --nav-bar-color: #010101;
+    --nav-bar-button-color:#444857;
     --modal-border-color: #4d4d4d;
-    --group-description-background-color: rgb(233, 199, 105);
+    --modal-font-color: #292929;
+    --group-description-background-color: rgb(51, 51, 51);
+    --group-description-font-color: rgb(212, 212, 212);
     --group-focus-border-color:rgba(131, 255, 158, 0.966);
+    --iframe-border-color:rgba(0, 132, 255, 0.966);
+    --iframe-background-color:rgba(255, 255, 255, 0.966);
 }
 
 html, body {
@@ -22,6 +28,8 @@ html, body {
     width: 100%;
     margin:0;
     font-family: Futura, "Trebuchet MS", Arial, sans-serif;
+    background-color: #1c1c1c;
+    color: #ececec;
 }
 
 button {
@@ -58,7 +66,6 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 
 .item-display:focus-within{
-    background-color:var(--selection-item-background-color);
     border: 4px solid var(--selection-item-border-color);
     box-shadow:3px 3px 5px var(--box-shadow-one), 10px 10px 7px var(--box-shadow-two);
 }
@@ -72,6 +79,8 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 .item-img{
     height: 250px;
     width: 250px;
+    background-color: var(--item-image-background-color);
+    object-fit: fill;
 }
 
 .item-top-table{
@@ -103,6 +112,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     flex-direction: row;
     align-content:space-around;
     background-color: var(--group-data-background-color);
+    color:var(--group-data-font-color);
     border-radius: 6px;
 }
 
@@ -120,9 +130,9 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     height: auto;
     border-radius: 6px;
     background-color: var(--group-description-background-color);
+    color:var(--group-description-font-color);
 }
 .group-data-content.selected{
-    background-color: var(--selection-group-background-color);
     border: 4px solid var(--selection-group-border-color);
 }
 
@@ -156,6 +166,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     flex-direction: row;
     text-align: center;
     background-color: var(--group-header-background-color);
+    color: var(--group-header-font-color);
     border-radius: 6px;
 }
 
@@ -179,6 +190,18 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     
 }
 
+.item-display-action {
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+.iframe-action{
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
 /*----------id----------*/
 #base-container{
     display: flex;
@@ -186,6 +209,61 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     height: 100%;
 }
 
+/* #image-modal-upload-container.show{
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
+    pointer-events: auto;
+    border:var(--iframe-border-color);
+    background-color: var(--iframe-background-color);
+}
+
+#image-modal-upload-container {
+    display: none;
+    color: var(--modal-font-color);
+    align-items:center;
+    justify-content: center;
+    position: fixed;
+    pointer-events: none;
+    border-radius: 7px;
+} */
+
+#iframe-container.show{
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
+    pointer-events: auto;
+    border:var(--iframe-border-color);
+    background-color: var(--iframe-background-color);
+}
+
+#iframe-container {
+    display: none;
+    color: var(--modal-font-color);
+    align-items:center;
+    justify-content: center;
+    position: fixed;
+    top: 25%;
+    left: 25%;
+    height: 50%;
+    width: 50%;
+    pointer-events: none;
+    border-radius: 7px;
+}
+
+#iframe-button-header{
+    width: 90%;
+    display: flex;
+    align-items: right;
+    justify-content: right;
+}
+#iframe-forms {
+    opacity: 1;
+    height: 90%;
+    width: 90%;
+}
 #nav-bar{
     display: flex;
     flex:0 1 auto;
@@ -261,6 +339,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 .modal-container {
   display: "none";
+  color: var(--modal-font-color);
   background-color: rgba(0,0,0,0.3);
   display: flex;
   align-items:center;
