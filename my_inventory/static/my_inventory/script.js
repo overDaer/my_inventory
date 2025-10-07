@@ -10,9 +10,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 //global variables
-let itemSelection = null;
-let groupSelection = null;
-
+var itemSelection = null;
+var groupSelection = null;
+var slideshowIndex = -1;
+var slideshowImages = [];
 
 async function loadGroups(group_id = null) {
     let response = null;
@@ -119,7 +120,15 @@ function buildGroupDisplay(group){
     let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action');editItemButton.setAttribute('data-id',group.pk);
     let editItemImg = document.createElement('img');editItemImg.setAttribute('src', pencil);editItemImg.setAttribute('class','button-icon');
     editItemButton.prepend(editItemImg);
-    
+
+    let uploadImageButton = document.createElement('button'); uploadImageButton.setAttribute('class','item-action');uploadImageButton.setAttribute('data-id',group.pk);
+    let uploadItemImg = document.createElement('img');uploadItemImg.setAttribute('src', uploadIcon);uploadItemImg.setAttribute('class','button-icon');
+    uploadImageButton.prepend(uploadItemImg);
+
+    let viewItemButton = document.createElement('button'); viewItemButton.setAttribute('class','item-action');viewItemButton.setAttribute('data-id',group.pk);
+    let viewItemImg = document.createElement('img');viewItemImg.setAttribute('src', eye);viewItemImg.setAttribute('class','button-icon');
+    viewItemButton.prepend(viewItemImg);
+
     addItemButton?.addEventListener('click', () => {
         let itemModalContainer = document.getElementById('item-modal-container');
         clearItemModal();
@@ -144,19 +153,55 @@ function buildGroupDisplay(group){
             return;
         }
         let itemModalContainer = document.getElementById('item-modal-container');
-        let items = await loadItems({id:`${itemSelection.getAttribute('data-id')}`});
-        console.log(items);
-        console.log(itemSelection);
-        populateItemModal(items[0]);
+        let item_id = itemSelection.getAttribute('data-id')
+        let item = await loadItem(item_id);
+        populateItemModal(item);
         itemModalContainer?.setAttribute('data-group-id', group.pk)
         itemModalContainer?.classList.add('show');
+    });
+
+    uploadImageButton.addEventListener('click',()=>{
+        if(itemSelection === null) {return;}
+        let item_id = itemSelection.getAttribute('data-id')
+        let uploadModal = document.getElementById('image-upload-container');
+        uploadModal.setAttribute('data-item-id', item_id);
+        uploadModal.classList.toggle('show');
+    });
+
+    viewItemButton?.addEventListener('click',async () => {
+        await viewItem();
     });
 
     itemActionContainer.appendChild(addItemButton);
     itemActionContainer.appendChild(removeItemButton);
     itemActionContainer.appendChild(editItemButton);
+    itemActionContainer.appendChild(uploadImageButton);
+    itemActionContainer.appendChild(viewItemButton);
     
     return groupContainer;
+}
+
+async function viewItem(){
+    clearItemViewModal();
+    if(!itemSelection) {
+        alert("Select an item to edit");
+        return;
+    }
+    let itemViewModalContainer = document.getElementById('item-view-modal-container');
+    let item_id = itemSelection.getAttribute('data-id')
+    let item = await loadItem(item_id);
+    await populateItemViewModal(item);
+    itemViewModalContainer?.setAttribute('data-id', item_id);
+    itemViewModalContainer?.classList.add('show');
+}
+
+async function loadItem(id){
+    let items = await loadItems({id:id});
+    if (items.length > 0){
+        return items[0];
+    } else {
+        return null;
+    }
 }
 
 async function loadItems({id = null, group_id = null}) {
@@ -178,6 +223,39 @@ async function loadItems({id = null, group_id = null}) {
         let items = await response.json();
         items = JSON.parse(items);
         return items;
+    } 
+    else {
+        console.log('failed to load items');
+    }
+}
+
+async function loadFirstImage(item_id){
+    let images = await loadImages({item_id:item_id});
+    if (images.length > 0){
+        return images[0];
+    } else {
+        return null;
+    }
+}
+
+async function loadImages({id = null, item_id = null}){
+    let response = null;
+    if (id) {
+        let idParams = new URLSearchParams();
+        idParams.append('id', id);
+        response = await fetch(`/inventory/image/?${idParams}`);
+    }
+    else if (item_id) {
+        let itemIdParams = new URLSearchParams();
+        itemIdParams.append('item_id', item_id);
+        response = await fetch(`/inventory/image/?${itemIdParams}`);
+    }
+    else {
+        response = await fetch('/inventory/image');
+    }
+    if (response.ok) {
+        let images = await response.json();
+        return images;
     } 
     else {
         console.log('failed to load items');
@@ -260,12 +338,27 @@ function addButtonEvents() {
         imageUploadContainer?.classList.remove('show');
     });
 
-
-    let iframeButtonClose = document.getElementById('iframe-button-close');
-    iframeButtonClose?.addEventListener('click', ()=>{
-        let iframeContainer = document.getElementById('iframe-container');
-        iframeContainer.classList.remove('show');
+    const slideshowLeftButton = document.getElementById('slideshow-left-button');
+    const slideshowRightButton = document.getElementById('slideshow-right-button');
+    slideshowLeftButton?.addEventListener('click',()=>{
+        if(slideshowIndex - 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex - 1){
+            slideshowIndex--;
+            showImageElement(slideshowIndex);
+        }
     });
+    slideshowRightButton?.addEventListener('click',()=>{
+        if(slideshowIndex + 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex + 1){
+            slideshowIndex++;
+            showImageElement(slideshowIndex);
+        }
+    });
+
+    let itemViewModalContainer = document.getElementById('item-view-modal-container');
+    let itemViewButtonExit = document.getElementById('item-view-button-exit');
+    itemViewButtonExit.addEventListener('click',()=>{
+        itemViewModalContainer.classList.remove('show');
+    });
+
     
 }
 
@@ -275,7 +368,7 @@ function clearGroupModal(){
     // modalContainer.reset();
     document.getElementById('group-input-name').value = "";
     document.getElementById('group-input-category').value = "";
-    document.getElementById('group-input-description').value = "";
+    document.getElementById('group-textarea-description').value = "";
 }
 
 function clearItemModal(){
@@ -290,7 +383,7 @@ function clearItemModal(){
     document.getElementById('item-input-acquired-date').value = null;
     document.getElementById('item-input-expire-date').value = null;
     document.getElementById('item-input-lifespan').value = null;
-    document.getElementById('item-input-description').value = "";
+    document.getElementById('item-textarea-description').value = "";
 }
 
 function clearImageUpload(){
@@ -300,15 +393,44 @@ function clearImageUpload(){
     document.getElementById('image-file-input').value = null;
 }
 
+function clearItemViewModal(){
+    let modalContainer = document.getElementById('item-view-modal-container');
+    modalContainer.removeAttribute('data-id');
+    document.getElementById('item-view-header-name').innerHTML = "";
+    document.getElementById('item-name-datacell').innerHTML = "";
+    document.getElementById('item-price-datacell').innerHTML = "";
+    document.getElementById('item-total-datacell').innerHTML = "";
+    document.getElementById('item-available-datacell').innerHTML = "";
+    document.getElementById('item-used-datacell').innerHTML = "";
+    document.getElementById('item-acquired-datacell').innerHTML = "";
+    document.getElementById('item-expire-datacell').innerHTML = "";
+    document.getElementById('item-updated-datacell').innerHTML = "";
+    document.getElementById('item-description-datacell').innerHTML = "";
+    let imageSlideshow = document.getElementById('item-image-slideshow');
+    imageSlideshow.innerHTML='';
+}
+
+function showImageElement(index){
+    if (index < 0 || index > slideshowImages.length -1){
+        return;
+    }
+    for (let i = 0; i < slideshowImages.length; i++){
+        if(i===index){
+            slideshowImages[i].style.display = "block";
+        } else {
+            slideshowImages[i].style.display = "none";
+        }
+    }
+}
+
 function populateGroupModal(group){
     document.getElementById('group-modal-container').setAttribute('data-id', group.pk);
     document.getElementById('group-input-name').value = group.fields.name;
     document.getElementById('group-input-category').value = group.fields.category;
-    document.getElementById('group-input-description').value = group.fields.description;
+    document.getElementById('group-textarea-description').value = group.fields.description;
 }
 
 function populateItemModal(item){
-    console.log(item);
     document.getElementById('item-modal-container').setAttribute('data-id', item.pk);
     document.getElementById('item-input-name').value = item.fields.name;
     document.getElementById('item-input-price').value = item.fields.price;
@@ -317,7 +439,48 @@ function populateItemModal(item){
     document.getElementById('item-input-acquired-date').value = item.fields.acquired_dt;
     document.getElementById('item-input-expire-date').value = item.fields.expire_dt;
     document.getElementById('item-input-lifespan').value = item.fields.lifespan;
-    document.getElementById('item-input-description').value = item.fields.description;
+    document.getElementById('item-textarea-description').value = item.fields.description;
+}
+
+async function populateItemViewModal(item){
+    let modalContainer = document.getElementById('item-view-modal-container');
+    modalContainer.setAttribute('data-id', item.pk);
+    document.getElementById('item-view-header-name').innerHTML = item.fields.name;
+    document.getElementById('item-name-datacell').innerHTML = item.fields.name;
+    document.getElementById('item-price-datacell').innerHTML = item.fields.price;
+    document.getElementById('item-total-datacell').innerHTML = item.fields.total_quantity;
+    document.getElementById('item-available-datacell').innerHTML = item.fields.available_quantity;
+    document.getElementById('item-used-datacell').innerHTML = item.fields.used_quantity;
+    document.getElementById('item-acquired-datacell').innerHTML = item.fields.acquired_dt;
+    document.getElementById('item-expire-datacell').innerHTML = item.fields.expire_dt;
+    document.getElementById('item-updated-datacell').innerHTML = item.fields.updated_dt;
+    document.getElementById('item-description-datacell').innerHTML = item.fields.description;
+    await loadImageElements(item.pk);
+    populateSlideshow();
+}
+
+async function loadImageElements(item_id){
+    slideshowImages = [];
+    let images = await loadImages({item_id:`${item_id}`});
+    for (let i = 0; i < images.length; i++){
+        let imageElement = makeImageElement(images[i]);
+        slideshowImages.push(imageElement);
+    }
+}
+
+function populateSlideshow(){
+    let imageSlideshow = document.getElementById('item-image-slideshow');
+    imageSlideshow.innerHTML='';
+    console.log()
+    for (let i = 0; i < slideshowImages.length; i++){
+        imageSlideshow.appendChild(slideshowImages[i]);
+    }
+    if (imageSlideshow.length === 0) {
+        slideshowIndex = -1;
+    } else {
+        slideshowIndex = 0;
+    }
+    showImageElement(slideshowIndex);
 }
 
 async function saveGroupModal() {
@@ -325,7 +488,7 @@ async function saveGroupModal() {
     const groupModal = document.getElementById('group-modal-container');
     let groupName = document.getElementById('group-input-name').value;
     let groupCategory = document.getElementById('group-input-category')?.value;
-    let groupDescription = document.getElementById('group-input-description')?.value;
+    let groupDescription = document.getElementById('group-textarea-description')?.value;
     if (groupModal.hasAttribute('data-id')){
         let group = {
             id: groupModal.getAttribute('data-id'),
@@ -374,7 +537,7 @@ async function saveItemModal() {
     let acquired = document.getElementById('item-input-acquired-date')?.value;
     let expire = document.getElementById('item-input-expire-date')?.value;
     let lifespan = document.getElementById('item-input-lifespan')?.value;
-    let description = document.getElementById('item-input-description')?.value;
+    let description = document.getElementById('item-textarea-description')?.value;
 
     if (itemModal.hasAttribute('data-id')){
         let item = {
@@ -474,37 +637,32 @@ async function buildItemDisplay(item, group_id) {
     display.appendChild(name);
     let itemButtonContainer = document.createElement("div"); itemButtonContainer.setAttribute("class", "item-button-container");
     display.appendChild(itemButtonContainer);
-    let uploadImageButton = document.createElement("button"); 
-    uploadImageButton.setAttribute("class", "item-display-action"); 
-    uploadImageButton.setAttribute("id", "item-image-upload");
-    uploadImageButton.setAttribute("data-item-id", item.pk);
-    uploadImageButton.setAttribute("src",uploadIcon);
-    itemButtonContainer.appendChild(uploadImageButton);
-    uploadImageButton.addEventListener('click',()=>{
-        // let iframe = document.getElementById('iframe-forms');
-        // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
-        // let iframeContainer = document.getElementById('iframe-container');
-        // iframeContainer.classList.toggle('show');
-        let uploadModal = document.getElementById('image-upload-container');
-        uploadModal.setAttribute('data-item-id', item.pk);
-        uploadModal.classList.toggle('show');
-    });
-    let image = document.createElement("img");image.setAttribute("class", "item-img");
-    //load images, if no image, show defaultImage
-    let imageParams = new URLSearchParams();
-    imageParams.append('item_id', item.pk);
-    let response = await fetch(`/inventory/image/?${imageParams}`);
+    // let uploadImageButton = document.createElement("button"); 
+    // uploadImageButton.setAttribute("class", "item-display-action"); 
+    // uploadImageButton.setAttribute("id", "item-image-upload");
+    // uploadImageButton.setAttribute("data-item-id", item.pk);
+    // uploadImageButton.setAttribute("src",uploadIcon);
+    // itemButtonContainer.appendChild(uploadImageButton);
+    // uploadImageButton.addEventListener('click',()=>{
+    //     // let iframe = document.getElementById('iframe-forms');
+    //     // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
+    //     // let iframeContainer = document.getElementById('iframe-container');
+    //     // iframeContainer.classList.toggle('show');
+    //     let uploadModal = document.getElementById('image-upload-container');
+    //     uploadModal.setAttribute('data-item-id', item.pk);
+    //     uploadModal.classList.toggle('show');
+    // });
 
-    let images = await response.json();
-    if(images.length > 0) {
-        image.setAttribute("src", images[0].uri);
-        image.setAttribute('data-name', images[0].name);
+    let image = await loadFirstImage(item.pk);
+    let imageElement = null;
+    if (image===null) {
+        imageElement = makeImageElement();
     } else {
-        image.setAttribute("src", defaultImage);
-    }
-
-    display.appendChild(image);
-    let description = document.createElement("p");description.setAttribute("class", "item-description");description.innerHTML = item.fields.description;
+        imageElement = makeImageElement(image);
+    };
+    display.appendChild(imageElement);
+    let description = document.createElement("p");description.setAttribute("class", "item-description");
+    description.innerHTML = item.fields.description;
     let topTable = document.createElement("table");topTable.setAttribute("class", "item-top-table");
     let numberTable = document.createElement("table");numberTable.setAttribute("class", "key-value-table");
     insertFieldAsRow("price:", item.fields.price, numberTable);
@@ -518,10 +676,23 @@ async function buildItemDisplay(item, group_id) {
     display.addEventListener('focus',()=>{
         itemSelection = display;
     });
-
+    display.addEventListener('dblclick',async ()=> {
+        await viewItem();
+    });
     return display;
 }
 ;
+function makeImageElement(image=null){
+    let imageElement = document.createElement("img"); imageElement.setAttribute("class", "item-img");
+    if (image){
+        imageElement.setAttribute("src", image.uri);
+        imageElement.setAttribute('data-name', image.name);
+    } else {
+        imageElement.setAttribute("src", defaultImage);
+    }
+    return imageElement;
+}
+
 function insertFieldAsRow(key, value, table) {
     const row = table.insertRow();
     row.insertCell().innerHTML = key;

@@ -48,7 +48,9 @@
     <!-- modals -->
     <div class='modal-container' id='group-modal-container'>
         <div class='modal-content' id='group-modal-content'>
-            <h1 class='modal-header' id='group-modal-header'>Group</h1>
+            <div class='modal-header' id='group-modal-header'>
+                <h1 class='modal-header-value' id='group-header-name'>Group</h1>
+            </div>
             <h4 class="modal-input-header">Name</h4>
             <input class="modal-input"
                 type="text"
@@ -65,11 +67,10 @@
             name="category"
             size="50"/>
             <h4 class="modal-input-header">Description</h4>
-            <input class="modal-input"
-                type="text"
-                id="group-input-description"
-                name="description"
-                />
+            <textarea class="modal-textarea"
+                id="group-textarea-description"
+                name="description">
+            </textarea>
             <div class="modal-button-container" id="group-button-container">
                 <button class="modal-action" id="group-modal-cancel">Cancel</button>
                 <button class="modal-action" id="group-modal-save">Save</button>
@@ -78,7 +79,9 @@
     </div>
     <div class='modal-container' id='item-modal-container'>
         <div class='modal-content' id='item-modal-content'>
-            <h1 class='modal-header' id='item-modal-header'>Item</h1>
+            <div class='modal-header' id='item-modal-header'>
+                <h1 class='modal-header-value' id='item-header-name'>Item</h1>
+            </div>
             <h4 class="modal-input-header">Name</h4>
             <input class="modal-input" 
                 id="item-input-name"
@@ -132,10 +135,10 @@
             name="lifespan"
             size="50"/>
             <h4 class="modal-input-header">Description</h4>
-            <input class="modal-input"
-                id="item-input-description"
-                type="text"
-                name="description"/>
+            <textarea class="modal-textarea"
+                id="item-textarea-description"
+                name="description">
+            </textarea>
             <div class="modal-button-container" id="item-button-container">
                 <button class="modal-action" id="item-modal-cancel">Cancel</button>
                 <button class="modal-action" id="item-modal-save">Save</button>
@@ -154,6 +157,56 @@
             </div>
         </div>
     </div>
+    <div class='modal-container' id='item-view-modal-container'>
+        <div class='modal-content' id='item-view-modal-content'>
+            
+            <div class='modal-header' id='item-view-modal-header'>
+                <h1 class='modal-header-value' id='item-view-header-name'>Item name</h1>
+                <button class='item-view-action' id='item-view-button-exit'>X</button>
+            </div>
+            <div class='image-slideshow' id='item-image-slideshow'></div>
+            <div class='slideshow-button-container' id='item-slideshow-button-container'>
+                <button class='item-view-action' id='slideshow-left-button'>&#60;</button>
+                <button class='item-view-action' id='slideshow-right-button'>&#62;</button>
+            </div>
+            <table class='content-table' id='item-cotent-table'>
+            <tr class='item-header-row' id='item-name-header-row'>
+                <th class='item-header' id='item-name-header' colspan="2">Name</th>
+                <th class='item-header' id='item-price-header'>Price</th>
+            </tr>
+            <tr class='item-data-row' id='item-name-data-row'>
+                <td class='item-datacell' id='item-name-datacell' colspan="2">Name</td>
+                <td class='item-datacell' id='item-price-datacell'>Price</td>
+            </tr>
+            <tr class='item-header-row' id='item-quantity-header-row'>
+                <th class='item-header' id='item-total-header'>Total</th>
+                <th class='item-header' id='item-available-header'>Available</th>
+                <th class='item-header' id='item-used-header'>Used</th>
+            </tr>
+            <tr class='item-data-row' id='item-quantity-data-row'>
+                <td class='item-datacell' id='item-total-datacell'>Total</td>
+                <td class='item-datacell' id='item-available-datacell'>Available</td>
+                <td class='item-datacell' id='item-used-datacell'>Used</td>
+            </tr>
+            <tr class='item-header-row' id='item-date-header-row'>
+                <th class='item-header' id='item-acquired-header'>Acquired</th>
+                <th class='item-header' id='item-expire-header'>Expire</th>
+                <th class='item-header' id='item-updated-header'>Updated</th>
+            </tr>
+            <tr class='item-data-row' id='item-date-data-row'>
+                <td class='item-datacell' id='item-acquired-datacell'>Acquired</td>
+                <td class='item-datacell' id='item-expire-datacell'>Expire</td>
+                <td class='item-datacell' id='item-updated-datacell'>Updated</td>
+            </tr>
+            <tr class='item-header-row' id='item-description-header-row'>
+                <th class='item-header' id='item-description-header' colspan=3>Description</th>
+            </tr>
+            <tr class='item-data-row' id='item-description-data-row'>
+                <td class='item-datacell' id='item-description-datacell' colspan=3>Description</td>
+            </tr>
+            </table>
+        </div>  
+    </div>
 <script>
     var csrftoken = "{{ csrf_token }}";
     var defaultImage = "{% static 'my_inventory/assets/default-image.webp' %}";
@@ -165,6 +218,7 @@
     var collapseGroup = "{% static 'my_inventory/assets/chevron-double-up.svg' %}";
     var pencil = "{% static 'my_inventory/assets/pencil.svg' %}";
     var uploadIcon = "{% static 'my_inventory/assets/upload-icon.svg' %}";
+    var eye = "{% static 'my_inventory/assets/eye.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>
 </body>
