@@ -46,13 +46,7 @@ with open(CUR_DIR / 'SECRET_KEY.txt') as key_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '192.168.1.156',
-    '192.168.212.73',
-    'localhost',
-    '127.0.0.1',
-                 
-]
+# ALLOWED_HOSTS = []
 
 
 # Application definition
