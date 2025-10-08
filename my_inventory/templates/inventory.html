@@ -19,13 +19,13 @@
             <div class="container" id="groups-container">
                 <div class="button-header" id="groups-header">
                     <button class="group-action" id="group-add">
-                        <img class="button-icon" src="{% static 'my_inventory/assets/folder-plus.svg' %}">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/folder-plus.svg' %}" alt="add">
                     </button>
                     <button class="group-action" id="group-remove">
-                        <img class="button-icon" src="{% static 'my_inventory/assets/folder-minus.svg' %}">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/folder-minus.svg' %}" alt="remove">
                     </button>
                     <button class="group-action" id="group-edit">
-                        <img class="button-icon" src="{% static 'my_inventory/assets/pencil.svg' %}">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/pencil.svg' %}" alt="edit">
                     </button>
                 </div>
             </div>
@@ -46,10 +46,10 @@
     </div> -->
     
     <!-- modals -->
-    <div class='modal-container' id='group-modal-container'>
-        <div class='modal-content' id='group-modal-content'>
-            <div class='modal-header' id='group-modal-header'>
-                <h1 class='modal-header-value' id='group-header-name'>Group</h1>
+    <div class="modal-container" id="group-modal-container">
+        <div class="modal-content" id="group-modal-content">
+            <div class="modal-header" id="group-modal-header">
+                <h1 class="modal-header-value" id="group-header-name">Group</h1>
             </div>
             <h4 class="modal-input-header">Name</h4>
             <input class="modal-input"
@@ -77,10 +77,10 @@
             </div>
         </div>
     </div>
-    <div class='modal-container' id='item-modal-container'>
-        <div class='modal-content' id='item-modal-content'>
-            <div class='modal-header' id='item-modal-header'>
-                <h1 class='modal-header-value' id='item-header-name'>Item</h1>
+    <div class="modal-container" id="item-modal-container">
+        <div class="modal-content" id="item-modal-content">
+            <div class="modal-header" id="item-modal-header">
+                <h1 class="modal-header-value" id="item-header-name">Item</h1>
             </div>
             <h4 class="modal-input-header">Name</h4>
             <input class="modal-input" 
@@ -145,8 +145,11 @@
             </div>
         </div>
     </div>
-    <div class='modal-container' id='image-upload-container'>
-        <div class='modal-content' id='image-upload'>
+    <div class="modal-container" id="image-upload-container">
+        <div class="modal-content" id="image-upload">
+            <div class="modal-header" id="image-upload-modal-header">
+                <h1 class="modal-header-value" id="image-upload-header-name">Upload Image</h1>
+            </div>
             <h4 class="modal-input-header">Name</h4>
             <input type="name" class="modal-input" id="image-name-input" placeholder="Image Name">
             <h4 class="modal-input-header">File</h4>
@@ -157,54 +160,60 @@
             </div>
         </div>
     </div>
-    <div class='modal-container' id='item-view-modal-container'>
-        <div class='modal-content' id='item-view-modal-content'>
+    <div class="modal-container" id="item-view-modal-container">
+        <div class="modal-content" id="item-view-modal-content">
+            <div class="modal-button-container" id="item-view-button-container">
+                <button class="item-view-action" id="item-view-button-exit">X</button>
+            </div>
+            <div class="modal-header" id="item-view-modal-header">
+                <h1 class="modal-header-value" id="item-view-header-name">Item name</h1>
+            </div>
+            <div class="image-slideshow" id="item-image-slideshow"></div>
+            <div class="modal-button-container">
+                <div class="image-button-container" id="item-image-button-container">
+                    <button class="image-action" id="image-delete-button">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
+                    </button>
+                </div>
+                <div class="slideshow-button-container" id="item-slideshow-button-container">
+                    <button class="image-slideshow-action" id="slideshow-left-button">&#60;</button>
+                    <p class="modal-text" id="slideshow-index-text"></p>
+                    <button class="image-slideshow-action" id="slideshow-right-button">&#62;</button>
+                </div>
+            </div>
             
-            <div class='modal-header' id='item-view-modal-header'>
-                <h1 class='modal-header-value' id='item-view-header-name'>Item name</h1>
-                <button class='item-view-action' id='item-view-button-exit'>X</button>
-            </div>
-            <div class='image-slideshow' id='item-image-slideshow'></div>
-            <div class='slideshow-button-container' id='item-slideshow-button-container'>
-                <button class='item-view-action' id='slideshow-left-button'>&#60;</button>
-                <button class='item-view-action' id='slideshow-right-button'>&#62;</button>
-            </div>
-            <table class='content-table' id='item-cotent-table'>
-            <tr class='item-header-row' id='item-name-header-row'>
-                <th class='item-header' id='item-name-header' colspan="2">Name</th>
-                <th class='item-header' id='item-price-header'>Price</th>
+            <table class="content-table" id="item-cotent-table">
+            <tr class="item-header-row" id="item-name-header-row">
+                <th class="item-header" id="item-name-header" colspan="2">Name</th>
+                <th class="item-header" id="item-price-header">Price</th>
             </tr>
-            <tr class='item-data-row' id='item-name-data-row'>
-                <td class='item-datacell' id='item-name-datacell' colspan="2">Name</td>
-                <td class='item-datacell' id='item-price-datacell'>Price</td>
+            <tr class="item-data-row" id="item-name-data-row">
+                <td class="item-datacell" id="item-name-datacell" colspan="2">Name</td>
+                <td class="item-datacell" id="item-price-datacell">Price</td>
             </tr>
-            <tr class='item-header-row' id='item-quantity-header-row'>
-                <th class='item-header' id='item-total-header'>Total</th>
-                <th class='item-header' id='item-available-header'>Available</th>
-                <th class='item-header' id='item-used-header'>Used</th>
+            <tr class="item-header-row" id="item-quantity-header-row">
+                <th class="item-header" id="item-total-header">Total</th>
+                <th class="item-header" id="item-available-header">Available</th>
+                <th class="item-header" id="item-used-header">Used</th>
             </tr>
-            <tr class='item-data-row' id='item-quantity-data-row'>
-                <td class='item-datacell' id='item-total-datacell'>Total</td>
-                <td class='item-datacell' id='item-available-datacell'>Available</td>
-                <td class='item-datacell' id='item-used-datacell'>Used</td>
+            <tr class="item-data-row" id="item-quantity-data-row">
+                <td class="item-datacell" id="item-total-datacell">Total</td>
+                <td class="item-datacell" id="item-available-datacell">Available</td>
+                <td class="item-datacell" id="item-used-datacell">Used</td>
             </tr>
-            <tr class='item-header-row' id='item-date-header-row'>
-                <th class='item-header' id='item-acquired-header'>Acquired</th>
-                <th class='item-header' id='item-expire-header'>Expire</th>
-                <th class='item-header' id='item-updated-header'>Updated</th>
+            <tr class="item-header-row" id="item-date-header-row">
+                <th class="item-header" id="item-acquired-header">Acquired</th>
+                <th class="item-header" id="item-expire-header">Expire</th>
+                <th class="item-header" id="item-updated-header">Updated</th>
             </tr>
-            <tr class='item-data-row' id='item-date-data-row'>
-                <td class='item-datacell' id='item-acquired-datacell'>Acquired</td>
-                <td class='item-datacell' id='item-expire-datacell'>Expire</td>
-                <td class='item-datacell' id='item-updated-datacell'>Updated</td>
-            </tr>
-            <tr class='item-header-row' id='item-description-header-row'>
-                <th class='item-header' id='item-description-header' colspan=3>Description</th>
-            </tr>
-            <tr class='item-data-row' id='item-description-data-row'>
-                <td class='item-datacell' id='item-description-datacell' colspan=3>Description</td>
+            <tr class="item-data-row" id="item-date-data-row">
+                <td class="item-datacell" id="item-acquired-datacell">Acquired</td>
+                <td class="item-datacell" id="item-expire-datacell">Expire</td>
+                <td class="item-datacell" id="item-updated-datacell">Updated</td>
             </tr>
             </table>
+            <h4 class="modal-header-value" id="item-view-header-Description">Description</h4>
+            <textarea class="modal-textarea" id="item-view-description" readonly></textarea>
         </div>  
     </div>
 <script>

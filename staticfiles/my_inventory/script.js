@@ -10,10 +10,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 //global variables
-let itemSelection = null;
-let groupSelection = null;
-let slideshowIndex = -1;
-let slideshowImages = [];
+var itemSelection = null;
+var groupSelection = null;
+var slideshowIndex = -1;
+var slideshowImages = [];
 
 async function loadGroups(group_id = null) {
     let response = null;
@@ -47,6 +47,14 @@ async function buildGroupContainers() {
         groupsContainer.appendChild(groupDisplay);
     });
 }
+
+function clearItemSelect(){
+    let groupDataArray = document.getElementsByClassName('item-display');
+    for (let i=0;i < groupDataArray.length; i++){
+        groupDataArray[i].classList.remove('selected');
+    };
+    itemSelection = null;
+};
 
 function clearGroupSelect(){
     let groupDataArray = document.getElementsByClassName('group-data-content');
@@ -120,7 +128,11 @@ function buildGroupDisplay(group){
     let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action');editItemButton.setAttribute('data-id',group.pk);
     let editItemImg = document.createElement('img');editItemImg.setAttribute('src', pencil);editItemImg.setAttribute('class','button-icon');
     editItemButton.prepend(editItemImg);
-    
+
+    let uploadImageButton = document.createElement('button'); uploadImageButton.setAttribute('class','item-action');uploadImageButton.setAttribute('data-id',group.pk);
+    let uploadItemImg = document.createElement('img');uploadItemImg.setAttribute('src', uploadIcon);uploadItemImg.setAttribute('class','button-icon');
+    uploadImageButton.prepend(uploadItemImg);
+
     let viewItemButton = document.createElement('button'); viewItemButton.setAttribute('class','item-action');viewItemButton.setAttribute('data-id',group.pk);
     let viewItemImg = document.createElement('img');viewItemImg.setAttribute('src', eye);viewItemImg.setAttribute('class','button-icon');
     viewItemButton.prepend(viewItemImg);
@@ -156,26 +168,48 @@ function buildGroupDisplay(group){
         itemModalContainer?.classList.add('show');
     });
 
-    viewItemButton?.addEventListener('click',async () => {
-        clearItemViewModal();
-        if(!itemSelection) {
-            alert("Select an item to edit");
-            return;
-        }
-        let itemViewModalContainer = document.getElementById('item-view-modal-container');
+    uploadImageButton.addEventListener('click',()=>{
+        if(itemSelection === null) {return;}
         let item_id = itemSelection.getAttribute('data-id')
-        let item = await loadItem(item_id);
-        populateItemViewModal(item);
-        itemViewModalContainer?.setAttribute('data-id', item_id);
-        itemViewModalContainer?.classList.add('show');
+        let uploadModal = document.getElementById('image-upload-container');
+        uploadModal.setAttribute('data-item-id', item_id);
+        uploadModal.classList.toggle('show');
+    });
+
+    viewItemButton?.addEventListener('click',async () => {
+        await viewItem();
     });
 
     itemActionContainer.appendChild(addItemButton);
     itemActionContainer.appendChild(removeItemButton);
     itemActionContainer.appendChild(editItemButton);
+    itemActionContainer.appendChild(uploadImageButton);
     itemActionContainer.appendChild(viewItemButton);
     
     return groupContainer;
+}
+
+function updateIndexText(){
+    let indexText = document.getElementById('slideshow-index-text');
+    if(slideshowImages.length === 0 || slideshowIndex < 0){
+        indexText.innerHTML = '0/0'
+    } else {
+        indexText.innerHTML = `${slideshowIndex+1}/${slideshowImages.length}`
+    }
+}
+
+async function viewItem(){
+    clearItemViewModal();
+    if(!itemSelection) {
+        alert("Select an item to edit");
+        return;
+    }
+    let itemViewModalContainer = document.getElementById('item-view-modal-container');
+    let item_id = itemSelection.getAttribute('data-id')
+    let item = await loadItem(item_id);
+    await populateItemViewModal(item);
+    itemViewModalContainer?.setAttribute('data-id', item_id);
+    itemViewModalContainer?.classList.add('show');
 }
 
 async function loadItem(id){
@@ -255,6 +289,14 @@ async function buildItemsGrid(items, group_id) {
     return itemsGrid;
 }
 
+function alertResponse(response){
+    //don't show response for now
+    
+    // console.log(response);
+    // if(response.message){alert(response.message)};
+    // if(response.error){alert(response.error)};
+}
+
 function addButtonEvents() {
     const groupAddButton = document.getElementById('group-add');
     const groupRemoveButton = document.getElementById('group-remove');
@@ -265,7 +307,7 @@ function addButtonEvents() {
     groupAddButton?.addEventListener('click', () => {
         groupModalContainer?.classList.add('show');
     });
-    groupRemoveButton?.addEventListener('click', () => {
+    groupRemoveButton?.addEventListener('click',async () => {
         if(!groupSelection) {
             alert("Select a group to remove");
             return;
@@ -273,7 +315,8 @@ function addButtonEvents() {
         let groupName = groupSelection.getAttribute('data-name')
         let deleteMessage = `Are you sure you want to delete the selected group ${groupName} and all contained items?`
         if (confirm(deleteMessage)) {
-            deleteGroup(groupSelection.getAttribute('data-id'));
+            let response = await deleteGroup(groupSelection.getAttribute('data-id'));
+            alertResponse(response);
         }
     });
     groupEditButton?.addEventListener('click',async () => {
@@ -290,8 +333,9 @@ function addButtonEvents() {
         clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
-    groupModalSaveButton?.addEventListener('click', () => {
-        saveGroupModal();
+    groupModalSaveButton?.addEventListener('click',async () => {
+        let response = await saveGroupModal();
+        alertResponse(response);
         clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
@@ -302,8 +346,9 @@ function addButtonEvents() {
         clearItemModal();
         itemModalContainer?.classList.remove('show');
     });
-    itemModalSaveButton?.addEventListener('click', () => {
-        saveItemModal();
+    itemModalSaveButton?.addEventListener('click',async () => {
+        let response = await saveItemModal();
+        alertResponse(response);
         clearItemModal();
         itemModalContainer?.classList.remove('show');
     });
@@ -315,8 +360,9 @@ function addButtonEvents() {
         clearImageUpload();
         imageUploadContainer?.classList.remove('show');
     });
-    imageUploadButton?.addEventListener('click', () => {
-        uploadImage();
+    imageUploadButton?.addEventListener('click',async () => {
+        let response = await uploadImage();
+        alertResponse(response);
         clearImageUpload();
         imageUploadContainer?.classList.remove('show');
     });
@@ -324,23 +370,65 @@ function addButtonEvents() {
     const slideshowLeftButton = document.getElementById('slideshow-left-button');
     const slideshowRightButton = document.getElementById('slideshow-right-button');
     slideshowLeftButton?.addEventListener('click',()=>{
-        if(slideshowIndex - 1 >= 0 && slideshowImages.length - 1 > slideshowIndex - 1){
-            slideshowIndex--;
+        let newIndex = slideshowIndex - 1
+        if (checkIndexInLength(newIndex,slideshowImages.length)){
+            slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
+
+        // if(slideshowIndex - 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex - 1){
+            
+        // }
     });
     slideshowRightButton?.addEventListener('click',()=>{
-        if(slideshowIndex + 1 >= 0 && slideshowImages.length - 1 > slideshowIndex + 1){
-            slideshowIndex++;
+        let newIndex = slideshowIndex + 1
+        if (checkIndexInLength(newIndex,slideshowImages.length)){
+            slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
+        // }
+        // if(slideshowIndex + 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex + 1){
+        //     slideshowIndex++;
+        //     showImageElement(slideshowIndex);
+        // }
     });
-    // let iframeButtonClose = document.getElementById('iframe-button-close');
-    // iframeButtonClose?.addEventListener('click', ()=>{
-    //     let iframeContainer = document.getElementById('iframe-container');
-    //     iframeContainer.classList.remove('show');
-    // });
+
+    let itemViewModalContainer = document.getElementById('item-view-modal-container');
+    let itemViewButtonExit = document.getElementById('item-view-button-exit');
+    itemViewButtonExit.addEventListener('click',()=>{
+        itemViewModalContainer.classList.remove('show');
+    });
+
+    let imageDeleteButton = document.getElementById('image-delete-button');
+    imageDeleteButton.addEventListener('click',async ()=>{
+        let isIndexInLength = checkIndexInLength(slideshowIndex, slideshowImages.length);
+        if(!isIndexInLength) {
+            alert('failed to access slideshow Index in loaded slideshow Images');
+            return;
+        }
+        let imageElement = slideshowImages[slideshowIndex];
+        let isDefault = Boolean(imageElement.hasAttribute('data-is-default'));
+        if(isDefault) {
+            alert('cannot delete default image');
+            return;
+        }
+        let id = imageElement.getAttribute('data-id');
+        let name = imageElement.getAttribute('data-name');
+        let deleteImageMessage = `Are you sure you want to delete image ${name}?`;
+        if (confirm(deleteImageMessage)) {
+            let response = await deleteImage(id);
+            alertResponse(response);
+        }
+    })
     
+}
+
+function checkIndexInLength(index, length){
+    if (length === 0 || index < 0 || index > length - 1) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 function clearGroupModal(){
@@ -377,30 +465,32 @@ function clearImageUpload(){
 function clearItemViewModal(){
     let modalContainer = document.getElementById('item-view-modal-container');
     modalContainer.removeAttribute('data-id');
-    document.getElementById('item-name-datacell').value = "";
-    document.getElementById('item-price-datacell').value = "";
-    document.getElementById('item-total-datacell').value = "";
-    document.getElementById('item-available-datacell').value = "";
-    document.getElementById('item-used-datacell').value = "";
-    document.getElementById('item-acquired-datacell').value = "";
-    document.getElementById('item-expire-datacell').value = "";
-    document.getElementById('item-updated-datacell').value = "";
-    document.getElementById('item-description-datacell').value = "";
+    document.getElementById('item-view-header-name').innerHTML = "";
+    document.getElementById('item-name-datacell').innerHTML = "";
+    document.getElementById('item-price-datacell').innerHTML = "";
+    document.getElementById('item-total-datacell').innerHTML = "";
+    document.getElementById('item-available-datacell').innerHTML = "";
+    document.getElementById('item-used-datacell').innerHTML = "";
+    document.getElementById('item-acquired-datacell').innerHTML = "";
+    document.getElementById('item-expire-datacell').innerHTML = "";
+    document.getElementById('item-updated-datacell').innerHTML = "";
+    document.getElementById('item-view-description').value = "";
     let imageSlideshow = document.getElementById('item-image-slideshow');
     imageSlideshow.innerHTML='';
 }
 
 function showImageElement(index){
-    if (index < 0 || index > slideshowImages.length -1){
+    if (!checkIndexInLength(index,slideshowImages.length)){
         return;
     }
-    for (let i = 0; i < slideshowImages.length - 1; i++){
+    for (let i = 0; i < slideshowImages.length; i++){
         if(i===index){
             slideshowImages[i].style.display = "block";
         } else {
             slideshowImages[i].style.display = "none";
         }
     }
+    updateIndexText();
 }
 
 function populateGroupModal(group){
@@ -422,37 +512,44 @@ function populateItemModal(item){
     document.getElementById('item-textarea-description').value = item.fields.description;
 }
 
-function populateItemViewModal(item){
+async function populateItemViewModal(item){
     let modalContainer = document.getElementById('item-view-modal-container');
     modalContainer.setAttribute('data-id', item.pk);
-    document.getElementById('item-name-datacell').value = item.fields.name;
-    document.getElementById('item-price-datacell').value = item.fields.price;
-    document.getElementById('item-total-datacell').value = item.fields.total;
-    document.getElementById('item-available-datacell').value = item.fields.available_quantity;
-    document.getElementById('item-used-datacell').value = item.fields.used_quantity;
-    document.getElementById('item-acquired-datacell').value = item.fields.acquired_dt;
-    document.getElementById('item-expire-datacell').value = item.fields.expire_dt;
-    document.getElementById('item-updated-datacell').value = item.fields.updated_dt;
-    document.getElementById('item-description-datacell').value = item.fields.description;
-    loadImageElements(item.pk);
+    document.getElementById('item-view-header-name').innerHTML = item.fields.name;
+    document.getElementById('item-name-datacell').innerHTML = item.fields.name;
+    document.getElementById('item-price-datacell').innerHTML = item.fields.price;
+    document.getElementById('item-total-datacell').innerHTML = item.fields.total_quantity;
+    document.getElementById('item-available-datacell').innerHTML = item.fields.available_quantity;
+    document.getElementById('item-used-datacell').innerHTML = item.fields.used_quantity;
+    document.getElementById('item-acquired-datacell').innerHTML = item.fields.acquired_dt;
+    document.getElementById('item-expire-datacell').innerHTML = item.fields.expire_dt;
+    document.getElementById('item-updated-datacell').innerHTML = item.fields.updated_dt;
+    document.getElementById('item-view-description').value = item.fields.description;
+    await loadImageElements(item.pk);
     populateSlideshow();
 }
 
 async function loadImageElements(item_id){
     slideshowImages = [];
     let images = await loadImages({item_id:`${item_id}`});
-    images.forEach((image)=>{
-        let imageElement = makeImageElement(image);
+    if (images.length > 0){
+        for (let i = 0; i < images.length; i++){
+        let imageElement = makeImageElement(images[i],true);
         slideshowImages.push(imageElement);
-    });
+    }
+    } else {
+        let defaultElement = makeImageElement(null,true);
+        slideshowImages.push(defaultElement);
+    }
 }
 
 function populateSlideshow(){
     let imageSlideshow = document.getElementById('item-image-slideshow');
     imageSlideshow.innerHTML='';
-    slideshowImages.forEach((imageElement)=>{
-        imageSlideshow.appendChild(imageElement);
-    })
+    console.log()
+    for (let i = 0; i < slideshowImages.length; i++){
+        imageSlideshow.appendChild(slideshowImages[i]);
+    }
     if (imageSlideshow.length === 0) {
         slideshowIndex = -1;
     } else {
@@ -482,6 +579,7 @@ async function saveGroupModal() {
             },
             body: JSON.stringify(group)
         });
+        return response;
     }
     else {
         // POST
@@ -498,6 +596,7 @@ async function saveGroupModal() {
             },
             body: JSON.stringify(group)
         });
+        return response;
     }
     
 }
@@ -539,6 +638,7 @@ async function saveItemModal() {
             },
             body: JSON.stringify(item)
         });
+        return response;
     }
     else {
         // POST
@@ -562,6 +662,7 @@ async function saveItemModal() {
             },
             body: JSON.stringify(item)
         });
+        return response;
     }
 }
 
@@ -580,6 +681,7 @@ async function uploadImage(){
         },
         body: formData,
     });
+    return response;
 }
 
 async function deleteGroup(id) {
@@ -590,6 +692,7 @@ async function deleteGroup(id) {
         }
     }
     );
+    return response;
 }
 
 async function deleteItem(id) {
@@ -600,7 +703,20 @@ async function deleteItem(id) {
         }
     }
     );
+    return response;
 }
+
+async function deleteImage(id) {
+    let response = await fetch(`/inventory/image/delete/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    }
+    );
+    return response;
+}
+
 async function buildItemDisplay(item, group_id) {
     //top level box container
     let display = document.createElement("div");
@@ -615,21 +731,21 @@ async function buildItemDisplay(item, group_id) {
     display.appendChild(name);
     let itemButtonContainer = document.createElement("div"); itemButtonContainer.setAttribute("class", "item-button-container");
     display.appendChild(itemButtonContainer);
-    let uploadImageButton = document.createElement("button"); 
-    uploadImageButton.setAttribute("class", "item-display-action"); 
-    uploadImageButton.setAttribute("id", "item-image-upload");
-    uploadImageButton.setAttribute("data-item-id", item.pk);
-    uploadImageButton.setAttribute("src",uploadIcon);
-    itemButtonContainer.appendChild(uploadImageButton);
-    uploadImageButton.addEventListener('click',()=>{
-        // let iframe = document.getElementById('iframe-forms');
-        // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
-        // let iframeContainer = document.getElementById('iframe-container');
-        // iframeContainer.classList.toggle('show');
-        let uploadModal = document.getElementById('image-upload-container');
-        uploadModal.setAttribute('data-item-id', item.pk);
-        uploadModal.classList.toggle('show');
-    });
+    // let uploadImageButton = document.createElement("button"); 
+    // uploadImageButton.setAttribute("class", "item-display-action"); 
+    // uploadImageButton.setAttribute("id", "item-image-upload");
+    // uploadImageButton.setAttribute("data-item-id", item.pk);
+    // uploadImageButton.setAttribute("src",uploadIcon);
+    // itemButtonContainer.appendChild(uploadImageButton);
+    // uploadImageButton.addEventListener('click',()=>{
+    //     // let iframe = document.getElementById('iframe-forms');
+    //     // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
+    //     // let iframeContainer = document.getElementById('iframe-container');
+    //     // iframeContainer.classList.toggle('show');
+    //     let uploadModal = document.getElementById('image-upload-container');
+    //     uploadModal.setAttribute('data-item-id', item.pk);
+    //     uploadModal.classList.toggle('show');
+    // });
 
     let image = await loadFirstImage(item.pk);
     let imageElement = null;
@@ -651,20 +767,34 @@ async function buildItemDisplay(item, group_id) {
     row.insertCell().appendChild(numberTable);
     row.insertCell().appendChild(description);
     display.appendChild(topTable);
-    display.addEventListener('focus',()=>{
+    display.addEventListener('click',()=>{
+        //unselect previously selected groups
+        clearItemSelect();
+        //select this group
         itemSelection = display;
+        display.classList.add('selected');
+        
     });
-
+    display.addEventListener('dblclick',async ()=> {
+        await viewItem();
+    });
     return display;
 }
 ;
-function makeImageElement(image=null){
-    let imageElement = document.createElement("img"); imageElement.setAttribute("class", "item-img");
+function makeImageElement(image=null,large=false){
+    let imageElement = document.createElement("img"); 
+    if (large) {
+        imageElement.setAttribute("class", "item-img-large");
+    } else {
+        imageElement.setAttribute("class", "item-img");
+    }
     if (image){
         imageElement.setAttribute("src", image.uri);
         imageElement.setAttribute('data-name', image.name);
+        imageElement.setAttribute('data-id', image.pk);
     } else {
         imageElement.setAttribute("src", defaultImage);
+        imageElement.setAttribute('data-is-default', true);
     }
     return imageElement;
 }

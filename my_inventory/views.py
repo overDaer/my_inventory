@@ -208,7 +208,7 @@ def item_delete(request:HttpRequest,pk: int):
 #         form = ItemImageForm()
 #         return render(request, 'item_image_upload.html', {'form': form, 'item_id': item_id})
     
-def upload_image(request):
+def image_upload(request):
     # breakpoint()
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -242,12 +242,18 @@ def item_image(request):
             'name':image.name,
             'uri':request.build_absolute_uri(image.image.url)
         })
-        
     return JsonResponse(data, safe=False)
-    # serializedjson = serializers.serialize("json", items)
-        
-    # return JsonResponse(serializedjson,safe=False)
 
+def image_delete(request:HttpRequest,pk: int):
+    if request.method == "POST":
+        try:
+            image = get_object_or_404(Image, pk=pk)
+            image.delete()
+            return JsonResponse({'message':'successfully delete image'}, status=204)
+        except Http404:
+            return JsonResponse({'error':'Image could not be found with that pk'}, status=404)
+    else:
+            return JsonResponse({'error':'Expected a POST request'}, status=400)
 
 def success(request):
     return render(request, 'success.html')

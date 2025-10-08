@@ -48,6 +48,14 @@ async function buildGroupContainers() {
     });
 }
 
+function clearItemSelect(){
+    let groupDataArray = document.getElementsByClassName('item-display');
+    for (let i=0;i < groupDataArray.length; i++){
+        groupDataArray[i].classList.remove('selected');
+    };
+    itemSelection = null;
+};
+
 function clearGroupSelect(){
     let groupDataArray = document.getElementsByClassName('group-data-content');
     for (let i=0;i < groupDataArray.length; i++){
@@ -181,6 +189,15 @@ function buildGroupDisplay(group){
     return groupContainer;
 }
 
+function updateIndexText(){
+    let indexText = document.getElementById('slideshow-index-text');
+    if(slideshowImages.length === 0 || slideshowIndex < 0){
+        indexText.innerHTML = '0/0'
+    } else {
+        indexText.innerHTML = `${slideshowIndex+1}/${slideshowImages.length}`
+    }
+}
+
 async function viewItem(){
     clearItemViewModal();
     if(!itemSelection) {
@@ -272,6 +289,14 @@ async function buildItemsGrid(items, group_id) {
     return itemsGrid;
 }
 
+function alertResponse(response){
+    //don't show response for now
+    
+    // console.log(response);
+    // if(response.message){alert(response.message)};
+    // if(response.error){alert(response.error)};
+}
+
 function addButtonEvents() {
     const groupAddButton = document.getElementById('group-add');
     const groupRemoveButton = document.getElementById('group-remove');
@@ -282,7 +307,7 @@ function addButtonEvents() {
     groupAddButton?.addEventListener('click', () => {
         groupModalContainer?.classList.add('show');
     });
-    groupRemoveButton?.addEventListener('click', () => {
+    groupRemoveButton?.addEventListener('click',async () => {
         if(!groupSelection) {
             alert("Select a group to remove");
             return;
@@ -290,7 +315,8 @@ function addButtonEvents() {
         let groupName = groupSelection.getAttribute('data-name')
         let deleteMessage = `Are you sure you want to delete the selected group ${groupName} and all contained items?`
         if (confirm(deleteMessage)) {
-            deleteGroup(groupSelection.getAttribute('data-id'));
+            let response = await deleteGroup(groupSelection.getAttribute('data-id'));
+            alertResponse(response);
         }
     });
     groupEditButton?.addEventListener('click',async () => {
@@ -307,8 +333,9 @@ function addButtonEvents() {
         clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
-    groupModalSaveButton?.addEventListener('click', () => {
-        saveGroupModal();
+    groupModalSaveButton?.addEventListener('click',async () => {
+        let response = await saveGroupModal();
+        alertResponse(response);
         clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
@@ -319,8 +346,9 @@ function addButtonEvents() {
         clearItemModal();
         itemModalContainer?.classList.remove('show');
     });
-    itemModalSaveButton?.addEventListener('click', () => {
-        saveItemModal();
+    itemModalSaveButton?.addEventListener('click',async () => {
+        let response = await saveItemModal();
+        alertResponse(response);
         clearItemModal();
         itemModalContainer?.classList.remove('show');
     });
@@ -332,8 +360,9 @@ function addButtonEvents() {
         clearImageUpload();
         imageUploadContainer?.classList.remove('show');
     });
-    imageUploadButton?.addEventListener('click', () => {
-        uploadImage();
+    imageUploadButton?.addEventListener('click',async () => {
+        let response = await uploadImage();
+        alertResponse(response);
         clearImageUpload();
         imageUploadContainer?.classList.remove('show');
     });
@@ -341,16 +370,27 @@ function addButtonEvents() {
     const slideshowLeftButton = document.getElementById('slideshow-left-button');
     const slideshowRightButton = document.getElementById('slideshow-right-button');
     slideshowLeftButton?.addEventListener('click',()=>{
-        if(slideshowIndex - 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex - 1){
-            slideshowIndex--;
+        let newIndex = slideshowIndex - 1
+        if (checkIndexInLength(newIndex,slideshowImages.length)){
+            slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
+
+        // if(slideshowIndex - 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex - 1){
+            
+        // }
     });
     slideshowRightButton?.addEventListener('click',()=>{
-        if(slideshowIndex + 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex + 1){
-            slideshowIndex++;
+        let newIndex = slideshowIndex + 1
+        if (checkIndexInLength(newIndex,slideshowImages.length)){
+            slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
+        // }
+        // if(slideshowIndex + 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex + 1){
+        //     slideshowIndex++;
+        //     showImageElement(slideshowIndex);
+        // }
     });
 
     let itemViewModalContainer = document.getElementById('item-view-modal-container');
@@ -359,7 +399,36 @@ function addButtonEvents() {
         itemViewModalContainer.classList.remove('show');
     });
 
+    let imageDeleteButton = document.getElementById('image-delete-button');
+    imageDeleteButton.addEventListener('click',async ()=>{
+        let isIndexInLength = checkIndexInLength(slideshowIndex, slideshowImages.length);
+        if(!isIndexInLength) {
+            alert('failed to access slideshow Index in loaded slideshow Images');
+            return;
+        }
+        let imageElement = slideshowImages[slideshowIndex];
+        let isDefault = Boolean(imageElement.hasAttribute('data-is-default'));
+        if(isDefault) {
+            alert('cannot delete default image');
+            return;
+        }
+        let id = imageElement.getAttribute('data-id');
+        let name = imageElement.getAttribute('data-name');
+        let deleteImageMessage = `Are you sure you want to delete image ${name}?`;
+        if (confirm(deleteImageMessage)) {
+            let response = await deleteImage(id);
+            alertResponse(response);
+        }
+    })
     
+}
+
+function checkIndexInLength(index, length){
+    if (length === 0 || index < 0 || index > length - 1) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 function clearGroupModal(){
@@ -405,13 +474,13 @@ function clearItemViewModal(){
     document.getElementById('item-acquired-datacell').innerHTML = "";
     document.getElementById('item-expire-datacell').innerHTML = "";
     document.getElementById('item-updated-datacell').innerHTML = "";
-    document.getElementById('item-description-datacell').innerHTML = "";
+    document.getElementById('item-view-description').value = "";
     let imageSlideshow = document.getElementById('item-image-slideshow');
     imageSlideshow.innerHTML='';
 }
 
 function showImageElement(index){
-    if (index < 0 || index > slideshowImages.length -1){
+    if (!checkIndexInLength(index,slideshowImages.length)){
         return;
     }
     for (let i = 0; i < slideshowImages.length; i++){
@@ -421,6 +490,7 @@ function showImageElement(index){
             slideshowImages[i].style.display = "none";
         }
     }
+    updateIndexText();
 }
 
 function populateGroupModal(group){
@@ -454,7 +524,7 @@ async function populateItemViewModal(item){
     document.getElementById('item-acquired-datacell').innerHTML = item.fields.acquired_dt;
     document.getElementById('item-expire-datacell').innerHTML = item.fields.expire_dt;
     document.getElementById('item-updated-datacell').innerHTML = item.fields.updated_dt;
-    document.getElementById('item-description-datacell').innerHTML = item.fields.description;
+    document.getElementById('item-view-description').value = item.fields.description;
     await loadImageElements(item.pk);
     populateSlideshow();
 }
@@ -462,9 +532,14 @@ async function populateItemViewModal(item){
 async function loadImageElements(item_id){
     slideshowImages = [];
     let images = await loadImages({item_id:`${item_id}`});
-    for (let i = 0; i < images.length; i++){
-        let imageElement = makeImageElement(images[i]);
+    if (images.length > 0){
+        for (let i = 0; i < images.length; i++){
+        let imageElement = makeImageElement(images[i],true);
         slideshowImages.push(imageElement);
+    }
+    } else {
+        let defaultElement = makeImageElement(null,true);
+        slideshowImages.push(defaultElement);
     }
 }
 
@@ -504,6 +579,7 @@ async function saveGroupModal() {
             },
             body: JSON.stringify(group)
         });
+        return response;
     }
     else {
         // POST
@@ -520,6 +596,7 @@ async function saveGroupModal() {
             },
             body: JSON.stringify(group)
         });
+        return response;
     }
     
 }
@@ -561,6 +638,7 @@ async function saveItemModal() {
             },
             body: JSON.stringify(item)
         });
+        return response;
     }
     else {
         // POST
@@ -584,6 +662,7 @@ async function saveItemModal() {
             },
             body: JSON.stringify(item)
         });
+        return response;
     }
 }
 
@@ -602,6 +681,7 @@ async function uploadImage(){
         },
         body: formData,
     });
+    return response;
 }
 
 async function deleteGroup(id) {
@@ -612,6 +692,7 @@ async function deleteGroup(id) {
         }
     }
     );
+    return response;
 }
 
 async function deleteItem(id) {
@@ -622,7 +703,20 @@ async function deleteItem(id) {
         }
     }
     );
+    return response;
 }
+
+async function deleteImage(id) {
+    let response = await fetch(`/inventory/image/delete/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    }
+    );
+    return response;
+}
+
 async function buildItemDisplay(item, group_id) {
     //top level box container
     let display = document.createElement("div");
@@ -673,8 +767,13 @@ async function buildItemDisplay(item, group_id) {
     row.insertCell().appendChild(numberTable);
     row.insertCell().appendChild(description);
     display.appendChild(topTable);
-    display.addEventListener('focus',()=>{
+    display.addEventListener('click',()=>{
+        //unselect previously selected groups
+        clearItemSelect();
+        //select this group
         itemSelection = display;
+        display.classList.add('selected');
+        
     });
     display.addEventListener('dblclick',async ()=> {
         await viewItem();
@@ -682,13 +781,20 @@ async function buildItemDisplay(item, group_id) {
     return display;
 }
 ;
-function makeImageElement(image=null){
-    let imageElement = document.createElement("img"); imageElement.setAttribute("class", "item-img");
+function makeImageElement(image=null,large=false){
+    let imageElement = document.createElement("img"); 
+    if (large) {
+        imageElement.setAttribute("class", "item-img-large");
+    } else {
+        imageElement.setAttribute("class", "item-img");
+    }
     if (image){
         imageElement.setAttribute("src", image.uri);
         imageElement.setAttribute('data-name', image.name);
+        imageElement.setAttribute('data-id', image.pk);
     } else {
         imageElement.setAttribute("src", defaultImage);
+        imageElement.setAttribute('data-is-default', true);
     }
     return imageElement;
 }

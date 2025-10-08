@@ -1,26 +1,40 @@
 :root {
+    /* COLOR VARIABLES */
+    
+    /* item */
     --selection-item-border-color: rgb(199, 199, 199);
-    --selection-group-border-color: rgb(248, 248, 248);
-    --selection-group-background-color:rgb(98, 238, 248);
-    --group-button-color: #444857;
     --item-button-color: #848b9e;
     --item-border-color: rgb(0, 88, 88);
-    --item-image-background-color: rgb(66, 66, 66);
+    --item-image-background-color: rgb(15, 15, 15);
     --box-shadow-one: rgb(85, 85, 85);
     --box-shadow-two: rgb(44, 44, 44);
+
+    /* group */
+    --group-button-color: #444857;
     --group-header-background-color: rgb(122, 122, 122);
     --group-header-font-color: #ececec;
     --group-data-background-color: rgb(109, 109, 109);
     --group-data-font-color: #f1f1f1;
-    --nav-bar-color: #010101;
-    --nav-bar-button-color:#444857;
-    --modal-border-color: #4d4d4d;
-    --modal-font-color: #292929;
     --group-description-background-color: rgb(51, 51, 51);
     --group-description-font-color: rgb(212, 212, 212);
     --group-focus-border-color:rgba(131, 255, 158, 0.966);
-    --iframe-border-color:rgba(0, 132, 255, 0.966);
-    --iframe-background-color:rgba(255, 255, 255, 0.966);
+    --selection-group-border-color: rgb(248, 248, 248);
+    --selection-group-background-color:rgb(98, 238, 248);
+
+    /* nav */
+    --nav-bar-color: #010101;
+    --nav-bar-button-color:#444857;
+
+    /* modal */
+    --modal-border-color: #4d4d4d;
+    --modal-font-color: #f5f5f5;
+    --modal-content-background-color:rgb(61, 61, 61);
+    --modal-content-border-color:rgb(187, 187, 187);
+    --modal-container-background-color:rgb(54, 54, 54);
+    --modal-textarea-background-color:rgb(49, 49, 49);
+    --modal-textarea-font-color:rgb(230, 230, 230);
+    --modal-input-background-color:rgb(49, 49, 49);
+    --modal-input-font-color:rgb(230, 230, 230);
 }
 
 html, body {
@@ -65,7 +79,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 }
 
 
-.item-display:focus-within{
+.item-display.selected{
     border: 4px solid var(--selection-item-border-color);
     box-shadow:3px 3px 5px var(--box-shadow-one), 10px 10px 7px var(--box-shadow-two);
 }
@@ -77,10 +91,17 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 }
 
 .item-img{
-    height: 250px;
     width: 250px;
+    height: 250px;
     background-color: var(--item-image-background-color);
-    object-fit: fill;
+    object-fit:contain;
+}
+
+.item-img-large{
+    width: 800px;
+    height: 600px;
+    background-color: var(--item-image-background-color);
+    object-fit:scale-down;
 }
 
 .item-top-table{
@@ -194,15 +215,8 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 }
 
 .item-display-action {
-    position: relative;
     width: 30px;
     height: 30px;
-}
-
-.iframe-action{
-    position: relative;
-    width: 20px;
-    height: 20px;
 }
 
 .item-button-container {
@@ -250,15 +264,9 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 #item-image-slideshow{
     display: flex;
-    height: 70%;
-    width: 100%;
-
-}
-
-#item-slideshow-button-container{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 800px;
+    height: 600px;
+    overflow: hidden;
 }
 
 #slideshow-left-button,
@@ -381,21 +389,26 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 /* modal css */
 
+/* #item-view-modal-container{
+    
+} */
+
 .modal-container {
-  display: "none";
-  color: var(--modal-font-color);
-  background-color: rgba(0,0,0,0.3);
-  display: flex;
-  align-items:center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
+    display: "none";
+    color: var(--modal-font-color);
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    justify-self: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    width:fit-content;
+    height: fit-content;
 }
 
 .modal-container.show {
@@ -404,11 +417,13 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 }
 
 .modal-content {
-  background-color: #fff;
-  padding: 40px 50px;
-  width: 600px;
+  background-color: var(--modal-content-background-color);
+  padding: 20px 20px;
+  width: fit-content;
+  height: fit-content;
   border-radius: 25px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border: 1px solid var(--modal-content-border-color);
   display: flex;
   flex-direction: column;
 }
@@ -417,20 +432,53 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
   text-align: center;
   display: flex;
   flex-direction: row;
-  align-content:space-around;
+  justify-content: center;
 }
+
 
 #group-input-description {
   height: 100px;
   width: 100%;
 }
 
+.item-view-action {
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    padding: 0;
+}
+
+.image-slideshow{
+  justify-content: center;
+  margin: 5px;
+  width: 800px;
+  height: 600px;
+}
+
+.image-slideshow-action {
+    width: 25px;
+    height: 25px;
+}
+
+.image-action {
+    width: 30px;
+    height: 30px;
+}
+
+.slideshow-button-container{
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    width: 100%;
+}
+
 .modal-button-container {
   display: flex;
   flex-direction: row-reverse;
   align-items:right;
+  padding: 5px;
+  margin: 5px;
 }
-
 
 /* .modal-action {
   margin: 10px 5px;
@@ -445,18 +493,22 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 .modal-input {
     border: 1px solid var(--modal-border-color);
+    background-color: var(--modal-input-background-color);
     border-radius: 3px;
     padding: 5px;
     width: 100%;
+    color: var(--modal-input-font-color);
 }
 
 .modal-textarea{
     border: 1px solid var(--modal-border-color);
+    background-color: var(--modal-textarea-background-color);
     border-radius: 3px;
     padding: 5px;
     width: 100%;
     height: 80px;
     overflow-y: scroll;
+    color: var(--modal-textarea-font-color);
 }
 
 .modal-input-header {
