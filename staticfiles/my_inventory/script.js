@@ -99,8 +99,8 @@ function buildGroupDisplay(group){
     let groupContent = document.createElement('div'); groupContent.setAttribute('class','group-content');
     groupContent.appendChild(groupDescription);
     groupExpandButton.addEventListener('click', ()=> {
-        groupContent.classList.toggle('minimized');
-        if (groupContent.classList.contains('minimized')) {
+        groupContent.classList.toggle('collapsed');
+        if (groupContent.classList.contains('collapsed')) {
             expandImg.setAttribute('src', expandGroup);
         }   
         else{
@@ -301,6 +301,7 @@ function addButtonEvents() {
     const groupAddButton = document.getElementById('group-add');
     const groupRemoveButton = document.getElementById('group-remove');
     const groupEditButton = document.getElementById('group-edit');
+    const groupCollapseButton = document.getElementById('group-collapse');
     const groupModalContainer = document.getElementById('group-modal-container');
     const groupModalSaveButton = document.getElementById('group-modal-save');
     const groupModalCancelButton = document.getElementById('group-modal-cancel');
@@ -327,6 +328,14 @@ function addButtonEvents() {
         let groups = await loadGroups(`${groupSelection.getAttribute('data-id')}`);
         populateGroupModal(groups[0]);
         groupModalContainer?.classList.add('show');
+    });
+
+    groupCollapseButton?.addEventListener('click',() => {
+        groupCollapseButtons = document.getElementsByClassName('group-expand-button');
+        groupCollapseButtons.forEach((button)=> {
+            //if not collapsed, click collapse button
+            if(!groupContent.classList.contains('collapsed')){button.click();}
+        });
     });
 
     groupModalCancelButton?.addEventListener('click', () => {
@@ -520,6 +529,7 @@ async function populateItemViewModal(item){
     document.getElementById('item-view-header-name').innerHTML = item.fields.name;
     document.getElementById('item-name-datacell').innerHTML = item.fields.name;
     document.getElementById('item-price-datacell').innerHTML = item.fields.price;
+    document.getElementById('item-model-number-datacell').innerHTML = item.fields.model_number;
     document.getElementById('item-total-datacell').innerHTML = item.fields.total_quantity;
     document.getElementById('item-available-datacell').innerHTML = item.fields.available_quantity;
     document.getElementById('item-used-datacell').innerHTML = item.fields.used_quantity;

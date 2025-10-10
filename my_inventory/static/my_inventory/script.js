@@ -99,11 +99,13 @@ function buildGroupDisplay(group){
     let groupContent = document.createElement('div'); groupContent.setAttribute('class','group-content');
     groupContent.appendChild(groupDescription);
     groupExpandButton.addEventListener('click', ()=> {
-        groupContent.classList.toggle('minimized');
-        if (groupContent.classList.contains('minimized')) {
+        groupContent.classList.toggle('collapsed');
+        if (groupContent.classList.contains('collapsed')) {
+            groupExpandButton.toggleAttribute('data-collapsed');
             expandImg.setAttribute('src', expandGroup);
         }   
         else{
+            groupExpandButton.toggleAttribute('data-collapsed');
             expandImg.setAttribute('src', collapseGroup);
         }
     });
@@ -301,6 +303,7 @@ function addButtonEvents() {
     const groupAddButton = document.getElementById('group-add');
     const groupRemoveButton = document.getElementById('group-remove');
     const groupEditButton = document.getElementById('group-edit');
+    const groupCollapseButton = document.getElementById('group-collapse');
     const groupModalContainer = document.getElementById('group-modal-container');
     const groupModalSaveButton = document.getElementById('group-modal-save');
     const groupModalCancelButton = document.getElementById('group-modal-cancel');
@@ -327,6 +330,14 @@ function addButtonEvents() {
         let groups = await loadGroups(`${groupSelection.getAttribute('data-id')}`);
         populateGroupModal(groups[0]);
         groupModalContainer?.classList.add('show');
+    });
+
+    groupCollapseButton?.addEventListener('click',() => {
+        let groupCollapseButtons = document.getElementsByClassName('group-expand-button');
+        for (let button of groupCollapseButtons) {
+            let collapsed = Boolean(button.hasAttribute('data-collapsed'));
+            if(!collapsed){button.click();}
+        }
     });
 
     groupModalCancelButton?.addEventListener('click', () => {

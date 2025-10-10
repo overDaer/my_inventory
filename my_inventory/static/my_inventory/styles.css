@@ -144,7 +144,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     flex-direction: column;
 }
 
-.group-content.minimized{
+.group-content.collapsed{
     max-height: 0;
     overflow: hidden;
 }
