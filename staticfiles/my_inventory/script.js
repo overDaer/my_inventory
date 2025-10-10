@@ -674,7 +674,7 @@ async function uploadImage(){
     formData.append('name', name);
     formData.append('file', file);
     formData.append('item_id',item_id);
-    let response = await fetch(`/inventory/upload-image/`,{
+    let response = await fetch(`/inventory/image/upload/`,{
         method: 'POST',
         headers: {
             'X-CSRFToken': csrftoken

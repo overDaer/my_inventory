@@ -22,6 +22,7 @@ class Item(models.Model):
     name = models.CharField(max_length=200)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    model_number = models.CharField(max_length=200, null=True, blank=True)
     total_quantity = models.IntegerField(validators=[MinValueValidator(QTY_MIN),MaxValueValidator(QTY_MAX)],null=True, blank=True)
     available_quantity = models.IntegerField(validators=[MinValueValidator(QTY_MIN)],null=True, blank=True)
     used_quantity = models.IntegerField(validators=[MinValueValidator(QTY_MIN)], null=True, blank=True)
@@ -44,6 +45,7 @@ class Image(models.Model):
     
 class Note(models.Model):
     Item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
     text = models.TextField()
     updated_dt = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -58,29 +60,23 @@ class WebSource(models.Model):
     def __str__(self):
         return self.name
     
-class Reminder(models.Model):
+class WeeklyReminder(models.Model):
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    updated_dt = models.DateTimeField(auto_now=True)
+    acknowledged_dt = models.DateTimeField(null=True)
+    time = models.TimeField()
+    on_monday = models.BooleanField()
+    on_tuesday = models.BooleanField()
+    on_wednesday = models.BooleanField()
+    on_thursday = models.BooleanField()
+    on_friday = models.BooleanField()
+    on_saturday = models.BooleanField()
+    on_sunday = models.BooleanField()
+
+class DateReminder(models.Model):
     note = models.ForeignKey(Note, on_delete=models.CASCADE)
     reminder_dt = models.DateTimeField()
+    updated_dt = models.DateTimeField(auto_now=True)
+    acknowledged_dt = models.DateTimeField(null=True)
     reoccuring = models.BooleanField()
-    by_day = models.BooleanField(null=True, blank=True)
-    by_week = models.BooleanField(null=True, blank=True)
-    days = models.JSONField(default=list, null=True, blank=True)
-    
-class Character(models.Model):
-    name = models.CharField(max_length=200)
-    dob = models.DateField(null=True, blank=True)
-    height = models.DecimalField(max_digits=3,decimal_places=2, null=True, blank=True)
-    gender = models.CharField(max_length=50, null=True, blank=True)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    def __str__(self):
-        return self.name
-    
-class Stats(models.Model):
-    character = models.ForeignKey(Character,on_delete=models.CASCADE)
-    wisdom = models.IntegerField(validators=[MinValueValidator(STAT_MIN),MaxValueValidator(STAT_MAX)])
-    strength = models.IntegerField(validators=[MinValueValidator(STAT_MIN),MaxValueValidator(STAT_MAX)])
-    intelligence = models.IntegerField(validators=[MinValueValidator(STAT_MIN),MaxValueValidator(STAT_MAX)])
-    personality = models.IntegerField(validators=[MinValueValidator(STAT_MIN),MaxValueValidator(STAT_MAX)])
-    endurance = models.IntegerField(validators=[MinValueValidator(STAT_MIN),MaxValueValidator(STAT_MAX)])
-    luck = models.IntegerField(validators=[MinValueValidator(STAT_MIN),MaxValueValidator(STAT_MAX)])
-    agility = models.IntegerField(validators=[MinValueValidator(STAT_MIN),MaxValueValidator(STAT_MAX)])
+    reoccuring_timespan = models.DurationField(null=True, blank=True)
