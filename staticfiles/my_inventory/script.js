@@ -447,6 +447,7 @@ function clearItemModal(){
     // modalContainer.reset();
     document.getElementById('item-input-name').value = "";
     document.getElementById('item-input-price').value = null;
+    document.getElementById('item-input-model-number').value = null;
     document.getElementById('item-input-total-quantity').value = null;
     document.getElementById('item-input-available-quantity').value = null;
     document.getElementById('item-input-acquired-date').value = null;
@@ -504,6 +505,7 @@ function populateItemModal(item){
     document.getElementById('item-modal-container').setAttribute('data-id', item.pk);
     document.getElementById('item-input-name').value = item.fields.name;
     document.getElementById('item-input-price').value = item.fields.price;
+    document.getElementById('item-input-model-number').value = item.fields.model_number;
     document.getElementById('item-input-total-quantity').value = item.fields.total_quantity;
     document.getElementById('item-input-available-quantity').value = item.fields.available_quantity;
     document.getElementById('item-input-acquired-date').value = item.fields.acquired_dt;
@@ -608,6 +610,7 @@ async function saveItemModal() {
     let group_id = itemModal.getAttribute('data-group-id');
     let name = document.getElementById('item-input-name').value;
     let price = document.getElementById('item-input-price')?.value;
+    let modelNumber = document.getElementById('item-input-model-number')?.value;
     let total = document.getElementById('item-input-total-quantity')?.value;
     let available = document.getElementById('item-input-available-quantity')?.value;
     let used = document.getElementById('item-input-used-quantity')?.value;
@@ -622,6 +625,7 @@ async function saveItemModal() {
             group_id: group_id,
             name: name,
             price: price,
+            modelNumber: modelNumber,
             total: total,
             available: available,
             used: used,
@@ -646,6 +650,7 @@ async function saveItemModal() {
             group_id: group_id,
             name: name,
             price: price,
+            modelNumber: modelNumber,
             total: total,
             available: available,
             used: used,

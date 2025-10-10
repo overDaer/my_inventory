@@ -108,6 +108,7 @@ def item(request: HttpRequest):
             group_id = data['group_id']
             name= data['name']
             price= data['price']
+            model_number = data['modelNumber']
             total= data['total']
             available= data['available']
             used= data['used']
@@ -119,6 +120,7 @@ def item(request: HttpRequest):
             item.group = Group.objects.get(pk=group_id)
             item.name = name
             if (price): item.price = price
+            if (model_number): item.model_number = model_number
             if (total): item.total_quantity = total
             if (available): item.available_quantity = available
             if (used): item.used_quantity = used
@@ -155,6 +157,7 @@ def item(request: HttpRequest):
             id = data['id']
             name= data['name']
             price= data['price']
+            model_number = data['modelNumber']
             total= data['total']
             available= data['available']
             used= data['used']
@@ -165,6 +168,7 @@ def item(request: HttpRequest):
             item = Item.objects.get(pk=id)
             item.name = name
             if (price): item.price = price
+            if (model_number): item.model_number = model_number
             if (total): item.total_quantity = total
             if (available): item.available_quantity = available
             if (used): item.used_quantity = used
@@ -191,25 +195,8 @@ def item_delete(request:HttpRequest,pk: int):
             return JsonResponse({'error':'Item could not be found with that pk'}, status=404)
     else:
             return JsonResponse({'error':'Expected a POST request'}, status=400)
-
-# @xframe_options_sameorigin
-# def item_image_upload(request, item_id):
-#     item = get_object_or_404(Item, pk=item_id)
-    
-#     if request.method == 'POST':
-#         form = ItemImageForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             image_instance = form.save(commit=False)
-#             image_instance.Item = item
-#             image_instance.save()
-#             return redirect('/inventory/success/')
-
-#     else:
-#         form = ItemImageForm()
-#         return render(request, 'item_image_upload.html', {'form': form, 'item_id': item_id})
     
 def image_upload(request):
-    # breakpoint()
     if request.method == 'POST':
         name = request.POST.get('name')
         file = request.FILES.get('file')
