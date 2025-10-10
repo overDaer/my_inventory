@@ -10,7 +10,7 @@ from typing import Sequence, TypeVar
 import json
 
 def index(request: HttpRequest):
-    return HttpResponse("Hello, welcome to your personal Inventory Management System!")
+    redirect('/invetory/');
 
 def inventory(request: HttpRequest):
     return render(request, 'inventory.html')
@@ -24,9 +24,9 @@ def postModel(models: Sequence[T]):
             try:
                 model.full_clean()
             except ValidationError:
-                return HttpResponse(message="Failed to validate items", status_code=400)
+                return JsonResponse({'message':"failed to validate items"}, status_code=400)
             model.save()
-        return HttpResponse(message="Saved item(s)", status_code=200)
+        return JsonResponse({'message':"saved item(s)"}, status_code=200)
 
 #if Generic method postModel works for group, reuse generic method for most model POST requests
 
@@ -41,11 +41,11 @@ def group(request: HttpRequest):
             try:
                 group.full_clean()
                 group.save()
-                return JsonResponse({'message':'successfully created Group object'}, status=201)
+                return JsonResponse({'message':'successfully created group'}, status=201)
             except ValidationError:
-                return JsonResponse({'error':'Group failed to validate'}, status=400)
+                return JsonResponse({'error':'group failed to validate'}, status=400)
         except json.JSONDecodeError:
-                return JsonResponse({'error':'JSON failed to decode'}, status=400)
+                return JsonResponse({'error':'json failed to decode'}, status=400)
     elif request.method == "GET":
         groups = [];
         if 'id' in request.GET:
@@ -72,11 +72,11 @@ def group(request: HttpRequest):
             try:
                 group.full_clean()
                 group.save()
-                return JsonResponse({'message':'successfully created Group object'}, status=201)
+                return JsonResponse({'message':'successfully created group'}, status=200)
             except ValidationError:
-                return JsonResponse({'error':'Group failed to validate'}, status=400)
+                return JsonResponse({'error':'group failed to validate'}, status=400)
         except json.JSONDecodeError:
-            return JsonResponse({'error':'JSON failed to decode'}, status=400)
+            return JsonResponse({'error':'json failed to decode'}, status=400)
         
     
 def group_delete(request:HttpRequest,pk: int):
@@ -84,22 +84,22 @@ def group_delete(request:HttpRequest,pk: int):
         try:
             group = get_object_or_404(Group, pk=pk)
             group.delete()
-            return JsonResponse({'message':'successfully delete Group'}, status=204)
+            return JsonResponse({'message':'successfully deleted group'}, status=200)
         except Http404:
-            return JsonResponse({'error':'Group could not be found with that pk'}, status=404)
+            return JsonResponse({'error':'group could not be found'}, status=404)
     else:
-            return JsonResponse({'error':'Expected a POST request'}, status=400)
+            return JsonResponse({'error':'expected a POST request'}, status=400)
     
 def item_delete(request:HttpRequest,pk: int):
     if request.method == "POST":
         try:
             item = get_object_or_404(Item, pk=pk)
             item.delete()
-            return JsonResponse({'message':'successfully delete item'}, status=204)
+            return JsonResponse({'message':'successfully deleted item'}, status=204)
         except Http404:
-            return JsonResponse({'error':'Item could not be found with that pk'}, status=404)
+            return JsonResponse({'error':'item could not be found'}, status=404)
     else:
-            return JsonResponse({'error':'Expected a POST request'}, status=400)
+            return JsonResponse({'error':'expected a POST request'}, status=400)
     
 def item(request: HttpRequest):
     if request.method == "POST":
@@ -131,11 +131,11 @@ def item(request: HttpRequest):
             try:
                 item.full_clean()
                 item.save()
-                return JsonResponse({'message':'successfully created item object'}, status=201)
+                return JsonResponse({'message':'successfully created item'}, status=201)
             except ValidationError:
                 return JsonResponse({'error':'item failed to validate'}, status=400)
         except json.JSONDecodeError:
-                return JsonResponse({'error':'JSON failed to decode'}, status=400)
+                return JsonResponse({'error':'json failed to decode'}, status=400)
     elif request.method == "GET":
         items = [];
         if 'id' in request.GET:
@@ -143,7 +143,7 @@ def item(request: HttpRequest):
             try:
                 items = [Item.objects.get(pk=item_id)]
             except Item.DoesNotExist:
-                return JsonResponse({'error':f'failed to find item with id {item_id}'}, status=400)
+                return JsonResponse({'error':f'failed to find item'}, status=400)
         elif 'group_id' in request.GET:
             group_id = request.GET.get('group_id')
             items = Item.objects.filter(group__id=group_id)
@@ -179,36 +179,37 @@ def item(request: HttpRequest):
             try:
                 item.full_clean()
                 item.save()
-                return JsonResponse({'message':'successfully created item object'}, status=201)
+                return JsonResponse({'message':'successfully updated item'}, status=201)
             except ValidationError:
-                return JsonResponse({'error':'Item failed to validate'}, status=400)
+                return JsonResponse({'message':'item failed to validate'}, status=400)
         except json.JSONDecodeError:
-            return JsonResponse({'error':'JSON failed to decode'}, status=400)
+            return JsonResponse({'message':'json failed to decode'}, status=400)
         
 def item_delete(request:HttpRequest,pk: int):
     if request.method == "POST":
         try:
             item = get_object_or_404(Item, pk=pk)
             item.delete()
-            return JsonResponse({'message':'successfully delete item'}, status=204)
+            return JsonResponse({'message':'successfully deleted item'}, status=200)
         except Http404:
-            return JsonResponse({'error':'Item could not be found with that pk'}, status=404)
+            return JsonResponse({'message':'item could not be found'}, status=404)
     else:
-            return JsonResponse({'error':'Expected a POST request'}, status=400)
+            return JsonResponse({'message':'expected a POST request'}, status=400)
     
 def image_upload(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         file = request.FILES.get('file')
-        if not file: return JsonResponse({'error': 'No image provided'}, status=400)
+        if not file: 
+            return JsonResponse({'message': 'no image provided'}, status=400)
         item_id = request.POST.get('item_id')
         item = get_object_or_404(Item,pk=item_id)
         Image.objects.create(name=name, image=file, item=item)
-        return JsonResponse({'message': 'Image uploaded successfully'})
+        return JsonResponse({'message': 'image uploaded successfully'},status=201)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return JsonResponse({'message': 'invalid request method'}, status=405)
 
-def item_image(request):
+def image(request):
     images = []
     data = []
     if 'id' in request.GET:
@@ -216,7 +217,7 @@ def item_image(request):
         try:
             images = [Image.objects.get(pk=image_id)]
         except Image.DoesNotExist:
-            return JsonResponse({'error':f'failed to find item with id {image_id}'}, status=400)
+            return JsonResponse({'message':f'failed to find item'}, status=400)
     elif 'item_id' in request.GET:
         item_id = request.GET.get('item_id')
         item = get_object_or_404(Item,pk=item_id)
@@ -236,11 +237,8 @@ def image_delete(request:HttpRequest,pk: int):
         try:
             image = get_object_or_404(Image, pk=pk)
             image.delete()
-            return JsonResponse({'message':'successfully delete image'}, status=204)
+            return JsonResponse({'message':'successfully deleted image'}, status=200)
         except Http404:
-            return JsonResponse({'error':'Image could not be found with that pk'}, status=404)
+            return JsonResponse({'message':'image could not be found'}, status=404)
     else:
-            return JsonResponse({'error':'Expected a POST request'}, status=400)
-
-def success(request):
-    return render(request, 'success.html')
+            return JsonResponse({'message':'expected a POST request'}, status=400)

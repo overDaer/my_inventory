@@ -15,6 +15,11 @@ var groupSelection = null;
 var slideshowIndex = -1;
 var slideshowImages = [];
 
+var responseTypes = new Map();
+responseTypes.set('warning',"rgb(255, 251, 39)");
+responseTypes.set('error',"rgb(255, 0, 0)");
+responseTypes.set('ok',"rgb(21, 255, 0)");
+
 async function loadGroups(group_id = null) {
     let response = null;
     if (group_id) {
@@ -101,9 +106,11 @@ function buildGroupDisplay(group){
     groupExpandButton.addEventListener('click', ()=> {
         groupContent.classList.toggle('collapsed');
         if (groupContent.classList.contains('collapsed')) {
+            groupExpandButton.toggleAttribute('data-collapsed');
             expandImg.setAttribute('src', expandGroup);
         }   
         else{
+            groupExpandButton.toggleAttribute('data-collapsed');
             expandImg.setAttribute('src', collapseGroup);
         }
     });
@@ -289,7 +296,16 @@ async function buildItemsGrid(items, group_id) {
     return itemsGrid;
 }
 
-function alertResponse(response){
+async function notifyResponse(response){
+    console.log(response);
+    let jsonResponse = await response.json();
+    if('message' in jsonResponse) {
+        displayNotification('ok', jsonResponse.message);
+    }else if('error' in jsonResponse){
+        displayNotification('error', jsonResponse.error);
+    } else {
+        displayNotification('error', 'failed to parse response');
+    }
     //don't show response for now
     
     // console.log(response);
@@ -317,7 +333,7 @@ function addButtonEvents() {
         let deleteMessage = `Are you sure you want to delete the selected group ${groupName} and all contained items?`
         if (confirm(deleteMessage)) {
             let response = await deleteGroup(groupSelection.getAttribute('data-id'));
-            alertResponse(response);
+            await notifyResponse(response);
         }
     });
     groupEditButton?.addEventListener('click',async () => {
@@ -331,11 +347,11 @@ function addButtonEvents() {
     });
 
     groupCollapseButton?.addEventListener('click',() => {
-        groupCollapseButtons = document.getElementsByClassName('group-expand-button');
-        groupCollapseButtons.forEach((button)=> {
-            //if not collapsed, click collapse button
-            if(!groupContent.classList.contains('collapsed')){button.click();}
-        });
+        let groupCollapseButtons = document.getElementsByClassName('group-expand-button');
+        for (let button of groupCollapseButtons) {
+            let collapsed = Boolean(button.hasAttribute('data-collapsed'));
+            if(!collapsed){button.click();}
+        }
     });
 
     groupModalCancelButton?.addEventListener('click', () => {
@@ -344,7 +360,7 @@ function addButtonEvents() {
     });
     groupModalSaveButton?.addEventListener('click',async () => {
         let response = await saveGroupModal();
-        alertResponse(response);
+        await notifyResponse(response);
         clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
@@ -357,7 +373,7 @@ function addButtonEvents() {
     });
     itemModalSaveButton?.addEventListener('click',async () => {
         let response = await saveItemModal();
-        alertResponse(response);
+        await notifyResponse(response);
         clearItemModal();
         itemModalContainer?.classList.remove('show');
     });
@@ -371,7 +387,7 @@ function addButtonEvents() {
     });
     imageUploadButton?.addEventListener('click',async () => {
         let response = await uploadImage();
-        alertResponse(response);
+        await notifyResponse(response);
         clearImageUpload();
         imageUploadContainer?.classList.remove('show');
     });
@@ -426,7 +442,7 @@ function addButtonEvents() {
         let deleteImageMessage = `Are you sure you want to delete image ${name}?`;
         if (confirm(deleteImageMessage)) {
             let response = await deleteImage(id);
-            alertResponse(response);
+            await notifyResponse(response);
         }
     })
     
@@ -692,6 +708,7 @@ async function uploadImage(){
     let response = await fetch(`/inventory/image/upload/`,{
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         },
         body: formData,
@@ -703,6 +720,7 @@ async function deleteGroup(id) {
     let response = await fetch(`/inventory/group/delete/${id}/`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -714,6 +732,7 @@ async function deleteItem(id) {
     let response = await fetch(`/inventory/item/delete/${id}/`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -725,6 +744,7 @@ async function deleteImage(id) {
     let response = await fetch(`/inventory/image/delete/${id}/`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -830,6 +850,31 @@ function getItemDateTable(item) {
     return dateTable;
 }
 ;
+
+async function displayNotification(pretext, message, duration=3){
+    let notificationContainer = document.getElementById('notification-modal-container');
+    let notificationPretext = document.getElementById('notification-pretext');
+    let notificationText = document.getElementById('notification-text');
+
+    notificationPretext.innerHTML=`${pretext}:`;
+    if(responseTypes.has(pretext)){
+        notificationPretext.style.color = responseTypes.get(pretext);
+    } else {
+        notificationPretext.style.color = "#FFFFFF";
+    };
+    notificationText.innerHTML = message;
+    if(!notificationContainer.classList.contains('show')){
+        notificationContainer.classList.toggle('show');
+    }
+
+    await sleep(duration*1000);
+    notificationContainer.classList.toggle('show');
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export {};
 //export
 //load data and display

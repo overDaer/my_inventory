@@ -35,6 +35,13 @@
     --modal-textarea-font-color:rgb(230, 230, 230);
     --modal-input-background-color:rgb(49, 49, 49);
     --modal-input-font-color:rgb(230, 230, 230);
+
+    /* notification */
+    --notification-background-color: rgb(66, 66, 66);
+    --notification-font-color: rgb(255, 255, 255);
+    --notification-warning-font-color: rgb(255, 251, 39);
+    --notification-error-font-color: rgb(255, 0, 0);
+    --notification-ok-font-color: rgb(21, 255, 0);
 }
 
 html, body {
@@ -389,12 +396,53 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 /* modal css */
 
-/* #item-view-modal-container{
-    
-} */
+#notification-modal-container.show{
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#notification-modal-container{
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 250px;
+    height: 100px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out;
+}
+#notification-modal-content{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    border-radius: 7px;
+    background-color: var(--notification-background-color);
+}
+
+#notification-header-name{
+    margin: 0;
+    padding: 5px;
+    height: 25px;
+}
+#notification-text-content{
+    display: flex;
+    flex-direction: row;
+}
+#notification-pretext{
+    width: 35px;
+    height: 25px;
+}
+#notification-text{
+    height: 25px;
+}
 
 .modal-container {
-    display: "none";
+    display: none;
     color: var(--modal-font-color);
     display: flex;
     align-items:center;

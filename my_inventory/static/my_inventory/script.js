@@ -15,6 +15,11 @@ var groupSelection = null;
 var slideshowIndex = -1;
 var slideshowImages = [];
 
+var responseTypes = new Map();
+responseTypes.set('warning',"rgb(255, 251, 39)");
+responseTypes.set('error',"rgb(255, 0, 0)");
+responseTypes.set('ok',"rgb(21, 255, 0)");
+
 async function loadGroups(group_id = null) {
     let response = null;
     if (group_id) {
@@ -291,12 +296,15 @@ async function buildItemsGrid(items, group_id) {
     return itemsGrid;
 }
 
-function alertResponse(response){
-    //don't show response for now
-    
-    // console.log(response);
-    // if(response.message){alert(response.message)};
-    // if(response.error){alert(response.error)};
+async function notifyResponse(response){
+    let jsonResponse = await response.json();
+    if('message' in jsonResponse) {
+        displayNotification('ok', jsonResponse.message);
+    }else if('error' in jsonResponse){
+        displayNotification('error', jsonResponse.error);
+    } else {
+        displayNotification('error', 'failed to parse response');
+    }
 }
 
 function addButtonEvents() {
@@ -319,7 +327,7 @@ function addButtonEvents() {
         let deleteMessage = `Are you sure you want to delete the selected group ${groupName} and all contained items?`
         if (confirm(deleteMessage)) {
             let response = await deleteGroup(groupSelection.getAttribute('data-id'));
-            alertResponse(response);
+            await notifyResponse(response);
         }
     });
     groupEditButton?.addEventListener('click',async () => {
@@ -346,7 +354,7 @@ function addButtonEvents() {
     });
     groupModalSaveButton?.addEventListener('click',async () => {
         let response = await saveGroupModal();
-        alertResponse(response);
+        await notifyResponse(response);
         clearGroupModal();
         groupModalContainer?.classList.remove('show');
     });
@@ -359,7 +367,7 @@ function addButtonEvents() {
     });
     itemModalSaveButton?.addEventListener('click',async () => {
         let response = await saveItemModal();
-        alertResponse(response);
+        await notifyResponse(response);
         clearItemModal();
         itemModalContainer?.classList.remove('show');
     });
@@ -373,7 +381,7 @@ function addButtonEvents() {
     });
     imageUploadButton?.addEventListener('click',async () => {
         let response = await uploadImage();
-        alertResponse(response);
+        await notifyResponse(response);
         clearImageUpload();
         imageUploadContainer?.classList.remove('show');
     });
@@ -386,10 +394,6 @@ function addButtonEvents() {
             slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
-
-        // if(slideshowIndex - 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex - 1){
-            
-        // }
     });
     slideshowRightButton?.addEventListener('click',()=>{
         let newIndex = slideshowIndex + 1
@@ -397,11 +401,6 @@ function addButtonEvents() {
             slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
-        // }
-        // if(slideshowIndex + 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex + 1){
-        //     slideshowIndex++;
-        //     showImageElement(slideshowIndex);
-        // }
     });
 
     let itemViewModalContainer = document.getElementById('item-view-modal-container');
@@ -428,7 +427,7 @@ function addButtonEvents() {
         let deleteImageMessage = `Are you sure you want to delete image ${name}?`;
         if (confirm(deleteImageMessage)) {
             let response = await deleteImage(id);
-            alertResponse(response);
+            await notifyResponse(response);
         }
     })
     
@@ -694,7 +693,7 @@ async function uploadImage(){
     let response = await fetch(`/inventory/image/upload/`,{
         method: 'POST',
         headers: {
-            'X-CSRFToken': csrftoken
+            'X-CSRFToken': csrftoken,
         },
         body: formData,
     });
@@ -705,6 +704,7 @@ async function deleteGroup(id) {
     let response = await fetch(`/inventory/group/delete/${id}/`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -716,6 +716,7 @@ async function deleteItem(id) {
     let response = await fetch(`/inventory/item/delete/${id}/`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -727,6 +728,7 @@ async function deleteImage(id) {
     let response = await fetch(`/inventory/image/delete/${id}/`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -748,21 +750,6 @@ async function buildItemDisplay(item, group_id) {
     display.appendChild(name);
     let itemButtonContainer = document.createElement("div"); itemButtonContainer.setAttribute("class", "item-button-container");
     display.appendChild(itemButtonContainer);
-    // let uploadImageButton = document.createElement("button"); 
-    // uploadImageButton.setAttribute("class", "item-display-action"); 
-    // uploadImageButton.setAttribute("id", "item-image-upload");
-    // uploadImageButton.setAttribute("data-item-id", item.pk);
-    // uploadImageButton.setAttribute("src",uploadIcon);
-    // itemButtonContainer.appendChild(uploadImageButton);
-    // uploadImageButton.addEventListener('click',()=>{
-    //     // let iframe = document.getElementById('iframe-forms');
-    //     // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
-    //     // let iframeContainer = document.getElementById('iframe-container');
-    //     // iframeContainer.classList.toggle('show');
-    //     let uploadModal = document.getElementById('image-upload-container');
-    //     uploadModal.setAttribute('data-item-id', item.pk);
-    //     uploadModal.classList.toggle('show');
-    // });
 
     let image = await loadFirstImage(item.pk);
     let imageElement = null;
@@ -832,6 +819,31 @@ function getItemDateTable(item) {
     return dateTable;
 }
 ;
+
+async function displayNotification(pretext, message, duration=3){
+    let notificationContainer = document.getElementById('notification-modal-container');
+    let notificationPretext = document.getElementById('notification-pretext');
+    let notificationText = document.getElementById('notification-text');
+
+    notificationPretext.innerHTML=`${pretext}:`;
+    if(responseTypes.has(pretext)){
+        notificationPretext.style.color = responseTypes.get(pretext);
+    } else {
+        notificationPretext.style.color = "#FFFFFF";
+    };
+    notificationText.innerHTML = (` ${message}`);
+    if(!notificationContainer.classList.contains('show')){
+        notificationContainer.classList.toggle('show');
+    }
+
+    await sleep(duration*1000);
+    notificationContainer.classList.toggle('show');
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export {};
 //export
 //load data and display

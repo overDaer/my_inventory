@@ -227,6 +227,15 @@
             <textarea class="modal-textarea" id="item-view-description" readonly></textarea>
         </div>  
     </div>
+    <div class="notification-container" id="notification-modal-container">
+        <div class="notification-content" id="notification-modal-content">
+            <h4 class="modal-header-value" id="notification-header-name">notification</h4>
+            <div class="notification-text-content" id="notification-text-content">
+                <span class="notification-pretext" id="notification-pretext"></span>
+                <span class="notification-text" id="notification-text"></span>
+            </div>
+        </div>
+    </div>
 <script>
     var csrftoken = "{{ csrf_token }}";
     var defaultImage = "{% static 'my_inventory/assets/default-image.webp' %}";
