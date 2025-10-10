@@ -559,7 +559,6 @@ async function loadImageElements(item_id){
 function populateSlideshow(){
     let imageSlideshow = document.getElementById('item-image-slideshow');
     imageSlideshow.innerHTML='';
-    console.log()
     for (let i = 0; i < slideshowImages.length; i++){
         imageSlideshow.appendChild(slideshowImages[i]);
     }
@@ -704,7 +703,6 @@ async function deleteGroup(id) {
     let response = await fetch(`/inventory/group/delete/${id}/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -716,7 +714,6 @@ async function deleteItem(id) {
     let response = await fetch(`/inventory/item/delete/${id}/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -728,7 +725,6 @@ async function deleteImage(id) {
     let response = await fetch(`/inventory/image/delete/${id}/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }

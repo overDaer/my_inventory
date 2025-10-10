@@ -297,7 +297,6 @@ async function buildItemsGrid(items, group_id) {
 }
 
 async function notifyResponse(response){
-    console.log(response);
     let jsonResponse = await response.json();
     if('message' in jsonResponse) {
         displayNotification('ok', jsonResponse.message);
@@ -306,11 +305,6 @@ async function notifyResponse(response){
     } else {
         displayNotification('error', 'failed to parse response');
     }
-    //don't show response for now
-    
-    // console.log(response);
-    // if(response.message){alert(response.message)};
-    // if(response.error){alert(response.error)};
 }
 
 function addButtonEvents() {
@@ -400,10 +394,6 @@ function addButtonEvents() {
             slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
-
-        // if(slideshowIndex - 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex - 1){
-            
-        // }
     });
     slideshowRightButton?.addEventListener('click',()=>{
         let newIndex = slideshowIndex + 1
@@ -411,11 +401,6 @@ function addButtonEvents() {
             slideshowIndex=newIndex;
             showImageElement(slideshowIndex);
         }
-        // }
-        // if(slideshowIndex + 1 >= 0 && slideshowImages.length - 1 >= slideshowIndex + 1){
-        //     slideshowIndex++;
-        //     showImageElement(slideshowIndex);
-        // }
     });
 
     let itemViewModalContainer = document.getElementById('item-view-modal-container');
@@ -574,7 +559,6 @@ async function loadImageElements(item_id){
 function populateSlideshow(){
     let imageSlideshow = document.getElementById('item-image-slideshow');
     imageSlideshow.innerHTML='';
-    console.log()
     for (let i = 0; i < slideshowImages.length; i++){
         imageSlideshow.appendChild(slideshowImages[i]);
     }
@@ -708,8 +692,7 @@ async function uploadImage(){
     let response = await fetch(`/inventory/image/upload/`,{
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
+            'X-CSRFToken': csrftoken,
         },
         body: formData,
     });
@@ -720,7 +703,6 @@ async function deleteGroup(id) {
     let response = await fetch(`/inventory/group/delete/${id}/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -732,7 +714,6 @@ async function deleteItem(id) {
     let response = await fetch(`/inventory/item/delete/${id}/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -744,7 +725,6 @@ async function deleteImage(id) {
     let response = await fetch(`/inventory/image/delete/${id}/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         }
     }
@@ -766,21 +746,6 @@ async function buildItemDisplay(item, group_id) {
     display.appendChild(name);
     let itemButtonContainer = document.createElement("div"); itemButtonContainer.setAttribute("class", "item-button-container");
     display.appendChild(itemButtonContainer);
-    // let uploadImageButton = document.createElement("button"); 
-    // uploadImageButton.setAttribute("class", "item-display-action"); 
-    // uploadImageButton.setAttribute("id", "item-image-upload");
-    // uploadImageButton.setAttribute("data-item-id", item.pk);
-    // uploadImageButton.setAttribute("src",uploadIcon);
-    // itemButtonContainer.appendChild(uploadImageButton);
-    // uploadImageButton.addEventListener('click',()=>{
-    //     // let iframe = document.getElementById('iframe-forms');
-    //     // iframe.src = `/inventory/item/${item.pk}/image-upload/`;
-    //     // let iframeContainer = document.getElementById('iframe-container');
-    //     // iframeContainer.classList.toggle('show');
-    //     let uploadModal = document.getElementById('image-upload-container');
-    //     uploadModal.setAttribute('data-item-id', item.pk);
-    //     uploadModal.classList.toggle('show');
-    // });
 
     let image = await loadFirstImage(item.pk);
     let imageElement = null;
@@ -862,7 +827,7 @@ async function displayNotification(pretext, message, duration=3){
     } else {
         notificationPretext.style.color = "#FFFFFF";
     };
-    notificationText.innerHTML = message;
+    notificationText.innerHTML = (` ${message}`);
     if(!notificationContainer.classList.contains('show')){
         notificationContainer.classList.toggle('show');
     }

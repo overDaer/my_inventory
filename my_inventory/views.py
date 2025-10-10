@@ -10,7 +10,7 @@ from typing import Sequence, TypeVar
 import json
 
 def index(request: HttpRequest):
-    redirect('/invetory/');
+    redirect('/inventory/');
 
 def inventory(request: HttpRequest):
     return render(request, 'inventory.html')
@@ -95,7 +95,7 @@ def item_delete(request:HttpRequest,pk: int):
         try:
             item = get_object_or_404(Item, pk=pk)
             item.delete()
-            return JsonResponse({'message':'successfully deleted item'}, status=204)
+            return JsonResponse({'message':'successfully deleted item'}, status=200)
         except Http404:
             return JsonResponse({'error':'item could not be found'}, status=404)
     else:
