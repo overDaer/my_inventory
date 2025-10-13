@@ -10,7 +10,7 @@ from typing import Sequence, TypeVar
 import json
 
 def index(request: HttpRequest):
-    redirect('/inventory/');
+    return redirect('inventory');
 
 def inventory(request: HttpRequest):
     return render(request, 'inventory.html')
