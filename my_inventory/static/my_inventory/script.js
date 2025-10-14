@@ -38,6 +38,7 @@ function buildGroupDisplay(group){
     groupName.innerHTML = group.fields.name;
     let groupCategory = document.createElement('h4'); groupCategory.setAttribute('class', 'group-data-field'); groupCategory.setAttribute('id', 'group-data-category');
     if (group.fields.category) groupCategory.innerHTML = `[${group.fields.category}]`;
+    let groupValue = document.createElement('h4'); groupValue.setAttribute('class', 'group-data-field'); groupValue.setAttribute('id', 'group-data-value');
     let groupDescription = document.createElement('p'); groupDescription.setAttribute('class', 'group-data-description');
     groupDescription.innerHTML = group.fields.description;
     let groupExpandContainer = document.createElement('div'); groupExpandContainer.setAttribute('class','group-expand-container'); 
@@ -51,6 +52,7 @@ function buildGroupDisplay(group){
 
     groupData.appendChild(groupName);
     groupData.appendChild(groupCategory);
+    groupData.appendChild(groupValue);
     groupData.appendChild(groupExpandContainer);
     groupData.setAttribute('tabIndex',0);
     groupData.addEventListener('click',()=>{
@@ -234,10 +236,19 @@ async function buildItemDisplay(item, group_id) {
 async function buildItemsGrid(items, group_id) {
     let itemsGrid = document.createElement("div");
     itemsGrid.setAttribute("class", "items-grid");
-    items.forEach(async (element) => {
-        let itemDisplay = await buildItemDisplay(element, group_id);
+    items.forEach(async (item) => {
+        let itemDisplay = await buildItemDisplay(item, group_id);
         itemsGrid.appendChild(itemDisplay);
     });
+    let value = 0.00;
+    items.forEach((item)=> {
+        if(item.fields.total_quantity && item.fields.price) {
+            value += Number(item.fields.price) * Number(item.fields.total_quantity);
+        } else if (item.fields.price){
+            value += Number(item.fields.price);
+    }
+    });
+    itemsGrid.setAttribute("data-value", value);
     return itemsGrid;
 }
 
@@ -246,7 +257,14 @@ async function buildGroupDisplayWithItems(group){
     let groupItems = await loadItems({group_id: group.pk});
     if (groupItems) {
         let itemsGrid = await buildItemsGrid(groupItems, group.pk);
-        groupDisplay.querySelector('.group-content').appendChild(itemsGrid);
+        groupDisplay.querySelector('.group-content')?.appendChild(itemsGrid);
+        let valueElement = groupDisplay.querySelector('#group-data-value');
+        if (valueElement){
+            let groupValue = itemsGrid.getAttribute('data-value');
+            if (Number(groupValue) > 0) {
+                valueElement.innerHTML = `$${groupValue}`;
+            }
+        }
     }
     return groupDisplay;
 }
@@ -311,6 +329,7 @@ async function reloadGroupItems(group_id) {
     }
     let itemsGrid = await buildItemsGrid(groupItems, group_id);
     groupContent.appendChild(itemsGrid);
+    
 };
 
 function clearItemSelect(){
