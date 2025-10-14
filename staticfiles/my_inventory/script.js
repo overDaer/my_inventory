@@ -300,9 +300,7 @@ async function reloadGroupData(group_id){
 }
 
 async function reloadGroupItems(group_id) {
-    console.log(`reloading items for group_id: ${group_id}`);
     let groupContainer = getGroupContainerById(group_id);
-    console.log(groupContainer);
     if(groupContainer === null){return;}
     let groupContent = groupContainer.getElementsByClassName('group-content')[0];
     let groupItems = await loadItems({group_id: group_id});
@@ -586,9 +584,8 @@ async function uploadImages(){
     formData.append('name', name);
     formData.append('item_id',item_id);
     for (let file of files){
-        formData.append('images[]', file);
+        formData.append('images', file);
     }
-    console.log(formData);
     let response = await fetch(`/inventory/image/upload/`,{
         method: 'POST',
         headers: {
@@ -635,13 +632,13 @@ async function deleteImage(id) {
 //event handlers
 
 function addButtonEvents() {
-    const groupAddButton = document.getElementById('group-add');
-    const groupRemoveButton = document.getElementById('group-remove');
-    const groupEditButton = document.getElementById('group-edit');
-    const groupCollapseButton = document.getElementById('group-collapse');
-    const groupModalContainer = document.getElementById('group-modal-container');
-    const groupModalSaveButton = document.getElementById('group-modal-save');
-    const groupModalCancelButton = document.getElementById('group-modal-cancel');
+    let groupAddButton = document.getElementById('group-add');
+    let groupRemoveButton = document.getElementById('group-remove');
+    let groupEditButton = document.getElementById('group-edit');
+    let groupCollapseButton = document.getElementById('group-collapse');
+    let groupModalContainer = document.getElementById('group-modal-container');
+    let groupModalSaveButton = document.getElementById('group-modal-save');
+    let groupModalCancelButton = document.getElementById('group-modal-cancel');
     groupAddButton?.addEventListener('click', () => {
         if (groupModalContainer.hasAttribute('data-id')){
             groupModalContainer.removeAttribute('data-id');
@@ -711,9 +708,9 @@ function addButtonEvents() {
         groupModalContainer?.classList.remove('show');
     });
 
-    const itemModalContainer = document.getElementById('item-modal-container');
-    const itemModalSaveButton = document.getElementById('item-modal-save');
-    const itemModalCancelButton = document.getElementById('item-modal-cancel');
+    let itemModalContainer = document.getElementById('item-modal-container');
+    let itemModalSaveButton = document.getElementById('item-modal-save');
+    let itemModalCancelButton = document.getElementById('item-modal-cancel');
 
      itemModalCancelButton?.addEventListener('click', () => {
         clearItemModal();
@@ -728,9 +725,9 @@ function addButtonEvents() {
         itemModalContainer?.classList.remove('show');
     });
 
-    const imageUploadContainer = document.getElementById('image-upload-container');
-    const imageUploadButton = document.getElementById('image-upload-submit');
-    const imageCancelButton = document.getElementById('image-upload-cancel');
+    let imageUploadContainer = document.getElementById('image-upload-container');
+    let imageUploadButton = document.getElementById('image-upload-submit');
+    let imageCancelButton = document.getElementById('image-upload-cancel');
      imageCancelButton?.addEventListener('click', () => {
         clearImageUploadModal();
         imageUploadContainer?.classList.remove('show');
@@ -744,8 +741,8 @@ function addButtonEvents() {
         imageUploadContainer?.classList.remove('show');
     });
 
-    const slideshowLeftButton = document.getElementById('slideshow-left-button');
-    const slideshowRightButton = document.getElementById('slideshow-right-button');
+    let slideshowLeftButton = document.getElementById('slideshow-left-button');
+    let slideshowRightButton = document.getElementById('slideshow-right-button');
     slideshowLeftButton?.addEventListener('click',()=>{
         let newIndex = slideshowIndex - 1
         if (checkIndexInLength(newIndex,slideshowImages.length)){
@@ -786,6 +783,22 @@ function addButtonEvents() {
         if (confirm(deleteImageMessage)) {
             let response = await deleteImage(id);
             await notifyResponse(response);
+            if(response.ok) {
+                slideshowImages[slideshowIndex].remove();
+                //remove from slideshow list
+                slideshowImages.splice(slideshowIndex,1);
+                if(slideshowIndex > 0) {
+                    //previous image
+                    slideshowIndex -=1
+                } else if (slideshowIndex === 0 && slideshowImages.length > 0){
+                    //do nothing
+                } else {
+                    //no images left
+                    slideshowIndex = -1
+                }
+                updateIndexText();
+                showImageElement(slideshowIndex);
+            }
         }
     })
     
