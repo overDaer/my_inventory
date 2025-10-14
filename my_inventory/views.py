@@ -198,14 +198,18 @@ def item_delete(request:HttpRequest,pk: int):
     
 def image_upload(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        file = request.FILES.get('file')
-        if not file: 
-            return JsonResponse({'message': 'no image provided'}, status=400)
         item_id = request.POST.get('item_id')
+        name = request.POST.get('name')
+        files = request.FILES.getlist('images')
+        if (not files) or (len(files) == 0): 
+            return JsonResponse({'message': 'no image(s) provided'}, status=400)
         item = get_object_or_404(Item,pk=item_id)
-        Image.objects.create(name=name, image=file, item=item)
-        return JsonResponse({'message': 'image uploaded successfully'},status=201)
+        for i in range(len(files)):
+            iterated_name = name
+            if (i > 1): iterated_name += f"-{i}"
+            file = files[i]
+            Image.objects.create(name=iterated_name, image=file, item=item)
+        return JsonResponse({'message': 'image(s) uploaded successfully'},status=201)
     else:
         return JsonResponse({'message': 'invalid request method'}, status=405)
 

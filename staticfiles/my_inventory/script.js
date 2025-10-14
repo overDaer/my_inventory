@@ -578,14 +578,17 @@ async function saveItemModal() {
     }
 }
 
-async function uploadImage(){
+async function uploadImages(){
     let item_id = document.getElementById('image-upload-container').getAttribute('data-item-id');
     let name = document.getElementById('image-name-input').value;
-    let file = document.getElementById('image-file-input').files[0];
+    let files = document.getElementById('image-file-input').files;
     let formData = new FormData();
     formData.append('name', name);
-    formData.append('file', file);
     formData.append('item_id',item_id);
+    for (let file of files){
+        formData.append('images[]', file);
+    }
+    console.log(formData);
     let response = await fetch(`/inventory/image/upload/`,{
         method: 'POST',
         headers: {
@@ -733,7 +736,7 @@ function addButtonEvents() {
         imageUploadContainer?.classList.remove('show');
     });
     imageUploadButton?.addEventListener('click',async () => {
-        let response = await uploadImage();
+        let response = await uploadImages();
         await notifyResponse(response);
         let group_id = imageUploadContainer.getAttribute('data-group-id');
         await reloadGroupItems(group_id);

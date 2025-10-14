@@ -3,19 +3,20 @@
     
     /* item */
     --selection-item-border-color: rgb(199, 199, 199);
-    --item-button-color: #848b9e;
-    --item-border-color: rgb(0, 88, 88);
+    --item-button-color: #8f8f8f;
+    --item-border-color: rgb(0, 71, 71);
     --item-image-background-color: rgb(15, 15, 15);
-    --box-shadow-one: rgb(85, 85, 85);
+    --item-background-color: #1c1c1c;
+    --box-shadow-one: rgb(117, 117, 117);
     --box-shadow-two: rgb(44, 44, 44);
 
     /* group */
-    --group-button-color: #444857;
-    --group-header-background-color: rgb(122, 122, 122);
+    --group-button-color: #8f8f8f;
+    --group-header-background-color: rgb(95, 95, 95);
     --group-header-font-color: #ececec;
-    --group-data-background-color: rgb(109, 109, 109);
+    --group-data-background-color: rgb(73, 73, 73);
     --group-data-font-color: #f1f1f1;
-    --group-description-background-color: rgb(51, 51, 51);
+    --group-description-background-color: rgb(43, 43, 43);
     --group-description-font-color: rgb(212, 212, 212);
     --group-focus-border-color:rgba(131, 255, 158, 0.966);
     --selection-group-border-color: rgb(248, 248, 248);
@@ -49,7 +50,7 @@ html, body {
     width: 100%;
     margin:0;
     font-family: Futura, "Trebuchet MS", Arial, sans-serif;
-    background-color: #1c1c1c;
+    background-color: #181818;
     color: #ececec;
 }
 
@@ -78,6 +79,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     height: 400px;
     width: 250px;
     margin: 10px;
+    background-color: var(--item-background-color);
 }
 
 .item-display:hover{
@@ -95,6 +97,16 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     margin: 5px;
     text-align: center;
     height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.item-img-container{
+    width: 250px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .item-img{
@@ -112,18 +124,23 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 }
 
 .item-top-table{
-    height: 85px;
+    display: flex;
+    max-height: 85px;
 }
 
 .key-value-table{
     font-size: 13px;
     text-align: left;
+    max-height: 85px;
 }
 
 .item-description{
-    text-align:justify;
+    display: inline-block;
     vertical-align: text-top;
-    text-overflow: clip;
+    overflow: hidden;
+    height: 85px;
+    padding: 0;
+
 }
 
 .group-container{
@@ -159,9 +176,11 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 .group-data-description{
     margin: 5px 5px;
     height: auto;
-    border-radius: 6px;
+    border-radius: 5px;
     background-color: var(--group-description-background-color);
     color:var(--group-description-font-color);
+    padding: 5px;
+    margin: 2px 5px 2px 5px;
 }
 .group-data-content.selected{
     border: 4px solid var(--selection-group-border-color);
@@ -243,26 +262,6 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     height: 100%;
 }
 
-/* #image-modal-upload-container.show{
-    display: flex;
-    align-items: center;
-    align-content: center;
-    flex-direction: column;
-    pointer-events: auto;
-    border:var(--iframe-border-color);
-    background-color: var(--iframe-background-color);
-}
-
-#image-modal-upload-container {
-    display: none;
-    color: var(--modal-font-color);
-    align-items:center;
-    justify-content: center;
-    position: fixed;
-    pointer-events: none;
-    border-radius: 7px;
-} */
-
 #image-upload-container.show {
     pointer-events: auto;
     opacity: 1;
@@ -282,49 +281,9 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     width: 25px;
 }
 
-/* #slideshow-left-button:hover,
-#slideshow-right-button:hover
-{
-    background-color: rgba(0, 0, 0, 0.8);
-} */
-
-/* #iframe-container.show{
-    display: flex;
-    align-items: center;
-    align-content: center;
-    flex-direction: column;
-    pointer-events: auto;
-    border:var(--iframe-border-color);
-    background-color: var(--iframe-background-color);
-}
-
-#iframe-container {
-    display: none;
-    color: var(--modal-font-color);
-    align-items:center;
-    justify-content: center;
-    position: fixed;
-    top: 25%;
-    left: 25%;
-    height: 50%;
-    width: 50%;
-    pointer-events: none;
-    border-radius: 7px;
-}
-
-#iframe-button-header{
-    width: 90%;
-    display: flex;
-    align-items: right;
-    justify-content: right;
-}
-#iframe-forms {
-    opacity: 1;
-    height: 90%;
-    width: 90%;
-} */
 #nav-bar{
     display: flex;
+    flex-direction: row-reverse;
     flex:0 1 auto;
     background-color: var(--nav-bar-color);
     position: relative;
@@ -529,17 +488,6 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
   padding: 5px;
   margin: 5px;
 }
-
-/* .modal-action {
-  margin: 10px 5px;
-  width: 70px;
-  height: 30px;
-  border: 0;
-  background-color: #47b186;
-  box-shadow: 0 2px 4px rgba(0,0,0,2.5);
-  color: #fff;
-  border-radius: 7px;
-} */
 
 .modal-input {
     border: 1px solid var(--modal-border-color);

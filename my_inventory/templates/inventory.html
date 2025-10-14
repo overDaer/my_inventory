@@ -11,9 +11,9 @@
     <!-- main page content -->
     <div class="container" id="base-container">
         <div class="interactive-bar" id="nav-bar">
+            <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
             <button class="nav-bar-button" id="nav-bar-button-about">about</button>
             <button class="nav-bar-button" id="nav-bar-button-help">help</button>
-            <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
         </div>
         <div class="container" id="content-container">
             <div class="container" id="groups-container">
@@ -162,7 +162,7 @@
             <h4 class="modal-input-header">Name</h4>
             <input type="name" class="modal-input" id="image-name-input" placeholder="Image Name">
             <h4 class="modal-input-header">File</h4>
-            <input type="file" class="modal-input" id="image-file-input" accept="image/*">
+            <input type="file" class="modal-input" id="image-file-input" name="images" accept="image/*" multiple>
             <div class="modal-button-container" id="image-upload-button-container">
                 <button id="image-upload-cancel">Cancel</button>
                 <button id="image-upload-submit">Upload</button>
