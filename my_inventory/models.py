@@ -44,7 +44,7 @@ class Image(models.Model):
         return self.name
     
 class Note(models.Model):
-    Item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     text = models.TextField()
     updated_dt = models.DateTimeField(auto_now=True)
@@ -52,7 +52,7 @@ class Note(models.Model):
         return self.text
 
 class WebSource(models.Model):
-    Item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     url = models.URLField()
     name = models.CharField(max_length=200,null=True, blank=True)
     description = models.TextField(null= True, blank=True)
@@ -65,13 +65,13 @@ class WeeklyReminder(models.Model):
     updated_dt = models.DateTimeField(auto_now=True)
     acknowledged_dt = models.DateTimeField(null=True)
     time = models.TimeField()
-    on_monday = models.BooleanField()
-    on_tuesday = models.BooleanField()
-    on_wednesday = models.BooleanField()
-    on_thursday = models.BooleanField()
-    on_friday = models.BooleanField()
-    on_saturday = models.BooleanField()
-    on_sunday = models.BooleanField()
+    monday = models.BooleanField()
+    tuesday = models.BooleanField()
+    wednesday = models.BooleanField()
+    thursday = models.BooleanField()
+    friday = models.BooleanField()
+    saturday = models.BooleanField()
+    sunday = models.BooleanField()
 
 class DateReminder(models.Model):
     note = models.ForeignKey(Note, on_delete=models.CASCADE)

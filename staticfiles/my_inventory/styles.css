@@ -12,11 +12,11 @@
 
     /* group */
     --group-button-color: #8f8f8f;
-    --group-header-background-color: rgb(95, 95, 95);
+    --group-header-background-color: rgb(43, 43, 43);
     --group-header-font-color: #ececec;
     --group-data-background-color: rgb(73, 73, 73);
     --group-data-font-color: #f1f1f1;
-    --group-description-background-color: rgb(43, 43, 43);
+    --group-description-background-color: rgb(95, 95, 95);
     --group-description-font-color: rgb(212, 212, 212);
     --group-focus-border-color:rgba(131, 255, 158, 0.966);
     --selection-group-border-color: rgb(248, 248, 248);

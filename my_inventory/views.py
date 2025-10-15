@@ -246,3 +246,228 @@ def image_delete(request:HttpRequest,pk: int):
             return JsonResponse({'message':'image could not be found'}, status=404)
     else:
             return JsonResponse({'message':'expected a POST request'}, status=400)
+
+def note(request: HttpRequest):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            item_id = data['item_id']
+            name= data['name']
+            text= data['text']
+            note = Note()
+            note.item = Item.objects.get(pk=item_id)
+            note.name = name
+            note.text = text
+            try:
+                note.full_clean()
+                note.save()
+                return JsonResponse({'message':'successfully created note'}, status=201)
+            except ValidationError:
+                return JsonResponse({'error':'note failed to validate'}, status=400)
+        except json.JSONDecodeError:
+                return JsonResponse({'error':'json failed to decode'}, status=400)
+    elif request.method == "GET":
+        notes = [];
+        if 'id' in request.GET:
+            id = request.GET.get('id')
+            try:
+                notes = [Note.objects.get(pk=id)]
+            except Note.DoesNotExist:
+                return JsonResponse({'error':f'failed to find note'}, status=400)
+        elif 'item_id' in request.GET:
+            item_id = request.GET.get('item_id')
+            notes = Note.objects.filter(item__id=item_id)
+        else:
+            notes = Item.objects.all()
+        serializedjson = serializers.serialize("json", notes)
+        return JsonResponse(serializedjson,safe=False)
+    elif request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            id = data['id']
+            name= data['name']
+            text= data['text']
+            note = Note.objects.get(pk=id)
+            note.name = name
+            note.text = text
+            try:
+                note.full_clean()
+                note.save()
+                return JsonResponse({'message':'successfully updated note'}, status=201)
+            except ValidationError:
+                return JsonResponse({'message':'note failed to validate'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'message':'json failed to decode'}, status=400)
+
+def note_delete(request:HttpRequest,pk: int):
+    if request.method == "POST":
+        try:
+            note = get_object_or_404(Note, pk=pk)
+            note.delete()
+            return JsonResponse({'message':'successfully deleted note'}, status=200)
+        except Http404:
+            return JsonResponse({'message':'note could not be found'}, status=404)
+    else:
+            return JsonResponse({'message':'expected a POST request'}, status=400)
+    
+def weeklyReminder(request: HttpRequest):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            note_id = data['note_id']
+            acknowledged_dt = data['acknowledged_dt']
+            time= data['time']
+            monday= data['monday']
+            tuesday= data['tuesday']
+            wednesday= data['wednesday']
+            thursday= data['thursday']
+            friday= data['friday']
+            saturday= data['saturday']
+            sunday= data['sunday']
+            weeklyReminder = WeeklyReminder()
+            weeklyReminder.note = Note.objects.get(pk=note_id)
+            if(acknowledged_dt): weeklyReminder.acknowledged_dt = acknowledged_dt
+            weeklyReminder.time = time
+            weeklyReminder.monday = monday
+            weeklyReminder.tuesday = tuesday
+            weeklyReminder.wednesday = wednesday
+            weeklyReminder.thursday = thursday
+            weeklyReminder.friday = friday
+            weeklyReminder.saturday = saturday
+            weeklyReminder.sunday = sunday
+            try:
+                weeklyReminder.full_clean()
+                weeklyReminder.save()
+                return JsonResponse({'message':'successfully created weekly reminder'}, status=201)
+            except ValidationError:
+                return JsonResponse({'error':'weekly reminder failed to validate'}, status=400)
+        except json.JSONDecodeError:
+                return JsonResponse({'error':'json failed to decode'}, status=400)
+    elif request.method == "GET":
+        weeklyReminders = [];
+        if 'id' in request.GET:
+            id = request.GET.get('id')
+            try:
+                weeklyReminders = [WeeklyReminder.objects.get(pk=id)]
+            except WeeklyReminder.DoesNotExist:
+                return JsonResponse({'error':f'failed to find weekly reminder'}, status=400)
+        elif 'note_id' in request.GET:
+            note_id = request.GET.get('note_id')
+            weeklyReminders = WeeklyReminder.objects.filter(note__id=note_id)
+        else:
+            weeklyReminders = WeeklyReminder.objects.all()
+        serializedjson = serializers.serialize("json", weeklyReminders)
+        return JsonResponse(serializedjson,safe=False)
+    elif request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            id = data['id']
+            acknowledged_dt = data['acknowledged_dt']
+            time= data['time']
+            monday= data['monday']
+            tuesday= data['tuesday']
+            wednesday= data['wednesday']
+            thursday= data['thursday']
+            friday= data['friday']
+            saturday= data['saturday']
+            sunday= data['sunday']
+            weeklyReminder = WeeklyReminder.objects.get(pk=id)
+            if(acknowledged_dt): weeklyReminder.acknowledged_dt = acknowledged_dt
+            weeklyReminder.time = time
+            weeklyReminder.monday = monday
+            weeklyReminder.tuesday = tuesday
+            weeklyReminder.wednesday = wednesday
+            weeklyReminder.thursday = thursday
+            weeklyReminder.friday = friday
+            weeklyReminder.saturday = saturday
+            weeklyReminder.sunday = sunday
+            try:
+                weeklyReminder.full_clean()
+                weeklyReminder.save()
+                return JsonResponse({'message':'successfully updated weekly reminder'}, status=201)
+            except ValidationError:
+                return JsonResponse({'message':'weekly reminder failed to validate'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'message':'json failed to decode'}, status=400)
+
+def weeklyReminder_delete(request:HttpRequest,pk: int):
+    if request.method == "POST":
+        try:
+            weeklyReminder = get_object_or_404(WeeklyReminder, pk=pk)
+            weeklyReminder.delete()
+            return JsonResponse({'message':'successfully deleted weekly reminder'}, status=200)
+        except Http404:
+            return JsonResponse({'message':'weekly reminder could not be found'}, status=404)
+    else:
+            return JsonResponse({'message':'expected a POST request'}, status=400)
+    
+def dateReminder(request: HttpRequest):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            note_id = data['note_id']
+            reminder_dt = data['reminder_dt']
+            acknowledged_dt = data['acknowledged_dt']
+            reoccuring = data['reoccuring']
+            reoccuring_timespan = data['reoccuring_timespan']
+            dateReminder = DateReminder()
+            dateReminder.note = Note.objects.get(pk=note_id)
+            if(acknowledged_dt): dateReminder.acknowledged_dt = acknowledged_dt
+            dateReminder.reminder_dt = reminder_dt
+            dateReminder.reoccuring = reoccuring
+            if(reoccuring_timespan): dateReminder.reoccuring_timespan = reoccuring_timespan
+            try:
+                dateReminder.full_clean()
+                dateReminder.save()
+                return JsonResponse({'message':'successfully created date reminder'}, status=201)
+            except ValidationError:
+                return JsonResponse({'error':'date reminder failed to validate'}, status=400)
+        except json.JSONDecodeError:
+                return JsonResponse({'error':'json failed to decode'}, status=400)
+    elif request.method == "GET":
+        dateReminders = [];
+        if 'id' in request.GET:
+            id = request.GET.get('id')
+            try:
+                dateReminders = [DateReminder.objects.get(pk=id)]
+            except DateReminder.DoesNotExist:
+                return JsonResponse({'error':f'failed to find date reminder'}, status=400)
+        elif 'note_id' in request.GET:
+            note_id = request.GET.get('note_id')
+            dateReminders = DateReminder.objects.filter(note__id=note_id)
+        else:
+            dateReminders = DateReminder.objects.all()
+        serializedjson = serializers.serialize("json", dateReminders)
+        return JsonResponse(serializedjson,safe=False)
+    elif request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            id = data['id']
+            reminder_dt = data['reminder_dt']
+            acknowledged_dt = data['acknowledged_dt']
+            reoccuring = data['reoccuring']
+            reoccuring_timespan = data['reoccuring_timespan']
+            dateReminder = DateReminder.objects.get(pk=id)
+            if(acknowledged_dt): dateReminder.acknowledged_dt = acknowledged_dt
+            dateReminder.reminder_dt = reminder_dt
+            dateReminder.reoccuring = reoccuring
+            if(reoccuring_timespan): dateReminder.reoccuring_timespan = reoccuring_timespan
+            try:
+                dateReminder.full_clean()
+                dateReminder.save()
+                return JsonResponse({'message':'successfully updated date reminder'}, status=201)
+            except ValidationError:
+                return JsonResponse({'message':'date reminder failed to validate'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'message':'json failed to decode'}, status=400)
+
+def dateReminder_delete(request:HttpRequest,pk: int):
+    if request.method == "POST":
+        try:
+            dateReminder = get_object_or_404(DateReminder, pk=pk)
+            dateReminder.delete()
+            return JsonResponse({'message':'successfully deleted date reminder'}, status=200)
+        except Http404:
+            return JsonResponse({'message':'date reminder could not be found'}, status=404)
+    else:
+            return JsonResponse({'message':'expected a POST request'}, status=400)

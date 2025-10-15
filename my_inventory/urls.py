@@ -14,6 +14,12 @@ urlpatterns = [
     path('inventory/image/delete/<int:pk>/', views.image_delete, name='image_delete'),
     path('inventory/group/', views.group, name='group'),
     path('inventory/group/delete/<int:pk>/', views.group_delete, name='group_delete'),
+    path('inventory/note/', views.note, name='note'),
+    path('inventory/note/delete/<int:pk>/', views.note_delete, name='note_delete'),
+    path('inventory/weeklyReminder/', views.weeklyReminder, name='weeklyReminder'),
+    path('inventory/weeklyReminder/delete/<int:pk>/', views.weeklyReminder_delete, name='weeklyReminder_delete'),
+    path('inventory/dateReminder/', views.dateReminder, name='dateReminder'),
+    path('inventory/dateReminder/delete/<int:pk>/', views.dateReminder_delete, name='dateReminder_delete'),
 ]
 if settings.DEBUG:
     # Use static() to add url mapping to serve static files during development (only)
