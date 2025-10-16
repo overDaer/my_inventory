@@ -2,6 +2,7 @@ from pathlib import Path
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
+import os
 
 IMAGE_FILE_PATH = 'pictures/'
 STAT_MIN = 0
@@ -42,6 +43,11 @@ class Image(models.Model):
     image = models.ImageField(upload_to=IMAGE_FILE_PATH)
     def __str__(self):
         return self.name
+    def delete(self, *args, **kwargs):
+        if(self.image):
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
     
 class Note(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
