@@ -43,6 +43,13 @@
     --notification-warning-font-color: rgb(255, 251, 39);
     --notification-error-font-color: rgb(255, 0, 0);
     --notification-ok-font-color: rgb(21, 255, 0);
+
+    /* scroll bar */
+     --scroll-bar-thumb-color: rgb(187, 187, 187);
+     --scroll-bar-background-color:rgb(54, 54, 54);
+
+    /* note */
+    --note-button-color:#8f8f8f;;
 }
 
 html, body {
@@ -71,14 +78,18 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 /*---------class----------*/
 
+.header {
+    margin: 5px;
+}
+
 .item-display{
     display: flex;
     flex-direction: column;
     /* border: 2px solid rgb(111, 112, 112); */
     border: 4px solid var(--item-border-color);
     border-radius: 6%;
-    height: 400px;
-    width: 250px;
+    height: 370px;
+    width: 240px;
     margin: 10px;
     background-color: var(--item-background-color);
 }
@@ -103,16 +114,16 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 }
 
 .item-img-container{
-    width: 250px;
-    height: 250px;
+    width: 240px;
+    height: 240px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .item-img{
-    width: 250px;
-    height: 250px;
+    width: 240px;
+    height: 240px;
     background-color: var(--item-image-background-color);
     object-fit:contain;
 }
@@ -135,12 +146,17 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     max-height: 85px;
 }
 
+table td, table th {
+  vertical-align: top;
+}
 .item-description{
     display: inline-block;
-    vertical-align: text-top;
     overflow: hidden;
     height: 85px;
     padding: 0;
+    margin: 0;
+    vertical-align: top;
+
 
 }
 
@@ -210,6 +226,13 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     background-color: var(--item-button-color);
 }
 
+.note-action{
+    margin: 5px 5px;
+    margin: 5px 5px;
+    width: 25px;
+    background-color: var(--note-button-color);
+}
+
 .group-display-header{
     margin: 5px 5px;
     height: 42px;
@@ -261,6 +284,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     display: flex;
     flex-flow:column;
     height: 100%;
+    overflow:hidden;
 }
 
 #image-upload-container.show {
@@ -300,24 +324,43 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     flex-flow: row;
     position: relative;
     margin: 3px;
+    overflow:hidden;
 
 }
 
 #groups-container{
-    display: flex;
-    flex: 1 1 85%;
     flex-flow: column;
-    position: relative;
-    height: 100%;
-
+    display: flex;
+    flex: 1;
+    overflow:hidden;
 }
 
-#avatar-container{
+#groups-content-container-wrapper{
+    flex-flow: column;
+    display: flex;
+    flex: 1;
+    scrollbar-color: var(--scroll-bar-thumb-color) var(--scroll-bar-background-color);
+    overflow-y: auto;
+}
+
+#groups-content-container{
+    display: flex;
+    flex-flow: column;
+    min-height: 100%;
+}
+
+#notes-container{
     display: flex;
     flex-flow: column;
     flex: 0 1 350px;
     position: static;
-    height: 100%;
+    overflow:hidden;
+}
+
+#notes-content-container{
+    display: flex;
+    flex-flow: column;
+    min-height: 100%;
 }
 
 #groups-header{
@@ -482,6 +525,19 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     width: 100%;
 }
 
+#note-modal-container{
+    width: 400px;
+    height: 400px;
+}
+#note-content{
+    width: 400px;
+    height: 350px;
+}
+
+#notes-button-header{
+    display: flex;
+}
+
 .modal-button-container {
   display: flex;
   flex-direction: row-reverse;
@@ -489,6 +545,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
   padding: 5px;
   margin: 5px;
 }
+
 
 .modal-input {
     border: 1px solid var(--modal-border-color);
@@ -508,6 +565,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     height: 80px;
     overflow-y: scroll;
     color: var(--modal-textarea-font-color);
+    resize: none;
 }
 
 .modal-input-header {

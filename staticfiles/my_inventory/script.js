@@ -24,7 +24,7 @@ responseTypes.set('ok',"rgb(21, 255, 0)");
 
 async function buildGroupContainers() {
     let groups = await loadGroups();
-    let groupsContainer = document.getElementById('groups-container')
+    let groupsContainer = document.getElementById('groups-content-container')
     groups.forEach(async (group) => {
         let groupDisplay = await buildGroupDisplayWithItems(group);
         groupsContainer.appendChild(groupDisplay);
