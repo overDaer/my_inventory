@@ -40,19 +40,16 @@
                     <h4 class="content-header-value" id="note-content-header-value">Notes & Reminders</h4>
                 </div>
                 <div class="button-header" id="notes-button-header">
-                    <button class="note-action" id="add-note-button">
+                    <button class="note-action" id="note-add">
                         <img class="button-icon" id="add-note-image" src="{% static 'my_inventory/assets/file-earmark-plus.svg' %}" alt="add">
                     </button>
-                    <button class="note-action" id="delete-note-button">
+                    <button class="note-action" id="note-remove">
                         <img class="button-icon" id="delete-note-image" src="{% static 'my_inventory/assets/file-minus.svg' %}" alt="remove">
                     </button>
-                    <button class="note-action" id="edit-note-button">
+                    <button class="note-action" id="note-edit">
                         <img class="button-icon" id="edit-note-image" src="{% static 'my_inventory/assets/pencil.svg' %}" alt="edit">
                     </button>
-                    <button class="note-action" id="view-note-button">
-                        <img class="button-icon" id="view-note-image" src="{% static 'my_inventory/assets/eye.svg' %}" alt="view">
-                    </button>
-                    <button class="note-action" id="set-reminder-button">
+                    <button class="note-action" id="note-set-reminder">
                         <img class="button-icon" id="view-note-image" src="{% static 'my_inventory/assets/lightbulb.svg' %}" alt="collapse">
                     </button>
                 </div>
@@ -262,12 +259,12 @@
                 <h1 class="modal-header-value" id="note-header-name">Note</h1>
             </div>
             <h4 class="modal-input-header">Name</h4>
-            <input type="name" class="modal-input" id="note-name-input" placeholder="Note Name">
+            <input type="name" class="modal-input" id="note-modal-input-name" placeholder="Note Name">
             <h4 class="modal-input-header">Text</h4>
-            <textarea class="modal-textarea" id="note-text-input" name="text"></textarea>
+            <textarea class="modal-textarea" id="note-modal-input-text" name="text"></textarea>
             <div class="modal-button-container" id="note-button-container">
-                <button id="note-cancel">Cancel</button>
-                <button id="note-submit">Save</button>
+                <button id="note-modal-cancel">Cancel</button>
+                <button id="note-modal-save">Save</button>
             </div>
         </div>
     </div>
@@ -276,17 +273,17 @@
             <div class="modal-header" id="reminder-modal-header">
                 <h1 class="modal-header-value" id="reminder-header-name">Reminder</h1>
             </div>
-            <input type="radio" class="modal-input" id="note-set-date-reminder-input" name="radio-set-reminder" value="Date" checked>
-            <label for="note-set-date-reminder-input">Date</label>
-            <input type="radio" class="modal-input" id="note-set-weekly-reminder-input" name="radio-set-reminder" value="Weekly">
-            <label for="note-set-weekly-reminder-input">Weekly</label>
-            <div class="modal-container" id="date-reminder-container">
+            <input type="radio" class="modal-input" id="reminder-input-option-date" name="reminder-option" value="Date" checked>
+            <label for="reminder-input-option-date">Date</label>
+            <input type="radio" class="modal-input" id="reminder-input-option-weekly" name="reminder-option" value="Weekly">
+            <label for="reminder-input-option-weekly">Weekly</label>
+            <div class="modal-input-group-container" id="date-reminder-container">
                 <div class="modal-input-group-container" id="date-reminder-date-container">
-                    <input type="datetime-local" class="modal-input" id="date-reminder-date-input">
-                    <label for="date-reminder-date-input">Date and Time</label>
+                    <input type="datetime-local" class="modal-input" id="reminder-input-date">
+                    <label for="reminder-input-date">Date and Time</label>
                 </div>
             </div>
-            <div class="modal-container" id="weekly-reminder-container">
+            <div class="modal-input-group-container" id="weekly-reminder-container">
                 <div class="modal-input-group-container" id="weekly-reminder-time-container">
                     <input type="time" class="modal-input" id="weekly-reminder-time-input">
                     <label for="weekly-reminder-time-input">Time</label>
@@ -307,6 +304,10 @@
                     <input type="checkbox" class="modal-input" id="weekly-reminder-sunday-input">
                     <label for="weekly-reminder-sunday-input">Sunday</label>
                 </div>
+            </div>
+            <div class="modal-button-container" id="reminder-button-container">
+                <button id="reminder-cancel">Cancel</button>
+                <button id="reminder-save">Save</button>
             </div>
         </div>
     </div>

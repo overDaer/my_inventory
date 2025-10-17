@@ -39,7 +39,7 @@ class Item(models.Model):
 
 class Image(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE,related_name='image')
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(upload_to=IMAGE_FILE_PATH)
     def __str__(self):
         return self.name
@@ -51,7 +51,7 @@ class Image(models.Model):
     
 class Note(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, null=True, blank=True)
     text = models.TextField()
     updated_dt = models.DateTimeField(auto_now=True)
     def __str__(self):

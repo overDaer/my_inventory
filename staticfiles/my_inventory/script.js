@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 //global variables
 var itemSelection = null;
 var groupSelection = null;
+var noteSelection = null;
 var slideshowIndex = -1;
 var slideshowImages = [];
 
@@ -219,13 +220,13 @@ async function buildItemDisplay(item, group_id) {
     row.insertCell().appendChild(numberTable);
     row.insertCell().appendChild(description);
     display.appendChild(topTable);
-    display.addEventListener('click',()=>{
+    display.addEventListener('click', async()=>{
         //unselect previously selected groups
         clearItemSelect();
         //select this group
         itemSelection = display;
         display.classList.add('selected');
-        
+        reloadNotes();
     });
     display.addEventListener('dblclick',async ()=> {
         await viewItem();
@@ -287,7 +288,25 @@ function buildImageElement(image=null,large=false){
     return imageElement;
 }
 
-
+function buildNoteDisplay(note){
+    let noteContainer = document.createElement('div'); noteContainer.setAttribute('data-id',note.pk) ;noteContainer.setAttribute('data-name',note.fields.name); noteContainer.setAttribute('class','note-container');
+    let noteHeader = document.createElement('div'); noteHeader.setAttribute('class','note-header');
+    noteContainer.append(noteHeader);
+    let noteName = document.createElement('span'); noteName.setAttribute('class','note-name');
+    noteName.innerHTML = note.fields.name;
+    noteHeader.append(noteName);
+    let noteContent = document.createElement('div'); noteContent.setAttribute('class','note-content');
+    noteContainer.append(noteContent);
+    let noteText = document.createElement('p'); noteText.setAttribute('class','note-text');
+    noteText.innerHTML = note.fields.text;
+    noteContent.append(noteText);
+    noteContainer.addEventListener('click',()=>{
+        clearNoteSelect();
+        noteSelection = noteContainer;
+        noteContainer.classList.toggle('selected');
+    })
+    return noteContainer;
+}
 
 
 //UI Interaction and data reloading
@@ -332,6 +351,18 @@ async function reloadGroupItems(group_id) {
     
 };
 
+async function reloadNotes() {
+    clearNotes();
+    if (!itemSelection) {return;}
+    let item_id = itemSelection.getAttribute('data-id');
+    let notes = await loadNotes({item_id:item_id});
+    let notesContent = document.getElementById('notes-content-container');
+    notes.forEach((note)=>{
+        let noteDisplay = buildNoteDisplay(note);
+        notesContent.append(noteDisplay);
+    });
+}
+
 function clearItemSelect(){
     let items = document.getElementsByClassName('item-display');
     for (let i=0;i < items.length; i++){
@@ -340,12 +371,22 @@ function clearItemSelect(){
     itemSelection = null;
 };
 
+
+
 function clearGroupSelect(){
     let groupDatas = document.getElementsByClassName('group-data-content');
     for (let i=0;i < groupDatas.length; i++){
         groupDatas[i].classList.remove('selected');
     };
     groupSelection = null;
+};
+
+function clearNoteSelect(){
+    let notes = document.getElementsByClassName('note-container');
+    for (let i=0;i < notes.length; i++){
+        notes[i].classList.remove('selected');
+    };
+    noteSelection = null;
 };
 
 async function viewItem(){
@@ -436,6 +477,7 @@ async function loadItems({id = null, group_id = null}) {
     }
 }
 
+
 async function loadFirstImage(item_id){
     let images = await loadImages({item_id:item_id});
     if (images.length > 0){
@@ -465,7 +507,32 @@ async function loadImages({id = null, item_id = null}){
         return images;
     } 
     else {
-        console.log('failed to load items');
+        console.log('failed to load images');
+    }
+}
+
+async function loadNotes({id=null, item_id = null}){
+    let response = null;
+    if (id) {
+        let idParams = new URLSearchParams();
+        idParams.append('id', id);
+        response = await fetch(`/inventory/note/?${idParams}`);
+    }
+    else if (item_id) {
+        let itemIdParams = new URLSearchParams();
+        itemIdParams.append('item_id', item_id);
+        response = await fetch(`/inventory/note/?${itemIdParams}`);
+    }
+    else {
+        response = await fetch('/inventory/note');
+    }
+    if (response.ok) {
+        let notes = await response.json();
+        notes = JSON.parse(notes);
+        return notes;
+    }
+    else {
+        console.log('failed to load notes');
     }
 }
 
@@ -595,6 +662,49 @@ async function saveItemModal() {
     }
 }
 
+async function saveNoteModal(){
+    // gather data
+    let noteModal = document.getElementById('note-modal-container');
+    let id = noteModal.getAttribute('data-id');
+    let item_id = itemSelection.getAttribute('data-id');
+    let name = document.getElementById('note-modal-input-name').value;
+    let text = document.getElementById('note-modal-input-text').value;
+    if (noteModal.hasAttribute('data-id')){
+        let note = {
+            id: id,
+            item_id: item_id,
+            name: name,
+            text: text
+        }
+        let response = await fetch('/inventory/note/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(note)
+        });
+        return response;
+    }
+    else {
+        // POST
+        let note = {
+            item_id: item_id,
+            name: name,
+            text: text
+        }
+        let response = await fetch('/inventory/note/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(note)
+        });
+        return response;
+    }
+}
+
 async function uploadImages(){
     let item_id = document.getElementById('image-upload-container').getAttribute('data-item-id');
     let name = document.getElementById('image-name-input').value;
@@ -639,6 +749,17 @@ async function deleteItem(id) {
 
 async function deleteImage(id) {
     let response = await fetch(`/inventory/image/delete/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    }
+    );
+    return response;
+}
+
+async function deleteNote(id) {
+    let response = await fetch(`/inventory/note/delete/${id}/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': csrftoken
@@ -820,7 +941,83 @@ function addButtonEvents() {
             }
         }
     })
-    
+
+    let noteModal = document.getElementById('note-modal-container');
+    let noteAddButton = document.getElementById('note-add');
+    let noteRemoveButton = document.getElementById('note-remove');
+    let noteEditButton = document.getElementById('note-edit');
+    let noteSaveButton = document.getElementById('note-modal-save');
+    let noteCancelButton = document.getElementById('note-modal-cancel');
+    let noteSetReminderButton = document.getElementById('note-set-reminder');
+    let reminderModal = document.getElementById('reminder-modal-container');
+
+    noteAddButton.addEventListener('click',()=>{
+        if(!itemSelection){
+            alert('item must be selected to assign a note to');
+            return;
+        }
+        clearNoteModal();
+        noteModal.classList.add('show');
+    });
+
+    noteRemoveButton.addEventListener('click',async ()=>{
+        if(!noteSelection){
+            alert('note must be selected to remove');
+            return;
+        }
+        let name = noteSelection.getAttribute('data-name');
+        let deleteMessage = `Are you sure you want to delete note ${name}?`
+        if(confirm(deleteMessage)){
+            let id = noteSelection.getAttribute('data-id');
+            let response = await deleteNote(id);
+            notifyResponse(response);
+            if(response.ok){
+                reloadNotes();
+            }
+        }
+    });
+
+    noteEditButton.addEventListener('click',async ()=>{
+        if(!noteSelection){
+            alert('note must be selected to edit');
+            return;
+        }
+        let id = noteSelection.getAttribute('data-id');
+        let notes = await loadNotes({id: id});
+        if (notes.length > 0){
+            let note = notes[0];
+            populateNoteModal(note);
+            noteModal.setAttribute('data-id',note.pk);
+            noteModal.classList.add('show');
+        }
+    });
+
+    noteSaveButton.addEventListener('click',async ()=>{
+        let response = await saveNoteModal();
+        notifyResponse(response);
+        if (response.ok) {
+            clearNoteModal();
+            noteModal.classList.remove('show');
+            reloadNotes();
+        }
+    })
+
+    noteCancelButton.addEventListener('click',()=>{
+        clearNoteModal();
+        noteModal.classList.remove('show');
+    })
+
+    noteSetReminderButton.addEventListener('click',()=>{
+        if(!noteSelection){
+            alert('note must be selected to set reminder for');
+            return;
+        }
+        clearReminderModal();
+        reminderModal.setAttribute('data-item-id',noteSelection.getAttribute('data-id'));
+        //if reminder exists, populate modal with existing
+        reminderModal.classList.add('show');
+    });
+
 }
 
 function checkIndexInLength(index, length){
@@ -882,6 +1079,26 @@ function clearItemViewModal(){
     imageSlideshow.innerHTML='';
 }
 
+function clearNoteModal(){
+    let noteModal = document.getElementById('note-modal-container');
+    noteModal.removeAttribute('data-id');
+    document.getElementById('note-modal-input-name').value = "";
+    document.getElementById('note-modal-input-text').value = "";
+}
+
+function clearNotes(){
+    let notesContent = document.getElementById('notes-content-container');
+    notesContent.innerHTML = '';
+    noteSelection = null;
+}
+
+function clearReminderModal(){
+    let noteModal = document.getElementById('note-modal-container');
+    noteModal.removeAttribute('data-id');
+    document.getElementById('note-modal-input-name').value = "";
+    document.getElementById('note-modal-input-text').value = "";
+}
+
 function showImageElement(index){
     if (!checkIndexInLength(index,slideshowImages.length)){
         return;
@@ -932,6 +1149,18 @@ async function populateItemViewModal(item){
     document.getElementById('item-view-description').value = item.fields.description;
     await loadImageElements(item.pk);
     populateSlideshow();
+}
+
+function populateNoteModal(note){
+    clearNoteModal();
+    let noteModal = document.getElementById('note-modal-container');
+    document.getElementById('note-modal-input-name').value = note.fields.name;
+    document.getElementById('note-modal-input-text').value = note.fields.text;
+    noteModal.setAttribute('data-id',note.pk);
+}
+
+function populateReminderModal(reminder){
+    
 }
 
 async function loadImageElements(item_id){

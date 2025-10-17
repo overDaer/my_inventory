@@ -278,7 +278,7 @@ def note(request: HttpRequest):
             item_id = request.GET.get('item_id')
             notes = Note.objects.filter(item__id=item_id)
         else:
-            notes = Item.objects.all()
+            notes = Note.objects.all()
         serializedjson = serializers.serialize("json", notes)
         return JsonResponse(serializedjson,safe=False)
     elif request.method == "PUT":
