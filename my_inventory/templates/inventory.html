@@ -11,9 +11,9 @@
     <!-- main page content -->
     <div class="container" id="base-container">
         <div class="interactive-bar" id="nav-bar">
-            <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
-            <button class="nav-bar-button" id="nav-bar-button-about">about</button>
             <button class="nav-bar-button" id="nav-bar-button-help">help</button>
+            <button class="nav-bar-button" id="nav-bar-button-about">about</button>
+            <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
         </div>
         <div class="container" id="content-container">
             <div class="container" id="groups-container">
@@ -35,10 +35,13 @@
                     <div class="container" id="groups-content-container"></div>
                 </div>
             </div>
+            <div class="vertical-button-container" id="notes-collapse-container">
+                <button class="vertical-button" id="notes-collapse-button">
+                        <img class="button-icon" id="notes-collapse-image" src="{% static 'my_inventory/assets/caret-right-fill.svg' %}" alt="collapse">
+                </button>
+            </div>
             <div class= "container" id="notes-container">
-                <div class="header" id="notes-header">
-                    <h4 class="content-header-value" id="note-content-header-value">Notes & Reminders</h4>
-                </div>
+                <h4 class="header" id="notes-header">Notes & Reminders</h4>
                 <div class="button-header" id="notes-button-header">
                     <button class="note-action" id="note-add">
                         <img class="button-icon" id="add-note-image" src="{% static 'my_inventory/assets/file-earmark-plus.svg' %}" alt="add">
@@ -323,6 +326,8 @@
     var pencil = "{% static 'my_inventory/assets/pencil.svg' %}";
     var uploadIcon = "{% static 'my_inventory/assets/upload-icon.svg' %}";
     var eye = "{% static 'my_inventory/assets/eye.svg' %}";
+    var leftCaret = "{% static 'my_inventory/assets/caret-left-fill.svg' %}";
+    var rightCaret = "{% static 'my_inventory/assets/caret-right-fill.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>
 </body>

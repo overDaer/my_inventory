@@ -68,6 +68,7 @@ html, body {
 /* default button css */
 button {
   margin: 10px 5px;
+  padding: 0;
   width: 70px;
   height: 30px;
   border: 0;
@@ -264,9 +265,20 @@ table td, table th {
     background-color: var(--nav-bar-button-color);
 }
 
-.button-icon {
-    
+.vertical-button-container{
+    width: 0px;
 }
+
+.vertical-button{
+    position:relative;
+    width: 15px;
+    height: 30px;
+    transform: translateX(-40px) translateY(-50%);
+    top: 50%;
+    margin: 0;
+    padding: 0;
+}
+
 
 .item-display-action {
     width: 30px;
@@ -312,12 +324,11 @@ table td, table th {
 
 #nav-bar{
     display: flex;
-    flex-direction: row-reverse;
-    flex:0 1 auto;
+    justify-content: right;
+    margin: 3px;
+    height: 30px;
     background-color: var(--nav-bar-color);
     position: relative;
-    margin: 3px;
-    height: 50px;
 }
 
 
@@ -353,34 +364,32 @@ table td, table th {
     min-height: 100%;
 }
 
+#notes-container.collapsed{
+    max-width: 0;
+    /* transition: max-width 0.5s ease-in-out; */
+}
+
 #notes-container{
     display: flex;
     flex-flow: column;
     flex: 0 1 350px;
     position: static;
     overflow:hidden;
+    max-width: 350px;
+    /* transition: max-width 0.5s ease-in-out; */
 }
 
 #notes-content-container{
     display: flex;
     flex-flow: column;
-    min-height: 100%;
+    overflow-y:auto;
+    scrollbar-color: var(--scroll-bar-thumb-color) var(--scroll-bar-background-color);
 }
 
 #groups-header{
     display: flex;
     justify-content: left;
 }
-
-
-#items-header{
-
-}
-
-#items-body{
-
-}
-
 
 
 #avatar-animation{
@@ -544,6 +553,13 @@ table td, table th {
 
 #notes-button-header{
     display: flex;
+}
+
+#notes-header{
+    display: flex;
+    margin-top:20px;
+    margin-bottom:10px;
+    white-space: nowrap;
 }
 
 .note-container.selected {

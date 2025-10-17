@@ -1018,6 +1018,18 @@ function addButtonEvents() {
         reminderModal.classList.add('show');
     });
 
+    let notesCollapseButton = document.getElementById('notes-collapse-button');
+    notesCollapseButton.addEventListener('click',()=>{
+        let notesContainer = document.getElementById('notes-container');
+        notesContainer.classList.toggle('collapsed');
+        let notesCollapseImage = document.getElementById('notes-collapse-image');
+        if (notesContainer.classList.contains('collapsed')){
+            notesCollapseImage.setAttribute('src',leftCaret);
+        } else {
+            notesCollapseImage.setAttribute('src',rightCaret);
+        }
+    });
+
 }
 
 function checkIndexInLength(index, length){
