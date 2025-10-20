@@ -8,6 +8,7 @@ from .models import *
 from .forms import *
 from typing import Sequence, TypeVar
 import json
+import datetime
 
 def index(request: HttpRequest):
     return redirect('inventory');
@@ -315,7 +316,6 @@ def weeklyReminder(request: HttpRequest):
         try:
             data = json.loads(request.body)
             note_id = data['note_id']
-            acknowledged_dt = data['acknowledged_dt']
             time= data['time']
             monday= data['monday']
             tuesday= data['tuesday']
@@ -326,7 +326,6 @@ def weeklyReminder(request: HttpRequest):
             sunday= data['sunday']
             weeklyReminder = WeeklyReminder()
             weeklyReminder.note = Note.objects.get(pk=note_id)
-            if(acknowledged_dt): weeklyReminder.acknowledged_dt = acknowledged_dt
             weeklyReminder.time = time
             weeklyReminder.monday = monday
             weeklyReminder.tuesday = tuesday
@@ -362,7 +361,6 @@ def weeklyReminder(request: HttpRequest):
         try:
             data = json.loads(request.body)
             id = data['id']
-            acknowledged_dt = data['acknowledged_dt']
             time= data['time']
             monday= data['monday']
             tuesday= data['tuesday']
@@ -372,7 +370,6 @@ def weeklyReminder(request: HttpRequest):
             saturday= data['saturday']
             sunday= data['sunday']
             weeklyReminder = WeeklyReminder.objects.get(pk=id)
-            if(acknowledged_dt): weeklyReminder.acknowledged_dt = acknowledged_dt
             weeklyReminder.time = time
             weeklyReminder.monday = monday
             weeklyReminder.tuesday = tuesday
@@ -407,15 +404,13 @@ def dateReminder(request: HttpRequest):
             data = json.loads(request.body)
             note_id = data['note_id']
             reminder_dt = data['reminder_dt']
-            acknowledged_dt = data['acknowledged_dt']
-            reoccuring = data['reoccuring']
-            reoccuring_timespan = data['reoccuring_timespan']
+            reoccurring = data['reoccurring']
+            reoccurring_interval = data['reoccurring_interval']
             dateReminder = DateReminder()
             dateReminder.note = Note.objects.get(pk=note_id)
-            if(acknowledged_dt): dateReminder.acknowledged_dt = acknowledged_dt
             dateReminder.reminder_dt = reminder_dt
-            dateReminder.reoccuring = reoccuring
-            if(reoccuring_timespan): dateReminder.reoccuring_timespan = reoccuring_timespan
+            dateReminder.reoccurring = reoccurring
+            dateReminder.reoccurring_interval = reoccurring_interval
             try:
                 dateReminder.full_clean()
                 dateReminder.save()
@@ -444,14 +439,12 @@ def dateReminder(request: HttpRequest):
             data = json.loads(request.body)
             id = data['id']
             reminder_dt = data['reminder_dt']
-            acknowledged_dt = data['acknowledged_dt']
-            reoccuring = data['reoccuring']
-            reoccuring_timespan = data['reoccuring_timespan']
+            reoccurring = data['reoccurring']
+            reoccurring_interval = data['reoccurring_interval']
             dateReminder = DateReminder.objects.get(pk=id)
-            if(acknowledged_dt): dateReminder.acknowledged_dt = acknowledged_dt
             dateReminder.reminder_dt = reminder_dt
-            dateReminder.reoccuring = reoccuring
-            if(reoccuring_timespan): dateReminder.reoccuring_timespan = reoccuring_timespan
+            dateReminder.reoccurring = reoccurring
+            dateReminder.reoccurring_interval = reoccurring_interval
             try:
                 dateReminder.full_clean()
                 dateReminder.save()
@@ -471,3 +464,35 @@ def dateReminder_delete(request:HttpRequest,pk: int):
             return JsonResponse({'message':'date reminder could not be found'}, status=404)
     else:
             return JsonResponse({'message':'expected a POST request'}, status=400)
+    
+def weeklyReminder_acknowledge(request:HttpRequest, pk: int):
+    if request.method == "GET":
+        try:
+            reminder = get_object_or_404(WeeklyReminder, pk=pk)
+            reminder.acknowledged_dt = datetime.datetime.now()
+            try:
+                reminder.full_clean()
+                reminder.save()
+                return JsonResponse({'message':'successfully acknowledged reminder'}, status=200)
+            except:
+                return JsonResponse({'message':'reminder failed to validate'}, status=400)
+        except Http404:
+            return JsonResponse({'message':'reminder could not be found'}, status=404)
+    else:
+            return JsonResponse({'message':'expected a GET request'}, status=400)
+    
+def dateReminder_acknowledge(request:HttpRequest, pk: int):
+    if request.method == "GET":
+        try:
+            reminder = get_object_or_404(DateReminder, pk=pk)
+            reminder.acknowledged_dt = datetime.datetime.now()
+            try:
+                reminder.full_clean()
+                reminder.save()
+                return JsonResponse({'message':'successfully acknowledged reminder'}, status=200)
+            except:
+                return JsonResponse({'message':'reminder failed to validate'}, status=400)
+        except Http404:
+            return JsonResponse({'message':'reminder could not be found'}, status=404)
+    else:
+            return JsonResponse({'message':'expected a GET request'}, status=400)

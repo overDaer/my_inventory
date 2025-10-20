@@ -536,6 +536,68 @@ async function loadNotes({id=null, item_id = null}){
     }
 }
 
+async function loadNoteReminder(note_id){
+    let weeklyReminders = await loadWeeklyReminders({note_id:note_id});
+    let dateReminders = await loadDateReminders({note_id:note_id});
+    if (weeklyReminders.length > 0){
+        return weeklyReminders[0];
+    } else if (dateReminders.length > 0){
+        return dateReminders[0];
+    } else {
+        return null;
+    }
+};
+
+async function loadDateReminders({id=null, note_id = null}){
+    let response = null;
+    if (id) {
+        let idParams = new URLSearchParams();
+        idParams.append('id', id);
+        response = await fetch(`/inventory/dateReminder/?${idParams}`);
+    }
+    else if (note_id) {
+        let noteIdParams = new URLSearchParams();
+        noteIdParams.append('note_id', note_id);
+        response = await fetch(`/inventory/dateReminder/?${noteIdParams}`);
+    }
+    else {
+        response = await fetch('/inventory/dateReminder');
+    }
+    if (response.ok) {
+        let reminders = await response.json();
+        reminders = JSON.parse(reminders);
+        return reminders;
+    }
+    else {
+        console.log('failed to load reminders');
+    }
+}
+
+async function loadWeeklyReminders({id=null, note_id = null}){
+    let response = null;
+    if (id) {
+        let idParams = new URLSearchParams();
+        idParams.append('id', id);
+        response = await fetch(`/inventory/weeklyReminder/?${idParams}`);
+    }
+    else if (note_id) {
+        let noteIdParams = new URLSearchParams();
+        noteIdParams.append('note_id', note_id);
+        response = await fetch(`/inventory/weeklyReminder/?${noteIdParams}`);
+    }
+    else {
+        response = await fetch('/inventory/weeklyReminder');
+    }
+    if (response.ok) {
+        let reminders = await response.json();
+        reminders = JSON.parse(reminders);
+        return reminders;
+    }
+    else {
+        console.log('failed to load reminders');
+    }
+}
+
 async function notifyResponse(response){
     let jsonResponse = await response.json();
     if('message' in jsonResponse) {
@@ -705,6 +767,149 @@ async function saveNoteModal(){
     }
 }
 
+async function saveReminderModal(){
+    let isDate = Boolean(document.getElementById('reminder-input-option-date').checked);
+    let isWeekly = Boolean(document.getElementById('reminder-input-option-weekly').checked);
+
+    if(isDate) {
+        let response = await saveReminderDate();
+        return response;
+    } else if (isWeekly) {
+       let response = await saveReminderWeekly();
+        return response;
+    }
+}
+
+async function saveReminderWeekly(){
+    let reminderModal = document.getElementById('reminder-modal-container');
+    let id = reminderModal.getAttribute('data-id');
+    let note_id = noteSelection.getAttribute('data-id');
+    let time = document.getElementById('weekly-reminder-input-time').value;
+    let monday = Boolean(document.getElementById('weekly-reminder-input-monday').checked);
+    let tuesday = Boolean(document.getElementById('weekly-reminder-input-tuesday').checked);
+    let wednesday = Boolean(document.getElementById('weekly-reminder-input-wednesday').checked);
+    let thursday = Boolean(document.getElementById('weekly-reminder-input-thursday').checked);
+    let friday = Boolean(document.getElementById('weekly-reminder-input-friday').checked);
+    let saturday = Boolean(document.getElementById('weekly-reminder-input-saturday').checked);
+    let sunday = Boolean(document.getElementById('weekly-reminder-input-sunday').checked);
+    if (reminderModal.hasAttribute('data-id')){
+        let reminder = {
+            id: id,
+            note_id: note_id,
+            time: time,
+            monday: monday,
+            tuesday: tuesday,
+            wednesday: wednesday,
+            thursday: thursday,
+            friday: friday,
+            saturday: saturday,
+            sunday: sunday
+        }
+        let response = await fetch('/inventory/weeklyReminder/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(reminder)
+        });
+        return response;
+    }
+    else {
+        // POST
+        let reminder = {
+            note_id: note_id,
+            time: time,
+            monday: monday,
+            tuesday: tuesday,
+            wednesday: wednesday,
+            thursday: thursday,
+            friday: friday,
+            saturday: saturday,
+            sunday: sunday
+        }
+        let response = await fetch('/inventory/weeklyReminder/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(reminder)
+        });
+        return response;
+    }
+}
+
+async function saveReminderDate(){
+    let reminderModal = document.getElementById('reminder-modal-container');
+    let id = reminderModal.getAttribute('data-id');
+    let note_id = noteSelection.getAttribute('data-id');
+    let reminder_dt = document.getElementById('reminder-input-datetime').value;
+    let reoccurring = Boolean(document.getElementById('reminder-input-reoccurring').checked);
+    let reoccurring_interval = null;
+    if (reoccurring) {
+        reoccurring_interval = document.getElementById('reminder-input-reoccurring-interval').value;
+    }
+    if (reminderModal.hasAttribute('data-id')){
+        let reminder = {
+            id: id,
+            note_id: note_id,
+            reminder_dt: reminder_dt,
+            reoccurring: reoccurring,
+            reoccurring_interval: reoccurring_interval
+        }
+        let response = await fetch('/inventory/dateReminder/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(reminder)
+        });
+        return response;
+    }
+    else {
+        // POST
+        let reminder = {
+            note_id: note_id,
+            reminder_dt: reminder_dt,
+            reoccurring: reoccurring,
+            reoccurring_interval: reoccurring_interval
+        }
+        let response = await fetch('/inventory/dateReminder/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(reminder)
+        });
+        return response;
+    }
+}
+
+async function acknowledgeDateReminder(id){
+    let response = await fetch(`/inventory/dateReminder/acknowledge/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            }
+        });
+        return response;
+}
+
+async function acknowledgeWeeklyReminder(id){
+    let response = await fetch(`/inventory/weeklyReminder/acknowledge/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            }
+        });
+        return response;
+}
+
 async function uploadImages(){
     let item_id = document.getElementById('image-upload-container').getAttribute('data-item-id');
     let name = document.getElementById('image-name-input').value;
@@ -772,6 +977,9 @@ async function deleteNote(id) {
 //event handlers
 
 function addButtonEvents() {
+
+    //Group Modal
+
     let groupAddButton = document.getElementById('group-add');
     let groupRemoveButton = document.getElementById('group-remove');
     let groupEditButton = document.getElementById('group-edit');
@@ -848,6 +1056,8 @@ function addButtonEvents() {
         groupModalContainer?.classList.remove('show');
     });
 
+    //Item Modal
+
     let itemModalContainer = document.getElementById('item-modal-container');
     let itemModalSaveButton = document.getElementById('item-modal-save');
     let itemModalCancelButton = document.getElementById('item-modal-cancel');
@@ -865,6 +1075,8 @@ function addButtonEvents() {
         itemModalContainer?.classList.remove('show');
     });
 
+    //Image Modal
+
     let imageUploadContainer = document.getElementById('image-upload-container');
     let imageUploadButton = document.getElementById('image-upload-submit');
     let imageCancelButton = document.getElementById('image-upload-cancel');
@@ -880,6 +1092,8 @@ function addButtonEvents() {
         clearImageUploadModal();
         imageUploadContainer?.classList.remove('show');
     });
+
+    //Item View Modal
 
     let slideshowLeftButton = document.getElementById('slideshow-left-button');
     let slideshowRightButton = document.getElementById('slideshow-right-button');
@@ -941,6 +1155,8 @@ function addButtonEvents() {
             }
         }
     })
+
+    //Note Modal
 
     let noteModal = document.getElementById('note-modal-container');
     let noteAddButton = document.getElementById('note-add');
@@ -1007,14 +1223,19 @@ function addButtonEvents() {
         noteModal.classList.remove('show');
     })
 
-    noteSetReminderButton.addEventListener('click',()=>{
+    noteSetReminderButton.addEventListener('click',async ()=>{
         if(!noteSelection){
             alert('note must be selected to set reminder for');
             return;
         }
         clearReminderModal();
-        reminderModal.setAttribute('data-item-id',noteSelection.getAttribute('data-id'));
+        let note_id = noteSelection.getAttribute('data-id');
+        reminderModal.setAttribute('data-note-id',note_id);
         //if reminder exists, populate modal with existing
+        let reminder = await loadNoteReminder(note_id);
+        if (reminder) {
+            populateReminderModal(reminder);
+        }
         reminderModal.classList.add('show');
     });
 
@@ -1028,6 +1249,39 @@ function addButtonEvents() {
         } else {
             notesCollapseImage.setAttribute('src',rightCaret);
         }
+    });
+
+    //Reminder Modal
+    let reminderSaveButton = document.getElementById('reminder-save');
+    let reminderCancelButton = document.getElementById('reminder-cancel');
+
+    reminderSaveButton.addEventListener('click',async ()=>{
+        let response = await saveReminderModal();
+        notifyResponse(response);
+        if(response.ok){
+            reminderModal.classList.remove('show');
+            clearReminderModal();
+        }
+    });
+
+    reminderCancelButton.addEventListener('click',()=>{
+        reminderModal.classList.remove('show');
+        clearReminderModal();
+    });
+    let dateRadio = document.getElementById('reminder-input-option-date');
+    let weeklyRadio = document.getElementById('reminder-input-option-weekly');
+    dateRadio.addEventListener('change',()=>{
+        setDateInputDisabled(!dateRadio.checked);
+        setWeeklyInputDisabled(dateRadio.checked);
+    });
+    weeklyRadio.addEventListener('change',()=>{
+        setDateInputDisabled(weeklyRadio.checked);
+        setWeeklyInputDisabled(!weeklyRadio.checked);
+    });
+    let inputReoccuringCheckbox = document.getElementById('reminder-input-reoccurring');
+    let inputReoccuringInterval = document.getElementById('reminder-input-reoccurring-interval');
+    inputReoccuringCheckbox.addEventListener('change',()=>{
+        inputReoccuringInterval.disabled = !inputReoccuringCheckbox.checked;
     });
 
 }
@@ -1105,10 +1359,27 @@ function clearNotes(){
 }
 
 function clearReminderModal(){
-    let noteModal = document.getElementById('note-modal-container');
-    noteModal.removeAttribute('data-id');
-    document.getElementById('note-modal-input-name').value = "";
-    document.getElementById('note-modal-input-text').value = "";
+    let reminderModal = document.getElementById('reminder-modal-container');
+    let reminderRadioDate = document.getElementById('reminder-input-option-date');
+    let reminderRadioWeekly = document.getElementById('reminder-input-option-weekly');
+    reminderRadioDate.checked = false;
+    reminderRadioDate.disabled = false;
+    reminderRadioWeekly.checked = false;
+    reminderRadioWeekly.disabled = false;
+    reminderModal.removeAttribute('data-id');
+    document.getElementById('reminder-input-datetime').value = null;
+    document.getElementById('reminder-input-reoccurring').checked = false;
+    document.getElementById('reminder-input-reoccurring-interval').value = null;
+    document.getElementById('weekly-reminder-input-time').value = null;
+    document.getElementById('weekly-reminder-input-monday').checked = false;
+    document.getElementById('weekly-reminder-input-tuesday').checked =false;
+    document.getElementById('weekly-reminder-input-wednesday').checked = false;
+    document.getElementById('weekly-reminder-input-thursday').checked = false;
+    document.getElementById('weekly-reminder-input-friday').checked = false;
+    document.getElementById('weekly-reminder-input-saturday').checked = false;
+    document.getElementById('weekly-reminder-input-sunday').checked = false;
+    setDateInputDisabled(true);
+    setWeeklyInputDisabled(true);
 }
 
 function showImageElement(index){
@@ -1171,8 +1442,81 @@ function populateNoteModal(note){
     noteModal.setAttribute('data-id',note.pk);
 }
 
+function setReminderModalType(type){
+
+    let reminderRadioDate = document.getElementById('reminder-input-option-date');
+    let reminderRadioWeekly = document.getElementById('reminder-input-option-weekly');
+
+    if (type === 'date'){
+        setWeeklyInputDisabled(true);
+        setDateInputDisabled(false);
+        reminderRadioDate.checked = true;
+        reminderRadioWeekly.checked = false;
+    } else if (type ==='weekly'){
+        setWeeklyInputDisabled(false);
+        setDateInputDisabled(true);
+        reminderRadioDate.checked = false;
+        reminderRadioWeekly.checked = true;
+    }
+}
+
+function setWeeklyInputDisabled(value){
+    document.getElementById('weekly-reminder-input-time').disable = value;
+    document.getElementById('weekly-reminder-input-monday').disabled = value;
+    document.getElementById('weekly-reminder-input-tuesday').disabled = value;
+    document.getElementById('weekly-reminder-input-wednesday').disabled = value;
+    document.getElementById('weekly-reminder-input-thursday').disabled = value;
+    document.getElementById('weekly-reminder-input-friday').disabled = value;
+    document.getElementById('weekly-reminder-input-saturday').disabled = value;
+    document.getElementById('weekly-reminder-input-sunday').disabled = value;
+    document.getElementById('weekly-reminder-container').hidden = value;
+}
+
+function setDateInputDisabled(value){
+    document.getElementById('reminder-input-datetime').disabled = value;
+    document.getElementById('reminder-input-reoccurring').disabled = value;
+    document.getElementById('reminder-input-reoccurring-interval').disabled = value;
+    document.getElementById('date-reminder-container').hidden = value;
+}
+
 function populateReminderModal(reminder){
-    
+    let reminderRadioDate = document.getElementById('reminder-input-option-date');
+    let reminderRadioWeekly = document.getElementById('reminder-input-option-weekly');
+
+    let isDate = ('reminder_dt' in reminder.fields);
+    let isWeekly = ('time' in reminder.fields);
+
+    //cannot change between date and weekly for existing, so disable input
+    reminderRadioDate.disabled = true;
+    reminderRadioWeekly.disabled = true;
+
+    let reminderModal = document.getElementById('reminder-modal-container');
+    if (isDate) {
+        setReminderModalType('date');
+        reminderModal.setAttribute('data-id', reminder.pk);
+        let convertedDate = formatInputDate(reminder.fields.reminder_dt)
+        document.getElementById('reminder-input-datetime').value = convertedDate;
+        document.getElementById('reminder-input-reoccurring').checked = reminder.fields.reoccurring;
+        document.getElementById('reminder-input-reoccurring-interval').value = reminder.fields.reoccurring_interval;
+        document.getElementById('reminder-input-reoccurring-interval').disabled = !reminder.fields.reoccurring;
+    } else if (isWeekly) {
+        setReminderModalType('weekly');
+        reminderModal.setAttribute('data-id', reminder.pk);
+        document.getElementById('weekly-reminder-input-time').value = reminder.fields.time;
+        document.getElementById('weekly-reminder-input-monday').checked = reminder.fields.monday;
+        document.getElementById('weekly-reminder-input-tuesday').checked = reminder.fields.tuesday;
+        document.getElementById('weekly-reminder-input-wednesday').checked = reminder.fields.wednesday;
+        document.getElementById('weekly-reminder-input-thursday').checked = reminder.fields.thursday;
+        document.getElementById('weekly-reminder-input-friday').checked = reminder.fields.friday;
+        document.getElementById('weekly-reminder-input-saturday').checked = reminder.fields.saturday;
+        document.getElementById('weekly-reminder-input-sunday').checked = reminder.fields.sunday;
+    }
+}
+
+function formatInputDate(value){
+    //2025-10-20T14:48:00.000Z -> 2025-10-20T14:48 
+    let formattedDate = value.slice(0,16);
+    return formattedDate;
 }
 
 async function loadImageElements(item_id){

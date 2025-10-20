@@ -588,10 +588,14 @@ table td, table th {
     scrollbar-color: var(--scroll-bar-thumb-color) var(--scroll-bar-background-color);
 }
 
-#weekly-reminder-day-select-container{
+.modal-row-input-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
 }
+
 .modal-button-container {
   display: flex;
   flex-direction: row-reverse;

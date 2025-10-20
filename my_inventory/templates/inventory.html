@@ -276,35 +276,43 @@
             <div class="modal-header" id="reminder-modal-header">
                 <h1 class="modal-header-value" id="reminder-header-name">Reminder</h1>
             </div>
-            <input type="radio" class="modal-input" id="reminder-input-option-date" name="reminder-option" value="Date" checked>
-            <label for="reminder-input-option-date">Date</label>
-            <input type="radio" class="modal-input" id="reminder-input-option-weekly" name="reminder-option" value="Weekly">
-            <label for="reminder-input-option-weekly">Weekly</label>
+            <div class="modal-row-input-container" id="reminder-radio-container">
+                <label for="reminder-input-option-date">Date</label>
+                <input type="radio" class="modal-input" id="reminder-input-option-date" name="reminder-option" value="Date">
+                <label for="reminder-input-option-weekly">Weekly</label>
+                <input type="radio" class="modal-input" id="reminder-input-option-weekly" name="reminder-option" value="Weekly">
+            </div>
             <div class="modal-input-group-container" id="date-reminder-container">
                 <div class="modal-input-group-container" id="date-reminder-date-container">
-                    <input type="datetime-local" class="modal-input" id="reminder-input-date">
                     <label for="reminder-input-date">Date and Time</label>
+                    <input type="datetime-local" class="modal-input" id="reminder-input-datetime">
+                    <div class="modal-row-input-container" id="reminder-reoccurring-container">
+                        <label for="reminder-input-reoccurring">Reoccurring</label>
+                        <input type="checkbox" class="modal-input" id="reminder-input-reoccurring">
+                    </div>
+                    <label for="reminder-input-reoccurring">Reminder Interval (days)</label>
+                    <input type="number" class="modal-input" id="reminder-input-reoccurring-interval">
                 </div>
             </div>
             <div class="modal-input-group-container" id="weekly-reminder-container">
                 <div class="modal-input-group-container" id="weekly-reminder-time-container">
-                    <input type="time" class="modal-input" id="weekly-reminder-time-input">
                     <label for="weekly-reminder-time-input">Time</label>
+                    <input type="time" class="modal-input" id="weekly-reminder-input-time">
                 </div>
-                <div class="modal-input-group-container" id="weekly-reminder-day-select-container">
-                    <input type="checkbox" class="modal-input" id="weekly-reminder-monday-input">
+                <div class="modal-row-input-container" id="weekly-reminder-day-select-container">
+                    <input type="checkbox" class="modal-input" id="weekly-reminder-input-monday">
                     <label for="weekly-reminder-monday-input">Monday</label>
-                    <input type="checkbox" class="modal-input" id="weekly-reminder-tuesday-input">
+                    <input type="checkbox" class="modal-input" id="weekly-reminder-input-tuesday">
                     <label for="weekly-reminder-tuesday-input">Tuesday</label>
-                    <input type="checkbox" class="modal-input" id="weekly-reminder-wednesday-input">
+                    <input type="checkbox" class="modal-input" id="weekly-reminder-input-wednesday">
                     <label for="weekly-reminder-wednesday-input">Wednesday</label>
-                    <input type="checkbox" class="modal-input" id="weekly-reminder-thursday-input">
+                    <input type="checkbox" class="modal-input" id="weekly-reminder-input-thursday">
                     <label for="weekly-reminder-thursday-input">Thursday</label>
-                    <input type="checkbox" class="modal-input" id="weekly-reminder-friday-input">
+                    <input type="checkbox" class="modal-input" id="weekly-reminder-input-friday">
                     <label for="weekly-reminder-friday-input">Friday</label>
-                    <input type="checkbox" class="modal-input" id="weekly-reminder-saturday-input">
+                    <input type="checkbox" class="modal-input" id="weekly-reminder-input-saturday">
                     <label for="weekly-reminder-saturday-input">Saturday</label>
-                    <input type="checkbox" class="modal-input" id="weekly-reminder-sunday-input">
+                    <input type="checkbox" class="modal-input" id="weekly-reminder-input-sunday">
                     <label for="weekly-reminder-sunday-input">Sunday</label>
                 </div>
             </div>
