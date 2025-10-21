@@ -54,6 +54,9 @@
     --note-container-font-color:rgb(0, 0, 0);
     --note-header-background-color:rgb(255, 220, 67);
     --note-selected-border-color:rgba(83, 195, 255, 1);
+
+    /* reminder */
+    --note-reminder-span-background-color: rgb(157, 157, 255);
 }
 
 html, body {
@@ -498,10 +501,7 @@ table td, table th {
 }
 
 .modal-header {
-  text-align: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
+  align-items: center;
 }
 
 
@@ -534,11 +534,22 @@ table td, table th {
     height: 30px;
 }
 
+.slideshow-action-container{
+    display: flex;
+    justify-content:center;
+}
+
+.item-image-button-container{
+    float: right;
+}
+
 .slideshow-button-container{
+    margin: 0 auto;
     display: flex;
     justify-content: center;
     justify-items: center;
     width: 100%;
+    transform: translateX(20px);
 }
 
 #note-modal-container{
@@ -563,6 +574,7 @@ table td, table th {
     white-space: nowrap;
 }
 
+
 .note-container.selected {
     border: 3px solid var(--note-selected-border-color);
 }
@@ -581,6 +593,12 @@ table td, table th {
     padding: 5px;
 }
 
+.note-reminder-span {
+    float: right;
+    background-color: var(--note-reminder-span-background-color);
+    border-radius: 25px;
+}
+
 .note-content{
     padding: 5px;
     display: flex;
@@ -588,6 +606,24 @@ table td, table th {
     max-height: 300px;
     overflow-y: auto;
     scrollbar-color: var(--scroll-bar-thumb-color) var(--scroll-bar-background-color);
+}
+
+.header-button-span{
+    display: flex;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    width: 25px;
+    height: 25px;
+    float: right;
+}
+
+.reminder-action{
+    width: 25px;
+    height: 25px;
+    padding: 5px;
 }
 
 .modal-row-input-container {

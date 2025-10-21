@@ -288,13 +288,21 @@ function buildImageElement(image=null,large=false){
     return imageElement;
 }
 
-function buildNoteDisplay(note){
+async function buildNoteDisplay(note){
     let noteContainer = document.createElement('div'); noteContainer.setAttribute('data-id',note.pk) ;noteContainer.setAttribute('data-name',note.fields.name); noteContainer.setAttribute('class','note-container');
     let noteHeader = document.createElement('div'); noteHeader.setAttribute('class','note-header');
     noteContainer.append(noteHeader);
     let noteName = document.createElement('span'); noteName.setAttribute('class','note-name');
     noteName.innerHTML = note.fields.name;
     noteHeader.append(noteName);
+    let reminder = await loadNoteReminder(note.pk);
+    if (reminder) {
+        let noteReminderSpan = document.createElement('span'); noteReminderSpan.setAttribute('class','header-button-span note-reminder-span');
+        noteHeader.append(noteReminderSpan);
+        let noteReminderImage = document.createElement('img'); noteReminderImage.setAttribute('class','note-reminder-image');
+        noteReminderImage.setAttribute('src',lightbulb);
+        noteReminderSpan.appendChild(noteReminderImage);
+    }
     let noteContent = document.createElement('div'); noteContent.setAttribute('class','note-content');
     noteContainer.append(noteContent);
     let noteText = document.createElement('p'); noteText.setAttribute('class','note-text');
@@ -357,8 +365,8 @@ async function reloadNotes() {
     let item_id = itemSelection.getAttribute('data-id');
     let notes = await loadNotes({item_id:item_id});
     let notesContent = document.getElementById('notes-content-container');
-    notes.forEach((note)=>{
-        let noteDisplay = buildNoteDisplay(note);
+    notes.forEach(async (note)=>{
+        let noteDisplay = await buildNoteDisplay(note);
         notesContent.append(noteDisplay);
     });
 }
@@ -777,6 +785,8 @@ async function saveReminderModal(){
     } else if (isWeekly) {
        let response = await saveReminderWeekly();
         return response;
+    } else {
+        return null;
     }
 }
 
@@ -973,6 +983,29 @@ async function deleteNote(id) {
     );
     return response;
 }
+
+async function deleteDateReminder(id) {
+    let response = await fetch(`/inventory/dateReminder/delete/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    }
+    );
+    return response;
+}
+
+async function deleteWeeklyReminder(id) {
+    let response = await fetch(`/inventory/weeklyReminder/delete/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    }
+    );
+    return response;
+}
+
 
 //event handlers
 
@@ -1254,29 +1287,65 @@ function addButtonEvents() {
     //Reminder Modal
     let reminderSaveButton = document.getElementById('reminder-save');
     let reminderCancelButton = document.getElementById('reminder-cancel');
+    let reminderDeleteButton = document.getElementById('delete-reminder');
+    let dateRadio = document.getElementById('reminder-input-option-date');
+    let weeklyRadio = document.getElementById('reminder-input-option-weekly');
 
     reminderSaveButton.addEventListener('click',async ()=>{
         let response = await saveReminderModal();
+        if(!response){
+            alert('failed to perform reminder action');
+            return;
+        }
         notifyResponse(response);
         if(response.ok){
-            reminderModal.classList.remove('show');
             clearReminderModal();
+            await reloadNotes();
         }
     });
 
     reminderCancelButton.addEventListener('click',()=>{
-        reminderModal.classList.remove('show');
         clearReminderModal();
     });
-    let dateRadio = document.getElementById('reminder-input-option-date');
-    let weeklyRadio = document.getElementById('reminder-input-option-weekly');
+
+    reminderDeleteButton.addEventListener('click',async ()=>{
+        if(!reminderModal.hasAttribute('data-id')){
+            alert('There is no existing reminder to delete for this note.');
+            return;
+        }
+        let id = reminderModal.getAttribute('data-id');
+        let deleteMessage = 'delete the reminder for the selected note?'
+        if(confirm(deleteMessage)){
+            let response = null;
+            if (reminderModal.hasAttribute('date-reminder')){
+                response = await deleteDateReminder(id);
+            } else if (reminderModal.hasAttribute('weekly-reminder')) {
+                response = await deleteWeeklyReminder(id);
+            }
+            if (response){
+                notifyResponse(response);
+            }
+            if(response.ok){
+                clearReminderModal();
+                await reloadNotes();
+            } else {
+                console.log('failed to parse reminder type from Reminder modal');
+            }
+        }
+    });
+
+
+    //show and hide date vs weekly inputs based on radio selection
+    
     dateRadio.addEventListener('change',()=>{
-        setDateInputDisabled(!dateRadio.checked);
-        setWeeklyInputDisabled(dateRadio.checked);
+        if (dateRadio.checked) {
+            setReminderModalType('date');
+        }
     });
     weeklyRadio.addEventListener('change',()=>{
-        setDateInputDisabled(weeklyRadio.checked);
-        setWeeklyInputDisabled(!weeklyRadio.checked);
+        if (weeklyRadio.checked) {
+            setReminderModalType('weekly');
+        }
     });
     let inputReoccuringCheckbox = document.getElementById('reminder-input-reoccurring');
     let inputReoccuringInterval = document.getElementById('reminder-input-reoccurring-interval');
@@ -1358,9 +1427,16 @@ function clearNotes(){
     noteSelection = null;
 }
 
-function clearReminderModal(){
+async function clearReminderModal(){
     let reminderModal = document.getElementById('reminder-modal-container');
+    if(reminderModal.classList.contains('show')){
+        reminderModal.classList.remove('show');
+        //wait before continuing for clean transition
+        await sleep(500);
+    }
     reminderModal.removeAttribute('data-id');
+    reminderModal.removeAttribute('date-reminder');
+    reminderModal.removeAttribute('weekly-reminder');
     let reminderRadioDate = document.getElementById('reminder-input-option-date');
     let reminderRadioWeekly = document.getElementById('reminder-input-option-weekly');
     reminderRadioDate.checked = false;
@@ -1443,20 +1519,19 @@ function populateNoteModal(note){
 }
 
 function setReminderModalType(type){
-
-    let reminderRadioDate = document.getElementById('reminder-input-option-date');
-    let reminderRadioWeekly = document.getElementById('reminder-input-option-weekly');
+    let reminderModal = document.getElementById('reminder-modal-container');
 
     if (type === 'date'){
         setWeeklyInputDisabled(true);
         setDateInputDisabled(false);
-        reminderRadioDate.checked = true;
-        reminderRadioWeekly.checked = false;
+        reminderModal.toggleAttribute('date-reminder')
+        reminderModal.removeAttribute('weekly-reminder')
+
     } else if (type ==='weekly'){
         setWeeklyInputDisabled(false);
         setDateInputDisabled(true);
-        reminderRadioDate.checked = false;
-        reminderRadioWeekly.checked = true;
+        reminderModal.toggleAttribute('weekly-reminder')
+        reminderModal.removeAttribute('date-reminder')
     }
 }
 
@@ -1493,6 +1568,9 @@ function populateReminderModal(reminder){
     let reminderModal = document.getElementById('reminder-modal-container');
     if (isDate) {
         setReminderModalType('date');
+        reminderRadioDate.checked = true;
+        reminderRadioWeekly.checked = false;
+        // setReminderModalType('date');
         reminderModal.setAttribute('data-id', reminder.pk);
         let convertedDate = formatInputDate(reminder.fields.reminder_dt)
         document.getElementById('reminder-input-datetime').value = convertedDate;
@@ -1501,6 +1579,9 @@ function populateReminderModal(reminder){
         document.getElementById('reminder-input-reoccurring-interval').disabled = !reminder.fields.reoccurring;
     } else if (isWeekly) {
         setReminderModalType('weekly');
+        reminderRadioDate.checked = false;
+        reminderRadioWeekly.checked = true;
+        // setReminderModalType('weekly');
         reminderModal.setAttribute('data-id', reminder.pk);
         document.getElementById('weekly-reminder-input-time').value = reminder.fields.time;
         document.getElementById('weekly-reminder-input-monday').checked = reminder.fields.monday;

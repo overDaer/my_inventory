@@ -53,7 +53,7 @@
                         <img class="button-icon" id="edit-note-image" src="{% static 'my_inventory/assets/pencil.svg' %}" alt="edit">
                     </button>
                     <button class="note-action" id="note-set-reminder">
-                        <img class="button-icon" id="view-note-image" src="{% static 'my_inventory/assets/lightbulb.svg' %}" alt="collapse">
+                        <img class="button-icon" id="note-set-reminder-image" src="{% static 'my_inventory/assets/lightbulb.svg' %}" alt="reminder">
                     </button>
                 </div>
                 <div class="container" id="notes-content-container"></div>
@@ -198,17 +198,17 @@
                 <h1 class="modal-header-value" id="item-view-header-name">Item name</h1>
             </div>
             <div class="image-slideshow" id="item-image-slideshow"></div>
-            <div class="modal-button-container">
-                <div class="image-button-container" id="item-image-button-container">
-                    <button class="image-action" id="image-delete-button">
-                        <img class="button-icon" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
-                    </button>
-                </div>
-                <div class="slideshow-button-container" id="item-slideshow-button-container">
+            <div class="slideshow-action-container">
+                <span class="slideshow-button-container" id="item-slideshow-button-container">
                     <button class="image-slideshow-action" id="slideshow-left-button">&#60;</button>
                     <p class="modal-text" id="slideshow-index-text"></p>
                     <button class="image-slideshow-action" id="slideshow-right-button">&#62;</button>
-                </div>
+                </span>
+                <span class="image-button-container" id="item-image-button-container">
+                    <button class="image-action" id="image-delete-button">
+                        <img class="button-icon" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
+                    </button>
+                </span>
             </div>
             
             <table class="content-table" id="item-cotent-table">
@@ -274,7 +274,14 @@
     <div class="modal-container" id="reminder-modal-container">
         <div class="modal-content" id="reminder-content">
             <div class="modal-header" id="reminder-modal-header">
-                <h1 class="modal-header-value" id="reminder-header-name">Reminder</h1>
+                <h1 class="modal-header-value" id="reminder-header-name">Reminder
+                    <span class="header-button-span" id="reminder-header-button-span">
+                    <button class="reminder-action" id="delete-reminder">
+                        <img id="delete-reminder" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
+                    </button>
+                </span>
+                </h1>
+                
             </div>
             <div class="modal-row-input-container" id="reminder-radio-container">
                 <label for="reminder-input-option-date">Date</label>
@@ -336,6 +343,7 @@
     var eye = "{% static 'my_inventory/assets/eye.svg' %}";
     var leftCaret = "{% static 'my_inventory/assets/caret-left-fill.svg' %}";
     var rightCaret = "{% static 'my_inventory/assets/caret-right-fill.svg' %}";
+    var lightbulb = "{% static 'my_inventory/assets/lightbulb.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>
 </body>
