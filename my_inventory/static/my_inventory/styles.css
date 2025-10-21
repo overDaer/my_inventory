@@ -374,15 +374,16 @@ table td, table th {
     flex-flow: column;
     flex: 0 1 350px;
     position: static;
-    overflow:hidden;
+    overflow: hidden;
     max-width: 350px;
-    /* transition: max-width 0.5s ease-in-out; */
+    transition: max-width 0.5s ease-in-out;
 }
 
 #notes-content-container{
     display: flex;
     flex-flow: column;
     overflow-y:auto;
+    overflow-x: hidden;
     scrollbar-color: var(--scroll-bar-thumb-color) var(--scroll-bar-background-color);
 }
 
@@ -563,10 +564,11 @@ table td, table th {
 }
 
 .note-container.selected {
-    border: 4px solid var(--note-selected-border-color);
+    border: 3px solid var(--note-selected-border-color);
 }
 
 .note-container{
+    min-width: 330px;
     margin: 7px;
     display: flex;
     flex-direction: column;
