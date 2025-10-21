@@ -6,14 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Inventory</title>
     <link rel="stylesheet" type="text/css" href="{% static 'my_inventory/styles.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- main page content -->
     <div class="container" id="base-container">
-        <div class="interactive-bar" id="nav-bar">
-            <button class="nav-bar-button" id="nav-bar-button-help">help</button>
-            <button class="nav-bar-button" id="nav-bar-button-about">about</button>
-            <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
+        <div class="interactive-bar inconsolata-typefont" id="nav-bar">
+            <a id="base-container-header-text">my_inventory</a>
+            <span class="header-button-span" id="nav-bar-button-span">
+                <button class="nav-bar-button" id="nav-bar-button-help">help</button>
+                <button class="nav-bar-button" id="nav-bar-button-about">about</button>
+                <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
+            </span>
+            
         </div>
         <div class="container" id="content-container">
             <div class="container" id="groups-container">
@@ -43,16 +50,16 @@
             <div class= "container" id="notes-container">
                 <h4 class="header" id="notes-header">Notes & Reminders</h4>
                 <div class="button-header" id="notes-button-header">
-                    <button class="note-action" id="note-add">
+                    <button class="note-action small-button" id="note-add">
                         <img class="button-icon" id="add-note-image" src="{% static 'my_inventory/assets/file-earmark-plus.svg' %}" alt="add">
                     </button>
-                    <button class="note-action" id="note-remove">
+                    <button class="note-action small-button" id="note-remove">
                         <img class="button-icon" id="delete-note-image" src="{% static 'my_inventory/assets/file-minus.svg' %}" alt="remove">
                     </button>
-                    <button class="note-action" id="note-edit">
+                    <button class="note-action small-button" id="note-edit">
                         <img class="button-icon" id="edit-note-image" src="{% static 'my_inventory/assets/pencil.svg' %}" alt="edit">
                     </button>
-                    <button class="note-action" id="note-set-reminder">
+                    <button class="note-action small-button" id="note-set-reminder">
                         <img class="button-icon" id="note-set-reminder-image" src="{% static 'my_inventory/assets/lightbulb.svg' %}" alt="reminder">
                     </button>
                 </div>
@@ -275,7 +282,7 @@
         <div class="modal-content" id="reminder-content">
             <div class="modal-header" id="reminder-modal-header">
                 <h1 class="modal-header-value" id="reminder-header-name">Reminder
-                    <span class="header-button-span" id="reminder-header-button-span">
+                    <span class="header-button-span small-button" id="reminder-header-button-span">
                     <button class="reminder-action" id="delete-reminder">
                         <img id="delete-reminder" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
                     </button>

@@ -59,6 +59,16 @@
     --note-reminder-span-background-color: rgb(157, 157, 255);
 }
 
+
+.inconsolata-typefont {
+  font-family: "Inconsolata", monospace;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
 html, body {
     height:100%;
     width: 100%;
@@ -230,14 +240,12 @@ table td, table th {
 
 .item-action{
     margin: 5px 5px;
-    width: 25px;
     background-color: var(--item-button-color);
 }
 
 .note-action{
     margin: 5px 5px;
     margin: 5px 5px;
-    width: 25px;
     background-color: var(--note-button-color);
 }
 
@@ -306,6 +314,11 @@ table td, table th {
     overflow:hidden;
 }
 
+#base-container-header-text{
+    display: inline-block;
+    font-size: 25px;
+}
+
 #image-upload-container.show {
     pointer-events: auto;
     opacity: 1;
@@ -326,8 +339,8 @@ table td, table th {
 }
 
 #nav-bar{
-    display: flex;
     justify-content: right;
+    text-align: center;
     margin: 3px;
     height: 30px;
     background-color: var(--nav-bar-color);
@@ -615,9 +628,12 @@ table td, table th {
     justify-content: center;
     align-items: center;
     border-radius: 20px;
+    float: right;
+}
+
+.small-button{
     width: 25px;
     height: 25px;
-    float: right;
 }
 
 .reminder-action{
@@ -630,7 +646,7 @@ table td, table th {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content:center;
     padding: 5px;
 }
 

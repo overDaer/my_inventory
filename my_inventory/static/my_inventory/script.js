@@ -87,24 +87,24 @@ function buildGroupDisplay(group){
     let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container');
     groupHeader.appendChild(itemActionContainer);
     
-    let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action');addItemButton.setAttribute('data-id',group.pk);
+    let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action small-button');addItemButton.setAttribute('data-id',group.pk);
 
     let addItemImg = document.createElement('img');addItemImg.setAttribute('src', addItem);addItemImg.setAttribute('class','button-icon');
     addItemButton.prepend(addItemImg);
     
-    let removeItemButton = document.createElement('button'); removeItemButton.setAttribute('class','item-action');removeItemButton.setAttribute('data-id',group.pk);
+    let removeItemButton = document.createElement('button'); removeItemButton.setAttribute('class','item-action small-button');removeItemButton.setAttribute('data-id',group.pk);
     let removeItemImg = document.createElement('img');removeItemImg.setAttribute('src', removeItem);removeItemImg.setAttribute('class','button-icon');
     removeItemButton.prepend(removeItemImg);
 
-    let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action');editItemButton.setAttribute('data-id',group.pk);
+    let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action small-button');editItemButton.setAttribute('data-id',group.pk);
     let editItemImg = document.createElement('img');editItemImg.setAttribute('src', pencil);editItemImg.setAttribute('class','button-icon');
     editItemButton.prepend(editItemImg);
 
-    let uploadImageButton = document.createElement('button'); uploadImageButton.setAttribute('class','item-action');uploadImageButton.setAttribute('data-id',group.pk);
+    let uploadImageButton = document.createElement('button'); uploadImageButton.setAttribute('class','item-action small-button');uploadImageButton.setAttribute('data-id',group.pk);
     let uploadItemImg = document.createElement('img');uploadItemImg.setAttribute('src', uploadIcon);uploadItemImg.setAttribute('class','button-icon');
     uploadImageButton.prepend(uploadItemImg);
 
-    let viewItemButton = document.createElement('button'); viewItemButton.setAttribute('class','item-action');viewItemButton.setAttribute('data-id',group.pk);
+    let viewItemButton = document.createElement('button'); viewItemButton.setAttribute('class','item-action small-button');viewItemButton.setAttribute('data-id',group.pk);
     let viewItemImg = document.createElement('img');viewItemImg.setAttribute('src', eye);viewItemImg.setAttribute('class','button-icon');
     viewItemButton.prepend(viewItemImg);
 
