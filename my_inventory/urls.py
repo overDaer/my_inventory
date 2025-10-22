@@ -16,6 +16,7 @@ urlpatterns = [
     path('inventory/group/delete/<int:pk>/', views.group_delete, name='group_delete'),
     path('inventory/note/', views.note, name='note'),
     path('inventory/note/delete/<int:pk>/', views.note_delete, name='note_delete'),
+    path('inventory/reminders-now/', views.reminders_now, name='reminders_now'),
     path('inventory/weeklyReminder/', views.weeklyReminder, name='weeklyReminder'),
     path('inventory/weeklyReminder/delete/<int:pk>/', views.weeklyReminder_delete, name='weeklyReminder_delete'),
     path('inventory/weeklyReminder/acknowledge/<int:pk>/', views.weeklyReminder_acknowledge, name='weeklyReminder_acknowledge'),

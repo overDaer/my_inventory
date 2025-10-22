@@ -9,6 +9,8 @@ from .forms import *
 from typing import Sequence, TypeVar
 import json
 import datetime
+from datetime import time
+from django.db.models import Q, F
 
 def index(request: HttpRequest):
     return redirect('inventory');
@@ -496,3 +498,31 @@ def dateReminder_acknowledge(request:HttpRequest, pk: int):
             return JsonResponse({'message':'reminder could not be found'}, status=404)
     else:
             return JsonResponse({'message':'expected a GET request'}, status=400)
+    
+def reminders_now(request:HttpRequest):
+    if request.method == "GET":
+        utc_dt = datetime.datetime.now(datetime.timezone.utc)
+        local_dt = utc_dt.astimezone()
+        weekday = local_dt.weekday()
+        # where reminder datetime is past now, and acknowledged datetime is null or less than reminder datetime
+        dateQ = (
+            Q(date_reminder__reminder_dt__lt=local_dt) & 
+            (Q(date_reminder__acknowledged_dt=None) | Q(date_reminder__acknowledged_dt__lt=F("date_reminder__reminder_dt"))))
+        # where now is past reminder time, acknowledged less than today, and weekday is correct
+        weekQ = (
+            Q(weekly_reminder__time__lte=time(local_dt.hour,local_dt.minute)) &
+            (Q(weekly_reminder__acknowledged_dt = None) | Q(weekly_reminder__acknowledged_dt__lt=local_dt.date())))
+        
+        if weekday == 0: weekQ &=Q(weekly_reminder__monday = True)
+        if weekday == 1: weekQ &=Q(weekly_reminder__tuesday = True)
+        if weekday == 2: weekQ &=Q(weekly_reminder__wednesday = True)
+        if weekday == 3: weekQ &=Q(weekly_reminder__thursday = True)
+        if weekday == 4: weekQ &=Q(weekly_reminder__friday = True)
+        if weekday == 5: weekQ &=Q(weekly_reminder__saturday = True)
+        if weekday == 6: weekQ &=Q(weekly_reminder__sunday = True)
+        
+        notes = Note.objects.distinct().filter(dateQ | weekQ)
+        serializedjson = serializers.serialize("json", notes)
+        return JsonResponse(serializedjson,safe=False)
+    else: 
+        return JsonResponse({'message':'expected a GET request'}, status=400)

@@ -15,7 +15,7 @@
     <div class="container" id="base-container">
         <div class="interactive-bar inconsolata-typefont" id="nav-bar">
             <a id="base-container-header-text">my_inventory</a>
-            <span class="header-button-span" id="nav-bar-button-span">
+            <span class="header-button-span right-side-span" id="nav-bar-button-span">
                 <button class="nav-bar-button" id="nav-bar-button-help">help</button>
                 <button class="nav-bar-button" id="nav-bar-button-about">about</button>
                 <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
@@ -60,8 +60,14 @@
                         <img class="button-icon" id="edit-note-image" src="{% static 'my_inventory/assets/pencil.svg' %}" alt="edit">
                     </button>
                     <button class="note-action small-button" id="note-set-reminder">
-                        <img class="button-icon" id="note-set-reminder-image" src="{% static 'my_inventory/assets/lightbulb.svg' %}" alt="reminder">
+                        <img class="button-icon" id="note-set-reminder-image" src="{% static 'my_inventory/assets/alarm.svg' %}" alt="set reminder">
                     </button>
+                    <span class="header-button-span right-side-span" id="reminders-view-span">
+                        <img id="reminders-count-image" src= "{% static 'my_inventory/assets/0-square-fill.svg' %}">
+                        <button class="small-button" id="reminders-view-button">
+                            <img class="button-icon" id="reminders-view-image" src= "{% static 'my_inventory/assets/lightbulb.svg' %}" alt="reminders">
+                        </button>
+                    </span>
                 </div>
                 <div class="container" id="notes-content-container"></div>
             </div>
@@ -282,7 +288,7 @@
         <div class="modal-content" id="reminder-content">
             <div class="modal-header" id="reminder-modal-header">
                 <h1 class="modal-header-value" id="reminder-header-name">Reminder
-                    <span class="header-button-span small-button" id="reminder-header-button-span">
+                    <span class="header-button-span small-button button-icon right-side-span" id="reminder-header-button-span">
                     <button class="reminder-action" id="delete-reminder">
                         <img id="delete-reminder" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
                     </button>
@@ -351,6 +357,17 @@
     var leftCaret = "{% static 'my_inventory/assets/caret-left-fill.svg' %}";
     var rightCaret = "{% static 'my_inventory/assets/caret-right-fill.svg' %}";
     var lightbulb = "{% static 'my_inventory/assets/lightbulb.svg' %}";
+    var alarm = "{% static 'my_inventory/assets/alarm.svg' %}";
+    var zeroSquare = "{% static 'my_inventory/assets/0-square-fill.svg' %}";
+    var oneSquare = "{% static 'my_inventory/assets/1-square-fill.svg' %}";
+    var twoSquare = "{% static 'my_inventory/assets/2-square-fill.svg' %}";
+    var threeSquare = "{% static 'my_inventory/assets/3-square-fill.svg' %}";
+    var fourSquare = "{% static 'my_inventory/assets/4-square-fill.svg' %}";
+    var fiveSquare = "{% static 'my_inventory/assets/5-square-fill.svg' %}";
+    var sixSquare = "{% static 'my_inventory/assets/6-square-fill.svg' %}";
+    var sevenSquare = "{% static 'my_inventory/assets/7-square-fill.svg' %}";
+    var eightSquare = "{% static 'my_inventory/assets/8-square-fill.svg' %}";
+    var nineSquare = "{% static 'my_inventory/assets/9-square-fill.svg' %}";
 </script>
 <script type="module" src="{% static 'my_inventory/script.js' %}"></script>
 </body>

@@ -7,6 +7,7 @@ const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
 document.addEventListener('DOMContentLoaded', async function () {
     await buildGroupContainers();
     addButtonEvents();
+    await reloadCurrentReminders();
 });
 
 //global variables
@@ -20,6 +21,19 @@ var responseTypes = new Map();
 responseTypes.set('warning',"rgb(255, 251, 39)");
 responseTypes.set('error',"rgb(255, 0, 0)");
 responseTypes.set('ok',"rgb(21, 255, 0)");
+
+var countImages = new Map();
+countImages.set(0,zeroSquare);
+countImages.set(1,oneSquare);
+countImages.set(2,twoSquare);
+countImages.set(3,threeSquare);
+countImages.set(4,fourSquare);
+countImages.set(5,fiveSquare);
+countImages.set(6,sixSquare);
+countImages.set(7,sevenSquare);
+countImages.set(8,eightSquare);
+countImages.set(9,nineSquare);
+
 
 //UI Building
 
@@ -46,7 +60,7 @@ function buildGroupDisplay(group){
     let groupExpandButton = document.createElement('button'); groupExpandButton.setAttribute('class','group-expand-button'); 
     
     
-    let expandImg = document.createElement('img');
+    let expandImg = document.createElement('img'); expandImg.setAttribute('class','button-icon'); 
     expandImg.setAttribute('src', collapseGroup);
     groupExpandButton.prepend(expandImg);
     groupContainer.appendChild(groupData);
@@ -84,7 +98,7 @@ function buildGroupDisplay(group){
     let groupHeader = document.createElement('div'); groupHeader.setAttribute('class','group-display-header');
     groupContent.appendChild(groupHeader); 
 
-    let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container');
+    let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container button-header');
     groupHeader.appendChild(itemActionContainer);
     
     let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action small-button');addItemButton.setAttribute('data-id',group.pk);
@@ -297,7 +311,7 @@ async function buildNoteDisplay(note){
     noteHeader.append(noteName);
     let reminder = await loadNoteReminder(note.pk);
     if (reminder) {
-        let noteReminderSpan = document.createElement('span'); noteReminderSpan.setAttribute('class','header-button-span note-reminder-span');
+        let noteReminderSpan = document.createElement('span'); noteReminderSpan.setAttribute('class','header-button-span right-side-span note-reminder-span');
         noteHeader.append(noteReminderSpan);
         let noteReminderImage = document.createElement('img'); noteReminderImage.setAttribute('class','note-reminder-image');
         noteReminderImage.setAttribute('src',lightbulb);
@@ -358,6 +372,17 @@ async function reloadGroupItems(group_id) {
     groupContent.appendChild(itemsGrid);
     
 };
+
+async function reloadCurrentReminders() {
+    clearNotes();
+    let notes = await loadCurrentReminders();
+    let notesContent = document.getElementById('notes-content-container');
+    notes.forEach(async (note)=>{
+        let noteDisplay = await buildNoteDisplay(note);
+        notesContent.append(noteDisplay);
+    });
+    updateReminderCount(notes.length);
+}
 
 async function reloadNotes() {
     clearNotes();
@@ -540,6 +565,18 @@ async function loadNotes({id=null, item_id = null}){
         return notes;
     }
     else {
+        console.log('failed to load notes');
+    }
+}
+
+async function loadCurrentReminders(){
+    let response = await fetch('/inventory/reminders-now');
+    console.log(response);
+    if (response.ok){
+        let notes = await response.json();
+        notes = JSON.parse(notes);
+        return notes;
+    } else {
         console.log('failed to load notes');
     }
 }
@@ -1353,6 +1390,10 @@ function addButtonEvents() {
         inputReoccuringInterval.disabled = !inputReoccuringCheckbox.checked;
     });
 
+    let remindersViewButton = document.getElementById('reminders-view-button');
+    remindersViewButton.addEventListener('click',async ()=>{
+        await reloadCurrentReminders();
+    })
 }
 
 function checkIndexInLength(index, length){
@@ -1616,6 +1657,16 @@ async function loadImageElements(item_id){
 
 
 //helper functions
+
+function updateReminderCount(count){
+    let image = document.getElementById('reminders-count-image');
+    if (countImages.has(count)) {
+        image.setAttribute('src',countImages.get(count)); 
+    } else {
+        //if greater than 9, just show 9
+        image.setAttribute('src',countImages.get(9)); 
+    }
+}
 
 function getGroupContainerById(group_id){
     let groupContainers = document.getElementsByClassName('group-container');

@@ -67,7 +67,7 @@ class WebSource(models.Model):
         return self.name
     
 class WeeklyReminder(models.Model):
-    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE,related_name='weekly_reminder')
     updated_dt = models.DateTimeField(auto_now=True)
     acknowledged_dt = models.DateTimeField(null=True, blank=True)
     time = models.TimeField()
@@ -80,7 +80,7 @@ class WeeklyReminder(models.Model):
     sunday = models.BooleanField()
 
 class DateReminder(models.Model):
-    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE,related_name='date_reminder')
     reminder_dt = models.DateTimeField()
     updated_dt = models.DateTimeField(auto_now=True)
     acknowledged_dt = models.DateTimeField(null=True, blank=True)
