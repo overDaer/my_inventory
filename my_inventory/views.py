@@ -503,6 +503,7 @@ def reminders_now(request:HttpRequest):
     if request.method == "GET":
         utc_dt = datetime.datetime.now(datetime.timezone.utc)
         local_dt = utc_dt.astimezone()
+        local_time = time(local_dt.hour,local_dt.minute)
         weekday = local_dt.weekday()
         # where reminder datetime is past now, and acknowledged datetime is null or less than reminder datetime
         dateQ = (
@@ -510,8 +511,9 @@ def reminders_now(request:HttpRequest):
             (Q(date_reminder__acknowledged_dt=None) | Q(date_reminder__acknowledged_dt__lt=F("date_reminder__reminder_dt"))))
         # where now is past reminder time, acknowledged less than today, and weekday is correct
         weekQ = (
-            Q(weekly_reminder__time__lte=time(local_dt.hour,local_dt.minute)) &
-            (Q(weekly_reminder__acknowledged_dt = None) | Q(weekly_reminder__acknowledged_dt__lt=local_dt.date())))
+            Q(weekly_reminder__time__lte=local_time) &
+            (Q(weekly_reminder__acknowledged_dt = None) | Q(weekly_reminder__acknowledged_dt__lt=local_dt.date()))
+        )
         
         if weekday == 0: weekQ &=Q(weekly_reminder__monday = True)
         if weekday == 1: weekQ &=Q(weekly_reminder__tuesday = True)

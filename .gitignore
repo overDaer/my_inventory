@@ -3,6 +3,7 @@
 *.sqlite3
 SECRET_KEY.txt
 
+#ignore media storage populated during use
 media/
 
 #copied from https://github.com/github/gitignore/blob/main/Python.gitignore

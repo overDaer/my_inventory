@@ -48,7 +48,7 @@ async function buildGroupContainers() {
 
 function buildGroupDisplay(group){
     let groupContainer = document.createElement('div');groupContainer.setAttribute('class','group-container'); groupContainer.setAttribute('data-id',group.pk);
-    let groupData = document.createElement('div');groupData.setAttribute('data-id',group.pk);groupData.setAttribute('data-name',group.fields.name); groupData.setAttribute('class','group-data-content');
+    let groupData = document.createElement('div');groupData.setAttribute('data-id',group.pk);groupData.setAttribute('data-name',group.fields.name); groupData.setAttribute('class','group-data-content header');
     let groupName = document.createElement('h4'); groupName.setAttribute('class', 'group-data-field'); groupName.setAttribute('id', 'group-data-name');
     groupName.innerHTML = group.fields.name;
     let groupCategory = document.createElement('h4'); groupCategory.setAttribute('class', 'group-data-field'); groupCategory.setAttribute('id', 'group-data-category');
@@ -95,10 +95,10 @@ function buildGroupDisplay(group){
     groupContainer.appendChild(groupContent);
 
 
-    let groupHeader = document.createElement('div'); groupHeader.setAttribute('class','group-display-header');
+    let groupHeader = document.createElement('div'); groupHeader.setAttribute('class','group-display-header header');
     groupContent.appendChild(groupHeader); 
 
-    let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container button-header');
+    let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container button-header  header');
     groupHeader.appendChild(itemActionContainer);
     
     let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action small-button');addItemButton.setAttribute('data-id',group.pk);
@@ -209,7 +209,7 @@ async function buildItemDisplay(item, group_id) {
     display.setAttribute('tabindex', 0);
     //html elements containing data
     //add name as separate div
-    let name = document.createElement("h3");name.setAttribute("class", "item-name");name.innerHTML = item.fields.name;
+    let name = document.createElement("h3");name.setAttribute("class", "item-name header");name.innerHTML = item.fields.name;
     display.appendChild(name);
     let itemButtonContainer = document.createElement("div"); itemButtonContainer.setAttribute("class", "item-button-container");
     display.appendChild(itemButtonContainer);
@@ -304,7 +304,7 @@ function buildImageElement(image=null,large=false){
 
 async function buildNoteDisplay(note){
     let noteContainer = document.createElement('div'); noteContainer.setAttribute('data-id',note.pk) ;noteContainer.setAttribute('data-name',note.fields.name); noteContainer.setAttribute('class','note-container');
-    let noteHeader = document.createElement('div'); noteHeader.setAttribute('class','note-header');
+    let noteHeader = document.createElement('div'); noteHeader.setAttribute('class','note-header header');
     noteContainer.append(noteHeader);
     let noteName = document.createElement('span'); noteName.setAttribute('class','note-name');
     noteName.innerHTML = note.fields.name;
@@ -312,10 +312,29 @@ async function buildNoteDisplay(note){
     let reminder = await loadNoteReminder(note.pk);
     if (reminder) {
         let noteReminderSpan = document.createElement('span'); noteReminderSpan.setAttribute('class','header-button-span right-side-span note-reminder-span');
+        let noteReminderImage = document.createElement('img'); noteReminderImage.setAttribute('class','note-reminder-image button-icon');
+        noteReminderSpan.append(noteReminderImage);
         noteHeader.append(noteReminderSpan);
-        let noteReminderImage = document.createElement('img'); noteReminderImage.setAttribute('class','note-reminder-image');
-        noteReminderImage.setAttribute('src',lightbulb);
-        noteReminderSpan.appendChild(noteReminderImage);
+        //after acknowledgement, reminder is no longer current
+        if (!isAcknowledged(reminder)){
+            //show lightbulb for current reminders
+            noteReminderImage.setAttribute('src',lightbulb);
+            //if reminder is due, i.e. past reminder time or date, add acknowledge actions
+            if (isDue(reminder)){
+                let noteReminderAckButton = document.createElement('button'); noteReminderAckButton.setAttribute('class','note-action small-button round-button');
+                noteReminderSpan.prepend(noteReminderAckButton);
+                let noteReminderAckImage = document.createElement('img'); noteReminderAckImage.setAttribute('class', 'button-icon'); noteReminderAckImage.setAttribute('src', plus);
+                noteReminderAckButton.append(noteReminderAckImage);
+                noteReminderAckButton.addEventListener('click',async()=>{
+                    let acknowledged = await acknowledge(reminder);
+                    if (acknowledged) {
+                        noteReminderAckImage.setAttribute('src', circleCheck);
+                    }
+                });
+            }
+        } else {
+            noteReminderImage.setAttribute('src',circleCheck);
+        }
     }
     let noteContent = document.createElement('div'); noteContent.setAttribute('class','note-content');
     noteContainer.append(noteContent);
@@ -608,7 +627,7 @@ async function loadDateReminders({id=null, note_id = null}){
     else {
         response = await fetch('/inventory/dateReminder');
     }
-    if (response.ok) {
+    if (response?.ok) {
         let reminders = await response.json();
         reminders = JSON.parse(reminders);
         return reminders;
@@ -1599,26 +1618,23 @@ function populateReminderModal(reminder){
     let reminderRadioDate = document.getElementById('reminder-input-option-date');
     let reminderRadioWeekly = document.getElementById('reminder-input-option-weekly');
 
-    let isDate = ('reminder_dt' in reminder.fields);
-    let isWeekly = ('time' in reminder.fields);
-
     //cannot change between date and weekly for existing, so disable input
     reminderRadioDate.disabled = true;
     reminderRadioWeekly.disabled = true;
 
     let reminderModal = document.getElementById('reminder-modal-container');
-    if (isDate) {
+    if (isDate(reminder)) {
         setReminderModalType('date');
         reminderRadioDate.checked = true;
         reminderRadioWeekly.checked = false;
         // setReminderModalType('date');
         reminderModal.setAttribute('data-id', reminder.pk);
-        let convertedDate = formatInputDate(reminder.fields.reminder_dt)
-        document.getElementById('reminder-input-datetime').value = convertedDate;
+        let date = convertToLocalDate(reminder.fields.reminder_dt);
+        document.getElementById('reminder-input-datetime').value = convertDateToLocalString(date);
         document.getElementById('reminder-input-reoccurring').checked = reminder.fields.reoccurring;
         document.getElementById('reminder-input-reoccurring-interval').value = reminder.fields.reoccurring_interval;
         document.getElementById('reminder-input-reoccurring-interval').disabled = !reminder.fields.reoccurring;
-    } else if (isWeekly) {
+    } else if (isWeekly(reminder)) {
         setReminderModalType('weekly');
         reminderRadioDate.checked = false;
         reminderRadioWeekly.checked = true;
@@ -1635,10 +1651,28 @@ function populateReminderModal(reminder){
     }
 }
 
-function formatInputDate(value){
-    //2025-10-20T14:48:00.000Z -> 2025-10-20T14:48 
+function convertToLocalDate(value){
+    //UTC -> local
+    //2025-10-20T14:48:00.000Z
     let formattedDate = value.slice(0,16);
-    return formattedDate;
+    formattedDate = formattedDate.split('T');
+    let dateTexts = formattedDate[0].split('-');
+    let year = Number(dateTexts[0]);
+    //utc is 0 indexed
+    let month = Number(dateTexts[1]) - 1;
+    let day = Number(dateTexts[2]);
+    let timeTexts = formattedDate[1].split(':');
+    let hour = Number(timeTexts[0]);
+    let minute = Number(timeTexts[1]);
+    let date = new Date(Date.UTC(year,month,day,hour,minute,0,0));
+    return date;
+}
+
+//gemini
+function convertDateToLocalString(date){
+    let offset = date.getTimezoneOffset() * 60000; // Convert minutes to milliseconds
+    let localISOTime = new Date(date.getTime() - offset).toISOString().slice(0, 16);
+    return localISOTime;
 }
 
 async function loadImageElements(item_id){
@@ -1657,6 +1691,105 @@ async function loadImageElements(item_id){
 
 
 //helper functions
+async function acknowledge(reminder){
+    if (isDate(reminder)) {
+        let response = await acknowledgeDateReminder(reminder.pk);
+        if(response){
+            notifyResponse(response);
+        }
+        if (response?.ok) {
+            return true;
+        }
+    } else if(isWeekly(reminder)){
+        let response = await acknowledgeWeeklyReminder(reminder.pk);
+        if(response){
+            notifyResponse(response);
+        }
+        if (response?.ok) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isDate(reminder){
+    return ('reminder_dt' in reminder.fields);
+}
+
+function isWeekly(reminder){
+    return ('time' in reminder.fields);
+}
+
+function isReminderWeekday(reminder){
+    let today = new Date();
+    let day = today.getDay();
+    return hasWeeklyDay(reminder,day);
+}
+
+function isReminderTime(reminder){
+    let reminderTime = reminder.fields.time.split(':');
+    let reminderHours = Number(reminderTime[0]);
+    let reminderMinutes = Number(reminderTime[1]);
+    let now = new Date();
+    let nowHours = now.getHours();
+    let nowMinutes = now.getMinutes();
+    return isTimePast(reminderHours,reminderMinutes,nowHours,nowMinutes);
+}
+
+function isTimePast(mainHours,mainMinutes,comparedHours,comparedMinutes){
+    let mainTotalMinutes = (mainHours * 60) + mainMinutes;
+    let comparedTotalMinutes = (comparedHours *60) + comparedMinutes;
+    return (mainTotalMinutes <= comparedTotalMinutes);
+}
+
+// sunday: 0, monday: 1, ... saturday: 6
+function hasWeeklyDay(reminder, day){
+    let monday = Boolean(reminder.fields.monday);
+    let tuesday = Boolean(reminder.fields.tuesday);
+    let wednesday = Boolean(reminder.fields.wednesday);
+    let thursday = Boolean(reminder.fields.thursday);
+    let friday = Boolean(reminder.fields.friday);
+    let saturday = Boolean(reminder.fields.saturday);
+    let sunday = Boolean(reminder.fields.sunday);
+    if (sunday & day === 0) {return true};
+    if (monday & day === 1) {return true};
+    if (tuesday & day === 2) {return true};
+    if (wednesday & day === 3) {return true};
+    if (thursday & day === 4) {return true};
+    if (friday & day === 5) {return true};
+    if (saturday & day === 6) {return true};
+    return false;
+}
+
+function isDue(reminder){
+    let now = new Date();
+    if (isDate(reminder)){
+        let reminder_dt = new Date(reminder.fields.reminder_dt);
+        return (reminder_dt <= now) & !isAcknowledged(reminder);
+    } else if (isWeekly(reminder)){
+        return (isReminderWeekday(reminder) & isReminderTime(reminder)) & !isAcknowledged(reminder);
+    }
+}
+
+function isAcknowledged(reminder){
+    if (!reminder.fields.acknowledged_dt) {
+        return false;
+    }
+    let acknowledged_dt = new Date(reminder.fields.acknowledged_dt);
+    if (isDate(reminder)){
+        let reminder_dt = new Date(reminder.fields.reminder_dt);
+        return (acknowledged_dt >= reminder_dt)
+    } else if (isWeekly(reminder)){
+        let ackDay = acknowledged_dt.getDay();
+        let ackHours = acknowledged_dt.getHours();
+        let ackMinutes = acknowledged_dt.getMinutes();
+        //reminder time HH:MM:SS
+        let reminderTime = reminder.fields.time.split(':');
+        let reminderHours = Number(reminderTime[0]);
+        let reminderMinutes = Number(reminderTime[1]);
+        return (hasWeeklyDay(reminder, ackDay) & isTimePast(reminderHours,reminderMinutes,ackHours,ackMinutes));
+    }
+}
 
 function updateReminderCount(count){
     let image = document.getElementById('reminders-count-image');

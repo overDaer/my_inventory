@@ -97,7 +97,8 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 /*---------class----------*/
 
 .header {
-    margin: 5px;
+    display: flex;
+    align-items: center;
 }
 
 .item-display{
@@ -125,7 +126,7 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
 
 .item-name{
     margin: 5px;
-    text-align: center;
+    justify-content: center;
     height: 20px;
     white-space: nowrap;
     overflow: hidden;
@@ -609,8 +610,12 @@ table td, table th {
 }
 
 .note-reminder-span {
+    display: flex;
+    justify-content: space-around;
     background-color: var(--note-reminder-span-background-color);
     border-radius: 25px;
+    min-height: 30px;
+    min-width: 30px;
 }
 
 .note-content{
@@ -632,11 +637,19 @@ table td, table th {
     justify-content: center;
     align-items: center;
     border-radius: 20px;
+    padding: 1px 4px;
 }
 
 .small-button{
+    justify-content: center;
+    align-items: center;
     width: 25px;
     height: 25px;
+    padding: 5px;
+}
+
+.round-button{
+    border-radius: 25px;
 }
 
 #reminders-count-image{
@@ -644,13 +657,8 @@ table td, table th {
 }
 
 .button-icon{
+    
     filter: invert(100%) sepia(91%) saturate(38%) hue-rotate(321deg) brightness(110%) contrast(110%);
-}
-
-.reminder-action{
-    width: 25px;
-    height: 25px;
-    padding: 5px;
 }
 
 .modal-row-input-container {
