@@ -98,27 +98,27 @@ function buildGroupDisplay(group){
     let groupHeader = document.createElement('div'); groupHeader.setAttribute('class','group-display-header header');
     groupContent.appendChild(groupHeader); 
 
-    let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container button-header  header');
+    let itemActionContainer = document.createElement('div');itemActionContainer.setAttribute('class','item-action-container button-header  center-flex-container header');
     groupHeader.appendChild(itemActionContainer);
     
-    let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action small-button');addItemButton.setAttribute('data-id',group.pk);
+    let addItemButton = document.createElement('button'); addItemButton.setAttribute('class','item-action small-button shadowed-button');addItemButton.setAttribute('data-id',group.pk);
 
     let addItemImg = document.createElement('img');addItemImg.setAttribute('src', addItem);addItemImg.setAttribute('class','button-icon');
     addItemButton.prepend(addItemImg);
     
-    let removeItemButton = document.createElement('button'); removeItemButton.setAttribute('class','item-action small-button');removeItemButton.setAttribute('data-id',group.pk);
+    let removeItemButton = document.createElement('button'); removeItemButton.setAttribute('class','item-action small-button shadowed-button');removeItemButton.setAttribute('data-id',group.pk);
     let removeItemImg = document.createElement('img');removeItemImg.setAttribute('src', removeItem);removeItemImg.setAttribute('class','button-icon');
     removeItemButton.prepend(removeItemImg);
 
-    let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action small-button');editItemButton.setAttribute('data-id',group.pk);
+    let editItemButton = document.createElement('button'); editItemButton.setAttribute('class','item-action small-button shadowed-button');editItemButton.setAttribute('data-id',group.pk);
     let editItemImg = document.createElement('img');editItemImg.setAttribute('src', pencil);editItemImg.setAttribute('class','button-icon');
     editItemButton.prepend(editItemImg);
 
-    let uploadImageButton = document.createElement('button'); uploadImageButton.setAttribute('class','item-action small-button');uploadImageButton.setAttribute('data-id',group.pk);
+    let uploadImageButton = document.createElement('button'); uploadImageButton.setAttribute('class','item-action small-button shadowed-button');uploadImageButton.setAttribute('data-id',group.pk);
     let uploadItemImg = document.createElement('img');uploadItemImg.setAttribute('src', uploadIcon);uploadItemImg.setAttribute('class','button-icon');
     uploadImageButton.prepend(uploadItemImg);
 
-    let viewItemButton = document.createElement('button'); viewItemButton.setAttribute('class','item-action small-button');viewItemButton.setAttribute('data-id',group.pk);
+    let viewItemButton = document.createElement('button'); viewItemButton.setAttribute('class','item-action small-button shadowed-button');viewItemButton.setAttribute('data-id',group.pk);
     let viewItemImg = document.createElement('img');viewItemImg.setAttribute('src', eye);viewItemImg.setAttribute('class','button-icon');
     viewItemButton.prepend(viewItemImg);
 
@@ -209,7 +209,7 @@ async function buildItemDisplay(item, group_id) {
     display.setAttribute('tabindex', 0);
     //html elements containing data
     //add name as separate div
-    let name = document.createElement("h3");name.setAttribute("class", "item-name header");name.innerHTML = item.fields.name;
+    let name = document.createElement("h3");name.setAttribute("class", "item-name header center-flex-container inconsolata-typefont");name.innerHTML = item.fields.name;
     display.appendChild(name);
     let itemButtonContainer = document.createElement("div"); itemButtonContainer.setAttribute("class", "item-button-container");
     display.appendChild(itemButtonContainer);
@@ -222,11 +222,11 @@ async function buildItemDisplay(item, group_id) {
         imageElement = buildImageElement(image);
     };
     display.appendChild(imageElement);
-    let description = document.createElement("p");description.setAttribute("class", "item-description");
+    let description = document.createElement("p");description.setAttribute("class", "item-description description-fontsize");
     description.innerHTML = item.fields.description;
     let topTable = document.createElement("table");topTable.setAttribute("class", "item-top-table");
     let numberTable = document.createElement("table");numberTable.setAttribute("class", "key-value-table");
-    insertFieldAsRow("price:", item.fields.price, numberTable);
+    insertFieldAsRow("price:", (item.fields.price) ? `$${item.fields.price}` : '', numberTable);
     insertFieldAsRow("total:", item.fields.total_quantity, numberTable);
     insertFieldAsRow("available:", item.fields.available_quantity, numberTable);
     insertFieldAsRow("used:", item.fields.used_quantity, numberTable);
@@ -235,6 +235,10 @@ async function buildItemDisplay(item, group_id) {
     row.insertCell().appendChild(description);
     display.appendChild(topTable);
     display.addEventListener('click', async()=>{
+        //do nothing if selected item is re-clicked
+        if(itemSelection?.getAttribute('data-id')===display.getAttribute('data-id')){
+            return;
+        }
         //unselect previously selected groups
         clearItemSelect();
         //select this group
@@ -306,12 +310,12 @@ async function buildNoteDisplay(note){
     let noteContainer = document.createElement('div'); noteContainer.setAttribute('data-id',note.pk) ;noteContainer.setAttribute('data-name',note.fields.name); noteContainer.setAttribute('class','note-container');
     let noteHeader = document.createElement('div'); noteHeader.setAttribute('class','note-header header');
     noteContainer.append(noteHeader);
-    let noteName = document.createElement('span'); noteName.setAttribute('class','note-name');
+    let noteName = document.createElement('span'); noteName.setAttribute('class','note-name center-flex-container');
     noteName.innerHTML = note.fields.name;
     noteHeader.append(noteName);
     let reminder = await loadNoteReminder(note.pk);
     if (reminder) {
-        let noteReminderSpan = document.createElement('span'); noteReminderSpan.setAttribute('class','header-button-span right-side-span note-reminder-span');
+        let noteReminderSpan = document.createElement('span'); noteReminderSpan.setAttribute('class','header-button-span right-side-span note-reminder-span center-flex-container');
         let noteReminderImage = document.createElement('img'); noteReminderImage.setAttribute('class','note-reminder-image button-icon');
         noteReminderSpan.append(noteReminderImage);
         noteHeader.append(noteReminderSpan);
@@ -321,7 +325,7 @@ async function buildNoteDisplay(note){
             noteReminderImage.setAttribute('src',lightbulb);
             //if reminder is due, i.e. past reminder time or date, add acknowledge actions
             if (isDue(reminder)){
-                let noteReminderAckButton = document.createElement('button'); noteReminderAckButton.setAttribute('class','note-action small-button round-button');
+                let noteReminderAckButton = document.createElement('button'); noteReminderAckButton.setAttribute('class','note-header-action small-button round-button');
                 noteReminderSpan.prepend(noteReminderAckButton);
                 let noteReminderAckImage = document.createElement('img'); noteReminderAckImage.setAttribute('class', 'button-icon'); noteReminderAckImage.setAttribute('src', plus);
                 noteReminderAckButton.append(noteReminderAckImage);
@@ -338,7 +342,7 @@ async function buildNoteDisplay(note){
     }
     let noteContent = document.createElement('div'); noteContent.setAttribute('class','note-content');
     noteContainer.append(noteContent);
-    let noteText = document.createElement('p'); noteText.setAttribute('class','note-text');
+    let noteText = document.createElement('p'); noteText.setAttribute('class','note-text description-fontsize');
     noteText.innerHTML = note.fields.text;
     noteContent.append(noteText);
     noteContainer.addEventListener('click',()=>{
@@ -590,8 +594,7 @@ async function loadNotes({id=null, item_id = null}){
 
 async function loadCurrentReminders(){
     let response = await fetch('/inventory/reminders-now');
-    console.log(response);
-    if (response.ok){
+    if (response?.ok){
         let notes = await response.json();
         notes = JSON.parse(notes);
         return notes;
@@ -911,18 +914,11 @@ async function saveReminderDate(){
     let id = reminderModal.getAttribute('data-id');
     let note_id = noteSelection.getAttribute('data-id');
     let reminder_dt = document.getElementById('reminder-input-datetime').value;
-    let reoccurring = Boolean(document.getElementById('reminder-input-reoccurring').checked);
-    let reoccurring_interval = null;
-    if (reoccurring) {
-        reoccurring_interval = document.getElementById('reminder-input-reoccurring-interval').value;
-    }
     if (reminderModal.hasAttribute('data-id')){
         let reminder = {
             id: id,
             note_id: note_id,
-            reminder_dt: reminder_dt,
-            reoccurring: reoccurring,
-            reoccurring_interval: reoccurring_interval
+            reminder_dt: reminder_dt
         }
         let response = await fetch('/inventory/dateReminder/', {
             method: 'PUT',
@@ -939,8 +935,6 @@ async function saveReminderDate(){
         let reminder = {
             note_id: note_id,
             reminder_dt: reminder_dt,
-            reoccurring: reoccurring,
-            reoccurring_interval: reoccurring_interval
         }
         let response = await fetch('/inventory/dateReminder/', {
             method: 'POST',
@@ -1322,8 +1316,10 @@ function addButtonEvents() {
         reminderModal.setAttribute('data-note-id',note_id);
         //if reminder exists, populate modal with existing
         let reminder = await loadNoteReminder(note_id);
+        let reminderDeleteButton = document.getElementById('delete-reminder');
         if (reminder) {
             populateReminderModal(reminder);
+            reminderDeleteButton.hidden = false;
         }
         reminderModal.classList.add('show');
     });
@@ -1402,11 +1398,6 @@ function addButtonEvents() {
         if (weeklyRadio.checked) {
             setReminderModalType('weekly');
         }
-    });
-    let inputReoccuringCheckbox = document.getElementById('reminder-input-reoccurring');
-    let inputReoccuringInterval = document.getElementById('reminder-input-reoccurring-interval');
-    inputReoccuringCheckbox.addEventListener('change',()=>{
-        inputReoccuringInterval.disabled = !inputReoccuringCheckbox.checked;
     });
 
     let remindersViewButton = document.getElementById('reminders-view-button');
@@ -1494,6 +1485,8 @@ async function clearReminderModal(){
         //wait before continuing for clean transition
         await sleep(500);
     }
+    let reminderDeleteButton = document.getElementById('delete-reminder');
+    reminderDeleteButton.hidden = true;
     reminderModal.removeAttribute('data-id');
     reminderModal.removeAttribute('date-reminder');
     reminderModal.removeAttribute('weekly-reminder');
@@ -1504,8 +1497,6 @@ async function clearReminderModal(){
     reminderRadioWeekly.checked = false;
     reminderRadioWeekly.disabled = false;
     document.getElementById('reminder-input-datetime').value = null;
-    document.getElementById('reminder-input-reoccurring').checked = false;
-    document.getElementById('reminder-input-reoccurring-interval').value = null;
     document.getElementById('weekly-reminder-input-time').value = null;
     document.getElementById('weekly-reminder-input-monday').checked = false;
     document.getElementById('weekly-reminder-input-tuesday').checked =false;
@@ -1562,9 +1553,18 @@ async function populateItemViewModal(item){
     document.getElementById('item-total-datacell').innerHTML = item.fields.total_quantity;
     document.getElementById('item-available-datacell').innerHTML = item.fields.available_quantity;
     document.getElementById('item-used-datacell').innerHTML = item.fields.used_quantity;
-    document.getElementById('item-acquired-datacell').innerHTML = item.fields.acquired_dt;
-    document.getElementById('item-expire-datacell').innerHTML = item.fields.expire_dt;
-    document.getElementById('item-updated-datacell').innerHTML = item.fields.updated_dt;
+    if (item.fields.acquired_dt) {
+        document.getElementById('item-acquired-datacell').innerHTML = 
+            convertToLocalDate(item.fields.acquired_dt).toDateString()
+    }
+    if (item.fields.expire_dt) {
+        document.getElementById('item-expire-datacell').innerHTML = 
+            convertToLocalDate(item.fields.expire_dt).toDateString()
+    }
+    if (item.fields.updated_dt) {
+        document.getElementById('item-updated-datacell').innerHTML = 
+            convertToLocalDate(item.fields.updated_dt).toDateString()
+    }
     document.getElementById('item-view-description').value = item.fields.description;
     await loadImageElements(item.pk);
     populateSlideshow();
@@ -1609,8 +1609,6 @@ function setWeeklyInputDisabled(value){
 
 function setDateInputDisabled(value){
     document.getElementById('reminder-input-datetime').disabled = value;
-    document.getElementById('reminder-input-reoccurring').disabled = value;
-    document.getElementById('reminder-input-reoccurring-interval').disabled = value;
     document.getElementById('date-reminder-container').hidden = value;
 }
 
@@ -1631,9 +1629,6 @@ function populateReminderModal(reminder){
         reminderModal.setAttribute('data-id', reminder.pk);
         let date = convertToLocalDate(reminder.fields.reminder_dt);
         document.getElementById('reminder-input-datetime').value = convertDateToLocalString(date);
-        document.getElementById('reminder-input-reoccurring').checked = reminder.fields.reoccurring;
-        document.getElementById('reminder-input-reoccurring-interval').value = reminder.fields.reoccurring_interval;
-        document.getElementById('reminder-input-reoccurring-interval').disabled = !reminder.fields.reoccurring;
     } else if (isWeekly(reminder)) {
         setReminderModalType('weekly');
         reminderRadioDate.checked = false;
@@ -1781,13 +1776,16 @@ function isAcknowledged(reminder){
         return (acknowledged_dt >= reminder_dt)
     } else if (isWeekly(reminder)){
         let ackDay = acknowledged_dt.getDay();
+        let today = new Date().getDay();
         let ackHours = acknowledged_dt.getHours();
         let ackMinutes = acknowledged_dt.getMinutes();
         //reminder time HH:MM:SS
         let reminderTime = reminder.fields.time.split(':');
         let reminderHours = Number(reminderTime[0]);
         let reminderMinutes = Number(reminderTime[1]);
-        return (hasWeeklyDay(reminder, ackDay) & isTimePast(reminderHours,reminderMinutes,ackHours,ackMinutes));
+        return (today === ackDay & 
+            hasWeeklyDay(reminder, ackDay) & 
+            isTimePast(reminderHours,reminderMinutes,ackHours,ackMinutes));
     }
 }
 

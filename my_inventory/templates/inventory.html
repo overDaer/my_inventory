@@ -9,13 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- main page content -->
     <div class="container" id="base-container">
         <div class="interactive-bar inconsolata-typefont" id="nav-bar">
             <a id="base-container-header-text">my_inventory</a>
-            <span class="header-button-span right-side-span" id="nav-bar-button-span">
+            <span class="header-button-span right-side-span center-flex-container" id="nav-bar-button-span">
                 <button class="nav-bar-button" id="nav-bar-button-help">help</button>
                 <button class="nav-bar-button" id="nav-bar-button-about">about</button>
                 <button class="nav-bar-button" id="nav-bar-button-donate">donate</button>
@@ -24,17 +25,17 @@
         </div>
         <div class="container" id="content-container">
             <div class="container" id="groups-container">
-                <div class="button-header" id="groups-header">
-                    <button class="group-action" id="group-add">
+                <div class="button-header center-flex-container" id="groups-header">
+                    <button class="group-action  shadowed-button" id="group-add">
                         <img class="button-icon" src="{% static 'my_inventory/assets/folder-plus.svg' %}" alt="add">
                     </button>
-                    <button class="group-action" id="group-remove">
+                    <button class="group-action shadowed-button" id="group-remove">
                         <img class="button-icon" src="{% static 'my_inventory/assets/folder-minus.svg' %}" alt="remove">
                     </button>
-                    <button class="group-action" id="group-edit">
+                    <button class="group-action shadowed-button" id="group-edit">
                         <img class="button-icon" src="{% static 'my_inventory/assets/pencil.svg' %}" alt="edit">
                     </button>
-                    <button class="group-action" id="group-collapse">
+                    <button class="group-action shadowed-button" id="group-collapse">
                         <img class="button-icon" id="group-collapse-image" src="{% static 'my_inventory/assets/chevron-double-up.svg' %}" alt="collapse">
                     </button>
                 </div>
@@ -49,7 +50,7 @@
             </div>
             <div class= "container" id="notes-container">
                 <h4 class="header" id="notes-header">Notes & Reminders</h4>
-                <div class="button-header" id="notes-button-header">
+                <div class="button-header center-flex-container" id="notes-button-header">
                     <button class="note-action small-button" id="note-add">
                         <img class="button-icon" id="add-note-image" src="{% static 'my_inventory/assets/file-earmark-plus.svg' %}" alt="add">
                     </button>
@@ -62,9 +63,9 @@
                     <button class="note-action small-button" id="note-set-reminder">
                         <img class="button-icon" id="note-set-reminder-image" src="{% static 'my_inventory/assets/alarm.svg' %}" alt="set reminder">
                     </button>
-                    <span class="header-button-span right-side-span" id="reminders-view-span">
+                    <span class="header-button-span right-side-span center-flex-container" id="reminders-view-span">
                         <img id="reminders-count-image" src= "{% static 'my_inventory/assets/0-square-fill.svg' %}">
-                        <button class="small-button" id="reminders-view-button">
+                        <button class="small-button note-action" id="reminders-view-button">
                             <img class="button-icon" id="reminders-view-image" src= "{% static 'my_inventory/assets/lightbulb.svg' %}" alt="reminders">
                         </button>
                     </span>
@@ -77,7 +78,7 @@
     <!-- modals -->
     <div class="modal-container" id="group-modal-container">
         <div class="modal-content" id="group-modal-content">
-            <div class="modal-header" id="group-modal-header">
+            <div class="modal-header center-flex-container" id="group-modal-header">
                 <h1 class="modal-header-value" id="group-header-name">Group</h1>
             </div>
             <h4 class="modal-input-header">Name</h4>
@@ -100,15 +101,15 @@
                 id="group-textarea-description"
                 name="description">
             </textarea>
-            <div class="modal-button-container" id="group-button-container">
-                <button class="modal-action" id="group-modal-cancel">Cancel</button>
+            <div class="modal-button-container flex-justify-right" id="group-button-container">
                 <button class="modal-action" id="group-modal-save">Save</button>
+                <button class="modal-action" id="group-modal-cancel">Cancel</button>
             </div>
         </div>
     </div>
     <div class="modal-container" id="item-modal-container">
         <div class="modal-content" id="item-modal-content">
-            <div class="modal-header" id="item-modal-header">
+            <div class="modal-header  center-flex-container" id="item-modal-header">
                 <h1 class="modal-header-value" id="item-header-name">Item</h1>
             </div>
             <h4 class="modal-input-header">Name</h4>
@@ -174,44 +175,44 @@
                 id="item-textarea-description"
                 name="description">
             </textarea>
-            <div class="modal-button-container" id="item-button-container">
-                <button class="modal-action" id="item-modal-cancel">Cancel</button>
+            <div class="modal-button-container flex-justify-right" id="item-button-container">
                 <button class="modal-action" id="item-modal-save">Save</button>
+                <button class="modal-action" id="item-modal-cancel">Cancel</button>
             </div>
         </div>
     </div>
     <div class="modal-container" id="image-upload-container">
         <div class="modal-content" id="image-upload">
-            <div class="modal-header" id="image-upload-modal-header">
-                <h1 class="modal-header-value" id="image-upload-header-name">Upload Image</h1>
+            <div class="modal-header  center-flex-container" id="image-upload-modal-header">
+                <h1 class="modal-header-value" id="image-upload-header-name">Upload Images</h1>
             </div>
             <h4 class="modal-input-header">Name</h4>
             <input type="name" class="modal-input" id="image-name-input" placeholder="Image Name">
             <h4 class="modal-input-header">File</h4>
             <input type="file" class="modal-input" id="image-file-input" name="images" accept="image/*" multiple>
-            <div class="modal-button-container" id="image-upload-button-container">
-                <button id="image-upload-cancel">Cancel</button>
+            <div class="modal-button-container flex-justify-right" id="image-upload-button-container">
                 <button id="image-upload-submit">Upload</button>
+                <button id="image-upload-cancel">Cancel</button>
             </div>
         </div>
     </div>
     <div class="modal-container" id="item-view-modal-container">
         <div class="modal-content" id="item-view-modal-content">
-            <div class="modal-button-container" id="item-view-button-container">
-                <button class="item-view-action" id="item-view-button-exit">X</button>
-            </div>
-            <div class="modal-header" id="item-view-modal-header">
-                <h1 class="modal-header-value" id="item-view-header-name">Item name</h1>
+            <div class="modal-header center-flex-container" id="item-view-modal-header">
+                <span class="modal-header-text inconsolata-typefont" id="item-view-header-name"></span>
+                <span class="modal-button-container right-side-span" id="item-view-button-container">
+                    <button class="item-view-action modal-action" id="item-view-button-exit">X</button>
+                </span>
             </div>
             <div class="image-slideshow" id="item-image-slideshow"></div>
-            <div class="slideshow-action-container">
-                <span class="slideshow-button-container" id="item-slideshow-button-container">
-                    <button class="image-slideshow-action" id="slideshow-left-button">&#60;</button>
+            <div class="slideshow-action-container center-flex-container">
+                <span class="slideshow-button-container center-flex-container" id="item-slideshow-button-container">
+                    <button class="image-slideshow-action modal-action" id="slideshow-left-button">&#60;</button>
                     <p class="modal-text" id="slideshow-index-text"></p>
-                    <button class="image-slideshow-action" id="slideshow-right-button">&#62;</button>
+                    <button class="image-slideshow-action modal-action" id="slideshow-right-button">&#62;</button>
                 </span>
                 <span class="image-button-container" id="item-image-button-container">
-                    <button class="image-action" id="image-delete-button">
+                    <button class="image-action modal-action" id="image-delete-button">
                         <img class="button-icon" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
                     </button>
                 </span>
@@ -264,51 +265,44 @@
     </div>
     <div class="modal-container" id="note-modal-container">
         <div class="modal-content" id="note-content">
-            <div class="modal-header" id="note-modal-header">
+            <div class="modal-header center-flex-container" id="note-modal-header">
                 <h1 class="modal-header-value" id="note-header-name">Note</h1>
             </div>
             <h4 class="modal-input-header">Name</h4>
             <input type="name" class="modal-input" id="note-modal-input-name" placeholder="Note Name">
             <h4 class="modal-input-header">Text</h4>
             <textarea class="modal-textarea" id="note-modal-input-text" name="text"></textarea>
-            <div class="modal-button-container" id="note-button-container">
-                <button id="note-modal-cancel">Cancel</button>
+            <div class="modal-button-container flex-justify-right" id="note-button-container">
                 <button id="note-modal-save">Save</button>
+                <button id="note-modal-cancel">Cancel</button>
             </div>
         </div>
     </div>
     <div class="modal-container" id="reminder-modal-container">
-        <div class="modal-content" id="reminder-content">
-            <div class="modal-header" id="reminder-modal-header">
-                <h1 class="modal-header-value" id="reminder-header-name">Reminder
-                    <span class="header-button-span small-button button-icon right-side-span" id="reminder-header-button-span">
-                    <button class="reminder-action small-button" id="delete-reminder">
-                        <img id="delete-reminder" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
-                    </button>
-                </span>
+        <div class="modal-content center-flex-container" id="reminder-content">
+            <div class="modal-header center-flex-container" id="reminder-modal-header">
+                <h1 class="modal-header-text" id="reminder-header-name">Reminder
+                    <span class="header-button-span right-side-span center-flex-container" id="reminder-header-button-span">
+                        <button class="reminder-action small-button modal-action" id="delete-reminder">
+                            <img class="button-icon"id="delete-reminder" src="{% static 'my_inventory/assets/trash3.svg' %}" alt="delete">
+                        </button>
+                    </span>
                 </h1>
                 
             </div>
-            <div class="modal-row-input-container" id="reminder-radio-container">
+            <div class="modal-row-input-container  flex-space-between" id="reminder-radio-container">
                 <label for="reminder-input-option-date">Date</label>
                 <input type="radio" class="modal-input" id="reminder-input-option-date" name="reminder-option" value="Date">
                 <label for="reminder-input-option-weekly">Weekly</label>
                 <input type="radio" class="modal-input" id="reminder-input-option-weekly" name="reminder-option" value="Weekly">
             </div>
             <div class="modal-input-group-container" id="date-reminder-container">
-                <div class="modal-input-group-container" id="date-reminder-date-container">
-                    <label for="reminder-input-date">Date and Time</label>
+                <div class="modal-input-group-container modal-row-input-container" id="date-reminder-date-container">
                     <input type="datetime-local" class="modal-input" id="reminder-input-datetime">
-                    <div class="modal-row-input-container" id="reminder-reoccurring-container">
-                        <label for="reminder-input-reoccurring">Reoccurring</label>
-                        <input type="checkbox" class="modal-input" id="reminder-input-reoccurring">
-                    </div>
-                    <label for="reminder-input-reoccurring">Reminder Interval (days)</label>
-                    <input type="number" class="modal-input" id="reminder-input-reoccurring-interval">
                 </div>
             </div>
             <div class="modal-input-group-container" id="weekly-reminder-container">
-                <div class="modal-input-group-container" id="weekly-reminder-time-container">
+                <div class="modal-input-group-container center-flex-container modal-row-input-container" id="weekly-reminder-time-container">
                     <label for="weekly-reminder-time-input">Time</label>
                     <input type="time" class="modal-input" id="weekly-reminder-input-time">
                 </div>
@@ -329,9 +323,9 @@
                     <label for="weekly-reminder-sunday-input">Sunday</label>
                 </div>
             </div>
-            <div class="modal-button-container" id="reminder-button-container">
-                <button id="reminder-cancel">Cancel</button>
+            <div class="modal-button-container modal-row-input-container flex-justify-right" id="reminder-button-container">
                 <button id="reminder-save">Save</button>
+                <button id="reminder-cancel">Cancel</button>
             </div>
         </div>
     </div>

@@ -3,20 +3,20 @@
     
     /* item */
     --selection-item-border-color: rgb(199, 199, 199);
-    --item-button-color: #8f8f8f;
+    --item-button-color: #5c5c5c;
     --item-border-color: rgb(0, 71, 71);
     --item-image-background-color: rgb(15, 15, 15);
     --item-background-color: #1c1c1c;
-    --box-shadow-one: rgb(117, 117, 117);
-    --box-shadow-two: rgb(44, 44, 44);
+    --box-shadow-one: rgb(218, 218, 218);
+    --box-shadow-two: rgb(58, 58, 58);
 
     /* group */
-    --group-button-color: #8f8f8f;
+    --group-button-color: #5c5c5c;
     --group-header-background-color: rgb(43, 43, 43);
     --group-header-font-color: #ececec;
     --group-data-background-color: rgb(73, 73, 73);
     --group-data-font-color: #f1f1f1;
-    --group-description-background-color: rgb(95, 95, 95);
+    --group-description-background-color: rgb(73, 73, 73);
     --group-description-font-color: rgb(212, 212, 212);
     --group-focus-border-color:rgba(131, 255, 158, 0.966);
     --selection-group-border-color: rgb(248, 248, 248);
@@ -29,13 +29,15 @@
     /* modal */
     --modal-border-color: #4d4d4d;
     --modal-font-color: #f5f5f5;
-    --modal-content-background-color:rgb(61, 61, 61);
+    --modal-content-background-color:#252525;
     --modal-content-border-color:rgb(187, 187, 187);
     --modal-container-background-color:rgb(54, 54, 54);
     --modal-textarea-background-color:rgb(49, 49, 49);
     --modal-textarea-font-color:rgb(230, 230, 230);
     --modal-input-background-color:rgb(49, 49, 49);
     --modal-input-font-color:rgb(230, 230, 230);
+    --modal-button-background-color:rgb(68, 68, 68);
+    /* --modal-button-border-color:rgb(0, 0, 0); */
 
     /* notification */
     --notification-background-color: rgb(66, 66, 66);
@@ -49,14 +51,16 @@
      --scroll-bar-background-color:rgb(54, 54, 54);
 
     /* note */
-    --note-button-color:#8f8f8f;
-    --note-container-background-color:rgb(215, 255, 139);
-    --note-container-font-color:rgb(0, 0, 0);
-    --note-header-background-color:rgb(255, 220, 67);
-    --note-selected-border-color:rgba(83, 195, 255, 1);
+    --note-button-color:rgb(66, 66, 66);
+    --note-container-background-color:rgb(70, 70, 70);
+    --note-container-font-color:rgb(235, 235, 235);
+    --note-header-background-color:rgb(44, 44, 44);
+    --note-selected-border-color:rgb(117, 170, 199);
 
     /* reminder */
     --note-reminder-span-background-color: rgb(157, 157, 255);
+    --note-header-button-color:rgb(16, 36, 73);
+    --current-reminder-count-color: rgb(250, 238, 172);
 }
 
 
@@ -69,13 +73,20 @@
     "wdth" 100;
 }
 
+.description-fontsize {
+    font-size: small;
+}
+
 html, body {
     height:100%;
     width: 100%;
     margin:0;
-    font-family: Futura, "Trebuchet MS", Arial, sans-serif;
     background-color: #181818;
     color: #ececec;
+    font-family: "Nunito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* default button css */
@@ -86,42 +97,40 @@ button {
   height: 30px;
   border: 0;
   background-color: var(--group-button-color);
-  box-shadow: 0 2px 4px rgba(0,0,0,2.5);
   color: #fff;
   border-radius: 7px;
 }
 
 /*copied from https://www.cssfontstack.com*/
-h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 17.5px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 25px; } pre { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
+/* h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 17.5px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 25px; } pre { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; } */
 
 /*---------class----------*/
 
 .header {
     display: flex;
-    align-items: center;
 }
 
 .item-display{
     display: flex;
     flex-direction: column;
     /* border: 2px solid rgb(111, 112, 112); */
-    border: 4px solid var(--item-border-color);
-    border-radius: 6%;
+    border: 3px solid var(--item-border-color);
+    border-radius: 2%;
     height: 370px;
     width: 240px;
     margin: 10px;
     background-color: var(--item-background-color);
+    transition: box-shadow 0.2s;
 }
 
 .item-display:hover{
-    border: 4px solid var(--selection-item-border-color);
-    margin: 10px;
+    border: 3px solid var(--selection-item-border-color);
 }
 
 
 .item-display.selected{
-    border: 4px solid var(--selection-item-border-color);
-    box-shadow:3px 3px 5px var(--box-shadow-one), 10px 10px 7px var(--box-shadow-two);
+    border: 3px solid var(--selection-item-border-color);
+    box-shadow:3px 3px 3px var(--box-shadow-one), 10px 10px 7px var(--box-shadow-two);
 }
 
 .item-name{
@@ -130,6 +139,8 @@ h1 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 24px; fo
     height: 20px;
     white-space: nowrap;
     overflow: hidden;
+    font-size: medium;
+    font-family: ;
 }
 
 .item-img-container{
@@ -210,13 +221,13 @@ table td, table th {
 }
 
 .group-data-description{
-    margin: 5px 5px;
     height: auto;
     border-radius: 5px;
     background-color: var(--group-description-background-color);
     color:var(--group-description-font-color);
-    padding: 5px;
-    margin: 2px 5px 2px 5px;
+    padding: 0px 5px;
+    /* margin: 2px 5px; */
+    margin: 0px 5px;
 }
 .group-data-content.selected{
     border: 4px solid var(--selection-group-border-color);
@@ -248,6 +259,14 @@ table td, table th {
     margin: 5px 5px;
     margin: 5px 5px;
     background-color: var(--note-button-color);
+}
+
+.note-text {
+    font-size: medium;
+}
+
+.note-header-action{
+    background-color: var(--note-header-button-color);
 }
 
 .group-display-header{
@@ -409,13 +428,6 @@ table td, table th {
     justify-content: left;
 }
 
-
-#avatar-animation{
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: row;
-}
-
 #stats-header{
     display: flex;
     flex: 1 1 auto;
@@ -503,25 +515,26 @@ table td, table th {
 }
 
 .modal-content {
-  background-color: var(--modal-content-background-color);
-  padding: 20px 20px;
-  width: fit-content;
-  height: fit-content;
-  border-radius: 25px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  border: 1px solid var(--modal-content-border-color);
-  display: flex;
-  flex-direction: column;
+    background-color: var(--modal-content-background-color);
+    padding: 20px 20px;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: 1px solid var(--modal-content-border-color);
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 
 #group-input-description {
-  height: 100px;
-  width: 100%;
+    height: 100px;
+    width: 100%;
 }
 
 .item-view-action {
@@ -532,10 +545,10 @@ table td, table th {
 }
 
 .image-slideshow{
-  justify-content: center;
-  margin: 5px;
-  width: 800px;
-  height: 600px;
+    justify-content: center;
+    margin: 5px;
+    width: 800px;
+    height: 600px;
 }
 
 .image-slideshow-action {
@@ -548,9 +561,22 @@ table td, table th {
     height: 30px;
 }
 
-.slideshow-action-container{
+.center-flex-container{
     display: flex;
+    align-items: center;
     justify-content:center;
+}
+
+.flex-space-evenly {
+    display: flex;
+    align-items: center;
+    justify-content:space-evenly;
+}
+
+.flex-justify-right {
+    display: flex;
+    align-items: center;
+    justify-content:right;
 }
 
 .item-image-button-container{
@@ -559,9 +585,6 @@ table td, table th {
 
 .slideshow-button-container{
     margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    justify-items: center;
     width: 100%;
     transform: translateX(20px);
 }
@@ -577,11 +600,6 @@ table td, table th {
     flex-direction: column;
 }
 
-.button-header{
-    display: flex;
-    align-items: center;
-    
-}
 
 #notes-header{
     display: flex;
@@ -611,11 +629,12 @@ table td, table th {
 
 .note-reminder-span {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     background-color: var(--note-reminder-span-background-color);
     border-radius: 25px;
-    min-height: 30px;
-    min-width: 30px;
+    min-width: 25px;
+    max-height: 28px;
+    min-height: 28px;
 }
 
 .note-content{
@@ -633,14 +652,12 @@ table td, table th {
 }
 
 .header-button-span{
-    display: flex;
-    justify-content: center;
-    align-items: center;
     border-radius: 20px;
     padding: 1px 4px;
 }
 
 .small-button{
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 25px;
@@ -652,8 +669,12 @@ table td, table th {
     border-radius: 25px;
 }
 
+.shadowed-button{
+  box-shadow: 0 2px 4px rgba(0,0,0,2.5);
+}
+
 #reminders-count-image{
-    filter: invert(75%) sepia(67%) saturate(337%) hue-rotate(42deg) brightness(91%) contrast(93%);
+    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(263deg) brightness(116%) contrast(103%);
 }
 
 .button-icon{
@@ -671,19 +692,28 @@ table td, table th {
 
 .modal-button-container {
   display: flex;
-  flex-direction: row-reverse;
   align-items:right;
   padding: 5px;
   margin: 5px;
 }
 
+.modal-header-text {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.modal-action {
+    background-color: var(--modal-button-background-color);
+}
 
 .modal-input {
     border: 1px solid var(--modal-border-color);
     background-color: var(--modal-input-background-color);
     border-radius: 3px;
     padding: 5px;
-    width: 100%;
     color: var(--modal-input-font-color);
 }
 
@@ -692,7 +722,6 @@ table td, table th {
     background-color: var(--modal-textarea-background-color);
     border-radius: 3px;
     padding: 5px;
-    width: 100%;
     height: 80px;
     overflow-y: auto;
     scrollbar-color: var(--scroll-bar-thumb-color) var(--scroll-bar-background-color);

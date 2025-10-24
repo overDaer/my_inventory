@@ -406,13 +406,9 @@ def dateReminder(request: HttpRequest):
             data = json.loads(request.body)
             note_id = data['note_id']
             reminder_dt = data['reminder_dt']
-            reoccurring = data['reoccurring']
-            reoccurring_interval = data['reoccurring_interval']
             dateReminder = DateReminder()
             dateReminder.note = Note.objects.get(pk=note_id)
             dateReminder.reminder_dt = reminder_dt
-            dateReminder.reoccurring = reoccurring
-            dateReminder.reoccurring_interval = reoccurring_interval
             try:
                 dateReminder.full_clean()
                 dateReminder.save()
@@ -441,12 +437,8 @@ def dateReminder(request: HttpRequest):
             data = json.loads(request.body)
             id = data['id']
             reminder_dt = data['reminder_dt']
-            reoccurring = data['reoccurring']
-            reoccurring_interval = data['reoccurring_interval']
             dateReminder = DateReminder.objects.get(pk=id)
             dateReminder.reminder_dt = reminder_dt
-            dateReminder.reoccurring = reoccurring
-            dateReminder.reoccurring_interval = reoccurring_interval
             try:
                 dateReminder.full_clean()
                 dateReminder.save()

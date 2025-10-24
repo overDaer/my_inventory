@@ -84,5 +84,3 @@ class DateReminder(models.Model):
     reminder_dt = models.DateTimeField()
     updated_dt = models.DateTimeField(auto_now=True)
     acknowledged_dt = models.DateTimeField(null=True, blank=True)
-    reoccurring = models.BooleanField()
-    reoccurring_interval = models.IntegerField(null=True, blank=True)
